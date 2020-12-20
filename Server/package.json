@@ -20,8 +20,14 @@
     "MERN",
     "react.js"
   ],
+  "scripts": {
+    "start": "node dist/server.js",
+    "start2": "ts-node src/server.js",
+    "dev": "nodemon dist/server.ts",
+    "dev2": "nodemon --exec ts-node src/server.ts",
+    "watch": "tsc -w"
+  },
   "dependencies": {
-    "@typegoose/typegoose": "^7.4.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -32,11 +38,6 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.8",
     "morgan": "^1.10.0"
-  },
-  "scripts": {
-    "start": "node dist/server.js",
-    "dev": "nodemon server.ts",
-    "build": "tsc -p ."
   },
   "devDependencies": {
     "@types/cors": "^2.8.9",

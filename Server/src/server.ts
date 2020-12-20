@@ -4,8 +4,8 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
 
-import { graphqlHTTP } from "express-graphql";
-import { schema } from "./graphql/schema";
+// import { graphqlHTTP } from "express-graphql";
+// import { schema } from "./graphql/schema";
 
 dotenv.config();
 
@@ -19,14 +19,14 @@ if (process.env.NODE_ENV === "development") {
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema,
-    rootValue: null,
-    graphiql: true,
-  })
-);
+// app.use(
+//   "/graphql",
+//   graphqlHTTP({
+//     schema,
+//     rootValue: null,
+//     graphiql: true,
+//   })
+// );
 
 app.get("/", (req, res) => {
   res.send("API Running");

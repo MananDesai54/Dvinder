@@ -1,17 +1,27 @@
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { MyContext } from "../config/types";
 import { User } from "../entities/User";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 @Resolver()
 export class UserResolver {
-  @Query(() => [User])
-  users(@Ctx() { em }: MyContext): Promise<User[]> {
-    return em.find(User, {});
-  }
-
   @Query(() => User, { nullable: true })
-  user(@Ctx() { em }: MyContext, @Arg("id") id: number): Promise<User | null> {
-    return em.findOne(User, { id });
+  async login(
+    @Ctx() { em }: MyContext,
+    @Arg("email") email: string,
+    @Arg("password") password: string
+  ): Promise<User | null> {
+    const user = await em.findOne(User, { email });
+    if (!user) {
+      return null;
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return null;
+    }
+
+    return user;
   }
 
   @Mutation(() => User)
@@ -26,6 +36,12 @@ export class UserResolver {
       password,
       email,
     });
+
+    const salt = await bcrypt.genSalt(12);
+    const hash = await bcrypt.hash(user.password, salt);
+
+    user.password = hash;
+
     await em.persistAndFlush(user);
     return user;
   }

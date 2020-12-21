@@ -10,7 +10,6 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { UserResolver } from "./resolvers/user";
-import { User } from "./entities/User";
 dotenv.config();
 
 const main = async () => {

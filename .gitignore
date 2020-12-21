@@ -1,7 +1,8 @@
-
+#custom aded
 mikro-orm.config.ts
 mikro-orm.config.js
 migrations/
+comments.txt
 
 # Logs
 logs

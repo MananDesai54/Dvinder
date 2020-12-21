@@ -1,3 +1,6 @@
+
+mikro-orm.config.ts
+mikro-orm.config.js
 # Logs
 logs
 *.log

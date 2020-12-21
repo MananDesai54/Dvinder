@@ -1,37 +1,25 @@
 import dotenv from "dotenv";
-import express from "express";
-import bodyParser from "body-parser";
-import morgan from "morgan";
-import cors from "cors";
-
-// import { graphqlHTTP } from "express-graphql";
-// import { schema } from "./graphql/schema";
-
+import { MikroORM } from "@mikro-orm/core";
+import { User } from "./entities/User";
+import microConfig from "./mikro-orm.config";
 dotenv.config();
 
-const app: express.Application = express();
-const PORT = process.env.PORT || 5000;
+const main = async () => {
+  const orm = await MikroORM.init(microConfig);
+  await orm.getMigrator().up();
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+  // const user = orm.em.create(User, { username: "Manan", password: "manan" });
+  // await orm.em.persistAndFlush(user);
 
-app.use(cors());
-app.use(bodyParser.json());
+  const users = await orm.em.find(User, {});
+  console.log(users);
 
-// app.use(
-//   "/graphql",
-//   graphqlHTTP({
-//     schema,
-//     rootValue: null,
-//     graphiql: true,
-//   })
-// );
+  // console.log("----------sql2------------");
+  // await orm.em.nativeInsert(User, { username: "Manan", password: "manan" });
+};
 
-app.get("/", (req, res) => {
-  res.send("API Running");
+main().catch((error) => {
+  console.error(error);
 });
 
-app.listen(PORT, () =>
-  console.log(`Server is running at http://127.0.0.1:${PORT}/`)
-);
+console.log("Hello Typed Server");

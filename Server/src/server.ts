@@ -5,7 +5,6 @@ import microConfig from "./mikro-orm.config";
 import express from "express";
 import { PROD } from "./constants";
 import morgan from "morgan";
-import bodyParser from "body-parser";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
@@ -13,6 +12,7 @@ import { UserResolver } from "./resolvers/user";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import { MyContext } from "./config/types";
 
 dotenv.config();
 
@@ -34,7 +34,7 @@ const main = async () => {
   if (!PROD) {
     app.use(morgan("dev"));
   }
-  app.use(bodyParser.json());
+  app.use(express.json());
   app.get("/", (_, res) => {
     res.json({
       message: "API Running",
@@ -44,6 +44,15 @@ const main = async () => {
   /**
    * Connect to redis
    * to store sessions
+   * ==> How this exactly work <==
+   * 1. When user login we set userId to session object in req
+   * the we passes in session will be stored in redis as value with some cryptic key
+      i.e- sess:cryptic-key -> { userId: 1 }
+   * 2. then express-session middleware cookie will be set with the give data and the value will be signed version( SignedKey ) of that cryptic key
+   * 3. now when we send a req that cookie will be send to server ( SignedKey )
+   * 4. server find the cryptic key from that signed key by decrypting it ( SignedKey -> cryptic key )
+   * 5. then server request for the value for that cryptic key in redis to get user data ( sess:cryptic-key -> { userId: 1 } )
+   * so auto-login the yser
    */
 
   const RedisStore = connectRedis(session);
@@ -77,7 +86,7 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
-    context: (req: express.Request, res: express.Response) => ({
+    context: ({ req, res }): MyContext => ({
       em: orm.em,
       req,
       res,

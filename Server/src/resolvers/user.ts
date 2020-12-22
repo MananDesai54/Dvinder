@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import {
   ErrorResponse,
   MyContext,
@@ -12,9 +12,24 @@ import validator from "validator";
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    try {
+      const user = await em.findOne(User, { id: req.session.userId });
+      return user;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
+
   @Mutation(() => UserResponse)
   async registerUser(
-    @Ctx() { em }: MyContext,
+    @Ctx() { em, req }: MyContext,
     @Arg("userData") userData: UserData
   ): Promise<UserResponse> {
     try {
@@ -72,6 +87,14 @@ export class UserResolver {
       });
 
       await em.persistAndFlush(user);
+
+      /**
+       * store userId in session
+       * this will be keep stored in cookie
+       * so we can keep then login
+       */
+      req.session.userId = user.id;
+
       return {
         user,
         success: true,
@@ -92,7 +115,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Ctx() { em }: MyContext,
+    @Ctx() { em, req }: MyContext,
     @Arg("authData") authData: UserData
   ): Promise<UserResponse> {
     try {
@@ -120,6 +143,8 @@ export class UserResolver {
           success: false,
         };
       }
+
+      req.session.userId = user.id;
 
       return {
         user,

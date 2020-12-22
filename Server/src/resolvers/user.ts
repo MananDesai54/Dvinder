@@ -1,64 +1,67 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { ErrorResponse, MyContext, UserData } from "../config/types";
+import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
+import {
+  ErrorResponse,
+  MyContext,
+  UserData,
+  UserResponse,
+  ValidationField,
+} from "../config/types";
 import { User } from "../entities/User";
-// import jwt from "jsonwebtoken";
 import argon2 from "argon2";
+import validator from "validator";
 
 @Resolver()
 export class UserResolver {
-  @Query(() => User, { nullable: true })
-  async login(
-    @Ctx() { em }: MyContext,
-    @Arg("email") email: string,
-    @Arg("password") password: string
-  ): Promise<User | ErrorResponse | null> {
-    try {
-      const user = await em.findOne(User, { email });
-      if (!user) {
-        // return {
-        //   message: "Invalid credentials",
-        //   success: false,
-        //   statusCode: 400,
-        // };
-        return null;
-      }
-      const isMatch = await argon2.verify(user.password, password);
-      if (!isMatch) {
-        // return {
-        //   message: "Invalid Credentials",
-        //   success: false,
-        //   statusCode: 400,
-        // };
-        return null;
-      }
-
-      return user;
-    } catch (error) {
-      console.log(error.message);
-      // return {
-      //   message: "Something went wrong",
-      //   success: false,
-      //   statusCode: 500,
-      // };
-      return null;
-    }
-  }
-
-  @Mutation(() => User, { nullable: true })
+  @Mutation(() => UserResponse)
   async registerUser(
     @Ctx() { em }: MyContext,
     @Arg("userData") userData: UserData
-  ): Promise<User | ErrorResponse | null> {
+  ): Promise<UserResponse> {
     try {
+      const errors: ErrorResponse[] = [];
+      const validations: ValidationField[] = [
+        new ValidationField(
+          validator.isEmail(userData.email),
+          "Please enter valid email. i.e: abc@xyz.com",
+          "email"
+        ),
+        new ValidationField(
+          validator.isLength(userData.password, { min: 8, max: 32 }),
+          "Length must be between 8-32.",
+          "password"
+        ),
+        new ValidationField(
+          validator.isLength(userData.username!, { min: 3 }),
+          "Length must be greater than 2",
+          "username"
+        ),
+      ];
+
+      for (const validation of validations) {
+        if (!validation.success) {
+          errors.push(validation);
+        }
+      }
+
+      if (errors.length > 0) {
+        return {
+          errors,
+          success: false,
+        };
+      }
+
       const isEmailExist = await em.findOne(User, { email: userData.email });
       if (isEmailExist) {
         console.log("Already exist");
-        // return {
-        //   message: "User with email already exist",
-        //   success: false,
-        //   statusCode: 400,
-        // };
-        return null;
+        return {
+          errors: [
+            {
+              field: "email",
+              message: "Email is already taken choose different one",
+            },
+          ],
+          success: false,
+        };
       }
       const hashedPassword = await argon2.hash(userData.password);
 
@@ -69,15 +72,70 @@ export class UserResolver {
       });
 
       await em.persistAndFlush(user);
-      return user;
+      return {
+        user,
+        success: true,
+      };
     } catch (error) {
       console.log(error.message);
-      // return {
-      //   message: "Something went wrong",
-      //   success: false,
-      //   statusCode: 500,
-      // };
-      return null;
+      return {
+        errors: [
+          {
+            field: "Server error",
+            message: error.message,
+          },
+        ],
+        success: false,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  async login(
+    @Ctx() { em }: MyContext,
+    @Arg("authData") authData: UserData
+  ): Promise<UserResponse> {
+    try {
+      const user = await em.findOne(User, { email: authData.email });
+      if (!user) {
+        return {
+          errors: [
+            {
+              field: "Login error",
+              message: "Invalid login credentials",
+            },
+          ],
+          success: false,
+        };
+      }
+      const isMatch = await argon2.verify(user.password, authData.password);
+      if (!isMatch) {
+        return {
+          errors: [
+            {
+              field: "Login error",
+              message: "Invalid login credentials",
+            },
+          ],
+          success: false,
+        };
+      }
+
+      return {
+        user,
+        success: true,
+      };
+    } catch (error) {
+      console.log(error.message);
+      return {
+        errors: [
+          {
+            field: "Server error",
+            message: "Something went wrong",
+          },
+        ],
+        success: false,
+      };
     }
   }
 

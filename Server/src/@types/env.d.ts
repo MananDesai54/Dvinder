@@ -6,5 +6,7 @@ declare namespace NodeJS {
     PG_PASSWORD: string;
     PG_DB_NAME: string;
     PORT: number;
+    REDIS_SECRET: string;
+    COOKIE_NAME: string;
   }
 }

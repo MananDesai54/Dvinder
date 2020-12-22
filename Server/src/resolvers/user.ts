@@ -1,8 +1,8 @@
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { MyContext } from "../config/types";
+import { ErrorResponse, MyContext, UserData } from "../config/types";
 import { User } from "../entities/User";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
+import argon2 from "argon2";
 
 @Resolver()
 export class UserResolver {
@@ -11,39 +11,74 @@ export class UserResolver {
     @Ctx() { em }: MyContext,
     @Arg("email") email: string,
     @Arg("password") password: string
-  ): Promise<User | null> {
-    const user = await em.findOne(User, { email });
-    if (!user) {
-      return null;
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return null;
-    }
+  ): Promise<User | ErrorResponse | null> {
+    try {
+      const user = await em.findOne(User, { email });
+      if (!user) {
+        // return {
+        //   message: "Invalid credentials",
+        //   success: false,
+        //   statusCode: 400,
+        // };
+        return null;
+      }
+      const isMatch = await argon2.verify(user.password, password);
+      if (!isMatch) {
+        // return {
+        //   message: "Invalid Credentials",
+        //   success: false,
+        //   statusCode: 400,
+        // };
+        return null;
+      }
 
-    return user;
+      return user;
+    } catch (error) {
+      console.log(error.message);
+      // return {
+      //   message: "Something went wrong",
+      //   success: false,
+      //   statusCode: 500,
+      // };
+      return null;
+    }
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { nullable: true })
   async registerUser(
     @Ctx() { em }: MyContext,
-    @Arg("username") username: string,
-    @Arg("email") email: string,
-    @Arg("password") password: string
-  ): Promise<User> {
-    const user = em.create(User, {
-      username,
-      password,
-      email,
-    });
+    @Arg("userData") userData: UserData
+  ): Promise<User | ErrorResponse | null> {
+    try {
+      const isEmailExist = await em.findOne(User, { email: userData.email });
+      if (isEmailExist) {
+        console.log("Already exist");
+        // return {
+        //   message: "User with email already exist",
+        //   success: false,
+        //   statusCode: 400,
+        // };
+        return null;
+      }
+      const hashedPassword = await argon2.hash(userData.password);
 
-    const salt = await bcrypt.genSalt(12);
-    const hash = await bcrypt.hash(user.password, salt);
+      const user = em.create(User, {
+        username: userData.username,
+        password: hashedPassword,
+        email: userData.email,
+      });
 
-    user.password = hash;
-
-    await em.persistAndFlush(user);
-    return user;
+      await em.persistAndFlush(user);
+      return user;
+    } catch (error) {
+      console.log(error.message);
+      // return {
+      //   message: "Something went wrong",
+      //   success: false,
+      //   statusCode: 500,
+      // };
+      return null;
+    }
   }
 
   @Mutation(() => User, { nullable: true })

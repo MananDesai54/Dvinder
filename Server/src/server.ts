@@ -52,7 +52,7 @@ const main = async () => {
    * 3. now when we send a req that cookie will be send to server ( SignedKey )
    * 4. server find the cryptic key from that signed key by decrypting it ( SignedKey -> cryptic key )
    * 5. then server request for the value for that cryptic key in redis to get user data ( sess:cryptic-key -> { userId: 1 } )
-   * so auto-login the yser
+   * so data will be available on res.session = { userId: 1 } so we can auto-login the year
    */
 
   const RedisStore = connectRedis(session);

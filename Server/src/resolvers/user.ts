@@ -17,7 +17,7 @@ export class UserResolver {
     if (!req.session.userId) {
       return null;
     }
-
+    console.log(req.session);
     try {
       const user = await em.findOne(User, { id: req.session.userId });
       return user;

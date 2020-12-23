@@ -4,6 +4,8 @@ import { FC } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useRegisterMutation } from "../generated/graphql";
+import { handleAuthAndError } from "../utils";
+import { useRouter } from "next/router";
 // import { REGISTER_MUTATION } from "../mutations";
 // import { useMutation } from "urql";
 
@@ -11,18 +13,16 @@ interface registerProps {}
 
 const Register: FC<registerProps> = ({}) => {
   const [, register] = useRegisterMutation();
+  const router = useRouter();
 
   return (
     <Wrapper variant="small">
       <Formik
         initialValues={{ username: "", password: "", email: "" }}
-        onSubmit={async (values, { setErrors }) => {
+        onSubmit={async (values, errors) => {
           const response = await register(values);
-          if (response.data?.registerUser.errors) {
-            setErrors({
-              username: "Please provide username",
-            });
-          }
+          console.log(typeof response.data?.registerUser);
+          handleAuthAndError(errors, router, response.data?.registerUser);
         }}
       >
         {({ isSubmitting }) => (

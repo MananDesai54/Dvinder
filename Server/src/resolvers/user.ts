@@ -9,6 +9,7 @@ import {
 import { User } from "../entities/User";
 import argon2 from "argon2";
 import validator from "validator";
+// import { EntityManager } from '@mikro-orm/postgresql';
 
 @Resolver()
 export class UserResolver {
@@ -87,6 +88,14 @@ export class UserResolver {
       });
 
       await em.persistAndFlush(user);
+      // or queryBuilder
+      // const [user] = await (em as EntityManager).createQueryBuilder(User).getKnexQuery().insert({
+      //   username: userData.username,
+      //   password: hashedPassword,
+      //   email: userData.email,
+      //   created_at: new Date(),
+      //   updated_at: new Date(),
+      // });
 
       /**
        * store userId in session
@@ -124,8 +133,8 @@ export class UserResolver {
         return {
           errors: [
             {
-              field: "Login error",
-              message: "Invalid login credentials",
+              field: "email",
+              message: "Account doesn't exist with this email.",
             },
           ],
           success: false,
@@ -136,8 +145,8 @@ export class UserResolver {
         return {
           errors: [
             {
-              field: "Login error",
-              message: "Invalid login credentials",
+              field: "password",
+              message: "Invalid password.",
             },
           ],
           success: false,

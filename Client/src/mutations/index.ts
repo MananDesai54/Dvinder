@@ -19,3 +19,20 @@ export const REGISTER_MUTATION = `
     }
   } 
 `;
+
+export const LOGIN_MUTATION = `
+  mutation Login($email: String!, $password: String!){
+    login(authData: {password: $password, email: $email}) {
+      user {
+        id
+        email
+        username
+      }
+      errors {
+        field
+        message
+      }
+      success
+    }
+  }
+`;

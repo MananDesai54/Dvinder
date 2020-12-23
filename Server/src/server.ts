@@ -13,6 +13,7 @@ import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./config/types";
+import cors from "cors";
 
 dotenv.config();
 
@@ -30,6 +31,13 @@ const main = async () => {
    * Preparing express server
    */
   const app = express();
+
+  app.use(
+    cors({
+      origin: "http://127.0.0.1:3000",
+      credentials: true,
+    })
+  );
   const PORT = process.env.PORT || 5000;
   if (!PROD) {
     app.use(morgan("dev"));
@@ -93,7 +101,7 @@ const main = async () => {
     }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () =>
     console.log(`Server stated on http://127.0.0.1:${PORT}/`)

@@ -9,7 +9,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
   const [{ data, fetching }] = useMeQuery();
   let body = null;
 
-  const [, logout] = useLogoutMutation();
+  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
 
   // data is loading
   if (fetching) {
@@ -31,6 +31,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
       <Flex>
         <Box mx={4}>{data.me.username}</Box>
         <Button
+          isLoading={logoutFetching}
           onClick={() => {
             console.log("Logout");
             logout();

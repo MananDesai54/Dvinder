@@ -1,3 +1,5 @@
-const Index = () => <h1>Hello Next + react + Chakra App </h1>;
+import Navbar from "../components/Navbar";
+
+const Index = () => <Navbar></Navbar>;
 
 export default Index;

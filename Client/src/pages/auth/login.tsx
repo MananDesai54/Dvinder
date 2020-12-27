@@ -1,17 +1,24 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-import { useLoginMutation } from "../../generated/graphql";
+import { useLoginMutation, useMeQuery } from "../../generated/graphql";
 import { handleAuthAndError } from "../../utils";
+import NextLink from "next/link";
 
 interface LoginProps {}
 
 const Login: FC<LoginProps> = ({}) => {
   const [, login] = useLoginMutation();
   const router = useRouter();
+
+  const [{ data }] = useMeQuery();
+
+  if (data?.me) {
+    router.replace("/");
+  }
 
   return (
     <Formik
@@ -36,6 +43,12 @@ const Login: FC<LoginProps> = ({}) => {
               Login
             </Button>
           </Form>
+          <Box mt={2}>
+            Already have account ?{" "}
+            <NextLink href="/auth/register">
+              <Link fontWeight="bold"> Register</Link>
+            </NextLink>
+          </Box>
         </Wrapper>
       )}
     </Formik>

@@ -1,7 +1,7 @@
 import { FormikHelpers } from "formik";
 import { NextRouter } from "next/router";
-import { OperationResult } from "urql";
 import { ErrorResponse } from "../generated/graphql";
+import { QueryInput, Cache } from "@urql/exchange-graphcache";
 
 export const arrayToObject = (errors: ErrorResponse[]) => {
   const errorMap: Record<string, string> = {};
@@ -28,3 +28,12 @@ export const handleAuthAndError = (
     router.push("/");
   }
 };
+
+export function betterUpdateQuery<Result, Query>(
+  cache: Cache,
+  qi: QueryInput,
+  result: any,
+  fn: (r: Result, q: Query) => Query
+) {
+  return cache.updateQuery(qi, (data) => fn(result, data as any) as any);
+}

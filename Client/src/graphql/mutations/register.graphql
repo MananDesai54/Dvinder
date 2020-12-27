@@ -3,9 +3,7 @@ mutation Register($email: String!, $password: String!, $username: String!) {
     userData: { email: $email, password: $password, username: $username }
   ) {
     user {
-      username
-      id
-      email
+      ...RegularUser
     }
     errors {
       message

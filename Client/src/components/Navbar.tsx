@@ -4,7 +4,7 @@ import { FC } from "react";
 interface NavbarProps {}
 
 const Navbar: FC<NavbarProps> = ({}) => {
-  return <Box bg="tomato">navbar</Box>;
+  return <Box bg="tomato">Navbar</Box>;
 };
 
 export default Navbar;

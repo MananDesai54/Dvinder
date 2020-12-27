@@ -1,10 +1,10 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { FC } from "react";
-import InputField from "../components/InputField";
-import Wrapper from "../components/Wrapper";
-import { useRegisterMutation } from "../generated/graphql";
-import { handleAuthAndError } from "../utils";
+import InputField from "../../components/InputField";
+import Wrapper from "../../components/Wrapper";
+import { useRegisterMutation } from "../../generated/graphql";
+import { handleAuthAndError } from "../../utils";
 import { useRouter } from "next/router";
 // import { REGISTER_MUTATION } from "../mutations";
 // import { useMutation } from "urql";

@@ -11,7 +11,7 @@ const client = createClient({
   },
 });
 
-function MyApp({ Component, pageProps }) {
+const MyApp = ({ Component, pageProps }: any) => {
   return (
     <Provider value={client}>
       <ChakraProvider resetCSS theme={theme}>
@@ -25,6 +25,6 @@ function MyApp({ Component, pageProps }) {
       </ChakraProvider>
     </Provider>
   );
-}
+};
 
 export default MyApp;

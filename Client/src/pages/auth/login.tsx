@@ -2,10 +2,10 @@ import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import InputField from "../components/InputField";
-import Wrapper from "../components/Wrapper";
-import { useLoginMutation } from "../generated/graphql";
-import { arrayToObject, handleAuthAndError } from "../utils";
+import InputField from "../../components/InputField";
+import Wrapper from "../../components/Wrapper";
+import { useLoginMutation } from "../../generated/graphql";
+import { handleAuthAndError } from "../../utils";
 
 interface LoginProps {}
 

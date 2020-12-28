@@ -37,3 +37,5 @@ export function betterUpdateQuery<Result, Query>(
 ) {
   return cache.updateQuery(qi, (data) => fn(result, data as any) as any);
 }
+
+export const isServer = () => typeof window === "undefined";

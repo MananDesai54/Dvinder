@@ -7,6 +7,9 @@ import { useRegisterMutation } from "../../generated/graphql";
 import { handleAuthAndError } from "../../utils";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
+import { createUrqlClient } from "../../utils/createUrqlClient";
+import { withUrqlClient } from "next-urql";
+// import { useIsAuth } from "../../hooks/useIsAuth";
 // import { REGISTER_MUTATION } from "../mutations";
 // import { useMutation } from "urql";
 
@@ -15,6 +18,9 @@ interface registerProps {}
 const Register: FC<registerProps> = ({}) => {
   const [, register] = useRegisterMutation();
   const router = useRouter();
+
+  // const isAuth = useIsAuth();
+  // if (!isAuth) router.replace("/");
 
   return (
     <Wrapper variant="small">
@@ -56,4 +62,4 @@ const Register: FC<registerProps> = ({}) => {
   );
 };
 
-export default Register;
+export default withUrqlClient(createUrqlClient)(Register);

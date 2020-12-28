@@ -7,6 +7,9 @@ import Wrapper from "../../components/Wrapper";
 import { useLoginMutation, useMeQuery } from "../../generated/graphql";
 import { handleAuthAndError } from "../../utils";
 import NextLink from "next/link";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../../utils/createUrqlClient";
+// import { useIsAuth } from "../../hooks/useIsAuth";
 
 interface LoginProps {}
 
@@ -14,11 +17,8 @@ const Login: FC<LoginProps> = ({}) => {
   const [, login] = useLoginMutation();
   const router = useRouter();
 
-  const [{ data }] = useMeQuery();
-
-  if (data?.me) {
-    router.replace("/");
-  }
+  // const isAuth = useIsAuth();
+  // if (!isAuth) router.replace("/");
 
   return (
     <Formik
@@ -55,4 +55,4 @@ const Login: FC<LoginProps> = ({}) => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);

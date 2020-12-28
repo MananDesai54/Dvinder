@@ -154,6 +154,7 @@ export class UserResolver {
       }
 
       req.session.userId = user.id;
+      console.log(req.session);
 
       return {
         user,
@@ -216,5 +217,16 @@ export class UserResolver {
         return resolve(true);
       })
     );
+  }
+
+  @Query(() => [User], { nullable: true })
+  async users(@Ctx() { em }: MyContext): Promise<User[] | null> {
+    try {
+      // await sleep(3000);
+      return em.find(User, {});
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 }

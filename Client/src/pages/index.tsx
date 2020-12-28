@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../utils/createUrqlClient";
 import { useUsersQuery } from "../generated/graphql";
 
 /**
@@ -26,4 +26,5 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: false })(Index);
+export default Index;
+// export default withUrqlClient(createUrqlClient, { ssr: false })(Index);

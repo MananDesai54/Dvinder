@@ -18,7 +18,6 @@ export class UserResolver {
     if (!req.session.userId) {
       return null;
     }
-    console.log(req.session);
     try {
       const user = await em.findOne(User, { id: req.session.userId });
       return user;
@@ -154,7 +153,6 @@ export class UserResolver {
       }
 
       req.session.userId = user.id;
-      console.log(req.session);
 
       return {
         user,
@@ -222,7 +220,6 @@ export class UserResolver {
   @Query(() => [User], { nullable: true })
   async users(@Ctx() { em }: MyContext): Promise<User[] | null> {
     try {
-      // await sleep(3000);
       return em.find(User, {});
     } catch (error) {
       console.log(error);

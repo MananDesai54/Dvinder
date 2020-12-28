@@ -4,11 +4,11 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-import { useLoginMutation, useMeQuery } from "../../generated/graphql";
+import { useLoginMutation } from "../../generated/graphql";
 import { handleAuthAndError } from "../../utils";
 import NextLink from "next/link";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../../utils/createUrqlClient";
 // import { useIsAuth } from "../../hooks/useIsAuth";
 
 interface LoginProps {}
@@ -55,4 +55,5 @@ const Login: FC<LoginProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Login);
+export default Login;
+// export default withUrqlClient(createUrqlClient)(Login);

@@ -8,5 +8,7 @@ declare namespace NodeJS {
     PORT: number;
     REDIS_SECRET: string;
     COOKIE_NAME: string;
+    EMAIL_ID: string;
+    EMAIL_PASSWORD: string;
   }
 }

@@ -1,7 +1,7 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import router from "next/dist/next-server/lib/router/router";
-import React, { FC, useState } from "react";
+import React, { FC, Fragment, useState } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useForgetPasswordMutation } from "../generated/graphql";
@@ -24,18 +24,23 @@ const ForgetPassword: FC<{}> = ({}) => {
     >
       {({ values }) => (
         <Wrapper>
-          <Form>
-            <InputField name="email" type="email" label="Email" required />
-            {message && <Box style={{ color: "green" }}>{message}</Box>}
-            <Button
-              mt={4}
-              colorScheme="teal"
-              type="submit"
-              disabled={!values.email}
-            >
-              Reset Password
-            </Button>
-          </Form>
+          {message ? (
+            <Box style={{ color: "green" }}>{message}</Box>
+          ) : (
+            <Fragment>
+              <Form>
+                <InputField name="email" type="email" label="Email" required />
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  type="submit"
+                  disabled={!values.email}
+                >
+                  Reset Password
+                </Button>
+              </Form>
+            </Fragment>
+          )}
         </Wrapper>
       )}
     </Formik>

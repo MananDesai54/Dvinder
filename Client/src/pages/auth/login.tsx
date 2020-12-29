@@ -41,6 +41,11 @@ const Login: FC<LoginProps> = ({}) => {
             <Box mt={4}>
               <InputField name="password" type="password" label="Password" />
             </Box>
+            <Box mt={2}>
+              <NextLink href="/forget-password">
+                <Link fontWeight="bold"> Forgot password? </Link>
+              </NextLink>
+            </Box>
             <Button mt={4} colorScheme="teal" type="submit">
               Login
             </Button>

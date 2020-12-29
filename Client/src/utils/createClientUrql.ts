@@ -7,6 +7,7 @@ import {
   MeDocument,
   RegisterMutation,
   LogoutMutation,
+  ChangePasswordMutation,
 } from "../generated/graphql";
 
 export const createClientUrql = () =>
@@ -59,6 +60,22 @@ export const createClientUrql = () =>
                 _result,
                 (result, query) => {
                   if (!result.logout) {
+                    return query;
+                  } else {
+                    return {
+                      me: null,
+                    };
+                  }
+                }
+              );
+            },
+            changePassword: (_result, args, cache, info) => {
+              betterUpdateQuery<ChangePasswordMutation, MeQuery>(
+                cache,
+                { query: MeDocument },
+                _result,
+                (result, query) => {
+                  if (!result.changePassword) {
                     return query;
                   } else {
                     return {

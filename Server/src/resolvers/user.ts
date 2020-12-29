@@ -11,6 +11,9 @@ import argon2 from "argon2";
 import validator from "validator";
 import { sendMail } from "../utils/sendMail";
 import { validateRegister } from "../utils/validationRegister";
+import { v4 as generateId } from "uuid";
+import { FORGET_PASSWORD_PREFIX } from "../constants";
+import { generateErrorResponse } from "../utils/generateErrorResponse";
 // import { EntityManager } from '@mikro-orm/postgresql';
 
 @Resolver()
@@ -53,16 +56,20 @@ export class UserResolver {
         console.log("Already exist");
         const errors: ErrorResponse[] = [];
         if (isEmailExist) {
-          errors.push({
-            field: "email",
-            message: "Email is already taken choose different one",
-          });
+          errors.push(
+            generateErrorResponse(
+              "email",
+              "Email is already taken choose different one"
+            )
+          );
         }
         if (isUsernameExists) {
-          errors.push({
-            field: "username",
-            message: "Username is already taken choose different one",
-          });
+          errors.push(
+            generateErrorResponse(
+              "username",
+              "Username is already taken choose different one"
+            )
+          );
         }
         return {
           errors,
@@ -101,12 +108,7 @@ export class UserResolver {
     } catch (error) {
       console.log(error.message);
       return {
-        errors: [
-          {
-            field: "Server error",
-            message: error.message,
-          },
-        ],
+        errors: [generateErrorResponse("Server Error", error.message)],
         success: false,
       };
     }
@@ -122,17 +124,19 @@ export class UserResolver {
       const isEmail = validator.isEmail(usernameOrEmail);
       const user = await em.findOne(
         User,
-        isEmail ? { email: usernameOrEmail } : { username: usernameOrEmail }
+        isEmail
+          ? { email: usernameOrEmail }
+          : { username: usernameOrEmail.toLowerCase() }
       );
       if (!user) {
         return {
           errors: [
-            {
-              field: "email",
-              message: `Account doesn't exist with this ${
+            generateErrorResponse(
+              "email",
+              `Account doesn't exist with this ${
                 isEmail ? "email" : "username"
-              }.`,
-            },
+              }.`
+            ),
           ],
           success: false,
         };
@@ -140,12 +144,7 @@ export class UserResolver {
       const isMatch = await argon2.verify(user.password, password);
       if (!isMatch) {
         return {
-          errors: [
-            {
-              field: "password",
-              message: "Invalid password.",
-            },
-          ],
+          errors: [generateErrorResponse("password", "Invalid password.")],
           success: false,
         };
       }
@@ -194,20 +193,89 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => Boolean, { nullable: true })
-  async forgotPassword(
+  @Mutation(() => Boolean)
+  async forgetPassword(
     @Arg("email") email: string,
-    @Ctx() { em, req }: MyContext
-  ): Promise<boolean | null> {
+    @Ctx() { em, redis }: MyContext
+  ): Promise<boolean> {
     try {
       const user = await em.findOne(User, { email });
       if (!user) {
         console.log("User doesn't exist with this email.");
-        return false;
+        return true;
       }
-      console.log(req.body);
-      sendMail(email, "");
+
+      const token = generateId();
+      await redis.set(
+        `${FORGET_PASSWORD_PREFIX}${token}`,
+        user.id,
+        "ex",
+        1000 * 60 * 60 * 24 * 3
+      );
+
+      sendMail(
+        email,
+        `
+        <a href="http://127.0.0.1:3000/change-password/${token}">Reset Password</a>
+      `
+      );
+
       return true;
+    } catch (error) {
+      console.log(error.message);
+      return false;
+    }
+  }
+
+  @Mutation(() => UserResponse, { nullable: true })
+  async changePassword(
+    @Ctx() { em, req, redis }: MyContext,
+    @Arg("newPassword") newPassword: string,
+    @Arg("token") token: string
+  ): Promise<UserResponse | null> {
+    try {
+      if (!validator.isLength(newPassword, { min: 8, max: 32 })) {
+        return {
+          errors: [
+            generateErrorResponse(
+              "newPassword",
+              "Length must be between 8-32."
+            ),
+          ],
+        };
+      }
+
+      const userId = await redis.get(`${FORGET_PASSWORD_PREFIX}${token}`);
+      if (!userId) {
+        console.log("Invalid token");
+        return {
+          errors: [
+            generateErrorResponse(
+              "token",
+              "Reset link token is expired try again."
+            ),
+          ],
+        };
+      }
+      const user = await em.findOne(User, { id: +userId });
+      if (!user) {
+        return {
+          errors: [generateErrorResponse("token", "User no longer exists")],
+        };
+      }
+
+      const hashedPassword = await argon2.hash(newPassword);
+      user.password = hashedPassword;
+      await em.persistAndFlush(user);
+
+      //log user back in
+      req.session.userId = user.id;
+      await redis.del(`${FORGET_PASSWORD_PREFIX}${token}`);
+
+      return {
+        user,
+        success: true,
+      };
     } catch (error) {
       console.log(error.message);
       return null;

@@ -9,7 +9,8 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { UserResolver } from "./resolvers/user";
-import redis from "redis";
+import Redis from "ioredis";
+// import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./config/types";
@@ -64,13 +65,14 @@ const main = async () => {
    */
 
   const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient();
+  // const redisClient = redis.createClient();
+  const redis = new Redis();
 
   app.use(
     session({
       name: process.env.COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTouch: true,
         // disableTTL: true
       }),
@@ -98,6 +100,7 @@ const main = async () => {
       em: orm.em,
       req,
       res,
+      redis,
     }),
   });
 

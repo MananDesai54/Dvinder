@@ -17,7 +17,7 @@ export const validateRegister = (userData: UserData) => {
     new ValidationField(
       validator.isLength(userData.username!, { min: 3 }) &&
         !validator.contains(userData.username!, "@"),
-      "1. Length must be GREATER THAN 2 and must NOT CONTAIN @",
+      "Length must be GREATER THAN 2 and must NOT CONTAIN @",
       "username"
     ),
   ];

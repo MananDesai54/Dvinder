@@ -22,7 +22,7 @@ const InputField: FC<InputFieldProps> = (props) => {
         {...field}
         type={props.type}
         id={field.name}
-        placeholder={field.name}
+        placeholder={props.label}
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>

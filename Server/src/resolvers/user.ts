@@ -4,11 +4,13 @@ import {
   MyContext,
   UserData,
   UserResponse,
-  ValidationField,
+  // ValidationField,
 } from "../config/types";
 import { User } from "../entities/User";
 import argon2 from "argon2";
 import validator from "validator";
+import { sendMail } from "../utils/sendMail";
+import { validateRegister } from "../utils/validationRegister";
 // import { EntityManager } from '@mikro-orm/postgresql';
 
 @Resolver()
@@ -33,30 +35,7 @@ export class UserResolver {
     @Arg("userData") userData: UserData
   ): Promise<UserResponse> {
     try {
-      const errors: ErrorResponse[] = [];
-      const validations: ValidationField[] = [
-        new ValidationField(
-          validator.isEmail(userData.email),
-          "Please enter valid email. i.e: abc@xyz.com",
-          "email"
-        ),
-        new ValidationField(
-          validator.isLength(userData.password, { min: 8, max: 32 }),
-          "Length must be between 8-32.",
-          "password"
-        ),
-        new ValidationField(
-          validator.isLength(userData.username!, { min: 3 }),
-          "Length must be greater than 2",
-          "username"
-        ),
-      ];
-
-      for (const validation of validations) {
-        if (!validation.success) {
-          errors.push(validation);
-        }
-      }
+      const errors: ErrorResponse[] = validateRegister(userData);
 
       if (errors.length > 0) {
         return {
@@ -66,22 +45,34 @@ export class UserResolver {
       }
 
       const isEmailExist = await em.findOne(User, { email: userData.email });
-      if (isEmailExist) {
+      const isUsernameExists = await em.findOne(User, {
+        username: userData.username?.toLowerCase(),
+      });
+
+      if (isEmailExist || isUsernameExists) {
         console.log("Already exist");
+        const errors: ErrorResponse[] = [];
+        if (isEmailExist) {
+          errors.push({
+            field: "email",
+            message: "Email is already taken choose different one",
+          });
+        }
+        if (isUsernameExists) {
+          errors.push({
+            field: "username",
+            message: "Username is already taken choose different one",
+          });
+        }
         return {
-          errors: [
-            {
-              field: "email",
-              message: "Email is already taken choose different one",
-            },
-          ],
+          errors,
           success: false,
         };
       }
       const hashedPassword = await argon2.hash(userData.password);
 
       const user = em.create(User, {
-        username: userData.username,
+        username: userData.username?.toLowerCase(),
         password: hashedPassword,
         email: userData.email,
       });
@@ -124,22 +115,29 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Ctx() { em, req }: MyContext,
-    @Arg("authData") authData: UserData
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string
   ): Promise<UserResponse> {
     try {
-      const user = await em.findOne(User, { email: authData.email });
+      const isEmail = validator.isEmail(usernameOrEmail);
+      const user = await em.findOne(
+        User,
+        isEmail ? { email: usernameOrEmail } : { username: usernameOrEmail }
+      );
       if (!user) {
         return {
           errors: [
             {
               field: "email",
-              message: "Account doesn't exist with this email.",
+              message: `Account doesn't exist with this ${
+                isEmail ? "email" : "username"
+              }.`,
             },
           ],
           success: false,
         };
       }
-      const isMatch = await argon2.verify(user.password, authData.password);
+      const isMatch = await argon2.verify(user.password, password);
       if (!isMatch) {
         return {
           errors: [
@@ -172,6 +170,50 @@ export class UserResolver {
     }
   }
 
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+    return new Promise((resolve) =>
+      req.session.destroy((error) => {
+        if (error) {
+          console.log(error);
+          return resolve(false);
+        }
+        res.clearCookie(process.env.COOKIE_NAME);
+        return resolve(true);
+      })
+    );
+  }
+
+  @Query(() => [User], { nullable: true })
+  async users(@Ctx() { em }: MyContext): Promise<User[] | null> {
+    try {
+      return em.find(User, {});
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { em, req }: MyContext
+  ): Promise<boolean | null> {
+    try {
+      const user = await em.findOne(User, { email });
+      if (!user) {
+        console.log("User doesn't exist with this email.");
+        return false;
+      }
+      console.log(req.body);
+      sendMail(email, "");
+      return true;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
+
   @Mutation(() => User, { nullable: true })
   async updateUser(
     @Ctx() { em }: MyContext,
@@ -200,30 +242,6 @@ export class UserResolver {
       return true;
     } catch (error) {
       return false;
-    }
-  }
-
-  @Mutation(() => Boolean)
-  logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
-    return new Promise((resolve) =>
-      req.session.destroy((error) => {
-        if (error) {
-          console.log(error);
-          return resolve(false);
-        }
-        res.clearCookie(process.env.COOKIE_NAME);
-        return resolve(true);
-      })
-    );
-  }
-
-  @Query(() => [User], { nullable: true })
-  async users(@Ctx() { em }: MyContext): Promise<User[] | null> {
-    try {
-      return em.find(User, {});
-    } catch (error) {
-      console.log(error);
-      return null;
     }
   }
 }

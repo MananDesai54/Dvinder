@@ -28,7 +28,7 @@ const Login: FC<LoginProps> = ({}) => {
       initialValues={{ email: "", password: "", username: "" }}
       onSubmit={async (values, errors) => {
         const response = await login({
-          email: values.email,
+          usernameOrEmail: values.email,
           password: values.password,
         });
         handleAuthAndError(errors, router, response.data?.login);
@@ -37,7 +37,7 @@ const Login: FC<LoginProps> = ({}) => {
       {() => (
         <Wrapper>
           <Form>
-            <InputField name="email" type="email" label="Email" />
+            <InputField name="email" type="text" label="Username Or Email" />
             <Box mt={4}>
               <InputField name="password" type="password" label="Password" />
             </Box>

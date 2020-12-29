@@ -29,7 +29,7 @@ import nodeMailer from "nodemailer";
 //   </div>
 // `;
 
-export async function sendMail(to: string, text: string) {
+export async function sendMail(to: string, html: string) {
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -42,12 +42,10 @@ export async function sendMail(to: string, text: string) {
     from: process.env.EMAIL_ID,
     to,
     subject: "Forgot password",
-    text,
+    html,
   };
 
   let info = await transporter.sendMail(mailOptions);
 
   console.log("Message sent: %s", info.messageId);
-
-  console.log("Preview URL: %s", nodeMailer.getTestMessageUrl(info));
 }

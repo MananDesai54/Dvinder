@@ -1,38 +1,37 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+// import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, Int, ObjectType } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @ObjectType()
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @Field(() => Int)
-  @PrimaryKey()
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => String)
-  @Property({ type: "date" })
-  createdAt = new Date();
+  @CreateDateColumn()
+  createdAt!: Date;
 
   @Field(() => String)
-  @Property({ onUpdate: () => new Date(), type: "date" })
-  updatedAt = new Date();
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @Field()
-  @Property({ type: "text", unique: true })
+  @Column({ unique: true })
   username!: string;
 
   @Field()
-  @Property({ type: "text", unique: true })
+  @Column({ unique: true })
   email!: string;
 
-  @Property({ type: "text" })
+  @Column()
   password!: string;
-
-  // @ManyToOne() // when you provide correct type hint, ORM will read it for you
-  // author!: Author;
-
-  // @ManyToOne(() => Publisher) // or you can specify the entity as class reference or string name
-  // publisher?: Publisher;
-
-  // @ManyToMany() // owning side can be simple as this!
-  // tags = new Collection<BookTag>(this);
 }

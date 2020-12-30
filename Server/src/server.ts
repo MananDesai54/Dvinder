@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
-import microConfig from "./mikro-orm.config";
+import { createConnection } from "typeorm";
 import express from "express";
 import { PROD } from "./constants";
 import morgan from "morgan";
@@ -10,11 +9,12 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { UserResolver } from "./resolvers/user";
 import Redis from "ioredis";
-// import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./config/types";
 import cors from "cors";
+import { User } from "./entities/User";
+import { Feed } from "./entities/Feed";
 
 dotenv.config();
 
@@ -25,8 +25,17 @@ const main = async () => {
    * Create migration using CLI => npx mikro-orm migration:create
    * And use migrator in code to use migration and connect with database for doing CRUD
    */
-  const orm = await MikroORM.init(microConfig);
-  await orm.getMigrator().up();
+  const conn = await createConnection({
+    type: "postgres",
+    database: process.env.PG_DB_NAME,
+    username: process.env.PG_USERNAME,
+    password: process.env.PG_PASSWORD,
+    logging: true,
+    synchronize: true,
+    entities: [User, Feed],
+  });
+
+  console.log(conn.isConnected);
 
   /**
    * Preparing express server
@@ -97,7 +106,6 @@ const main = async () => {
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({
-      em: orm.em,
       req,
       res,
       redis,

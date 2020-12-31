@@ -1,0 +1,5 @@
+mutation CreateFeed($title: String!, $imageUrl: String!) {
+  createFeed(feedData: { title: $title, imageUrl: $imageUrl }) {
+    ...RegularFeedResponse
+  }
+}

@@ -1,0 +1,8 @@
+fragment RegularFeedResponse on FeedResponse {
+  feed {
+    ...RegularFeed
+  }
+  errors {
+    ...RegularError
+  }
+}

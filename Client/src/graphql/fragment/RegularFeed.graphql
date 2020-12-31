@@ -1,0 +1,8 @@
+fragment RegularFeed on Feed {
+  creatorId
+  title
+  imageUrl
+  id
+  createdAt
+  updatedAt
+}

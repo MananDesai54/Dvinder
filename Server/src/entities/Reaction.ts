@@ -1,6 +1,5 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,28 +8,25 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User";
+import { reactionType } from "../config/types";
 
 @ObjectType()
 @Entity()
-export class Feed extends BaseEntity {
+export class Reaction {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, (user) => user.feeds)
-  creator!: User;
+  @Field()
+  @Column()
+  type!: reactionType;
+
+  @ManyToOne(() => User, (user) => user.reactions)
+  user!: User;
 
   @Field(() => Int)
   @Column({ type: "number" })
-  creatorId!: number;
-
-  @Field()
-  @Column()
-  title!: string;
-
-  @Field()
-  @Column()
-  imageUrl!: string;
+  userId!: number;
 
   @Field(() => String)
   @CreateDateColumn()

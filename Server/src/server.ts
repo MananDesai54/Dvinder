@@ -15,15 +15,16 @@ import { MyContext } from "./config/types";
 import cors from "cors";
 import { User } from "./entities/User";
 import { Feed } from "./entities/Feed";
+import { Reaction } from "./entities/Reaction";
 
 dotenv.config();
 
 const main = async () => {
   /**
-   * Steps for Database connection with pg using mikro-orm:
-   * First create entity and create microConfig and add it there
-   * Create migration using CLI => npx mikro-orm migration:create
-   * And use migrator in code to use migration and connect with database for doing CRUD
+   * Steps for Database connection with pg using mikro-orm/ typeorm:
+   * First create entity and create microConfig/ typeormConfig and add it there
+   * Create migration using CLI => npx mikro-orm migration:create or with typeorm auto migration or cli
+   * And use migrator in code to use migration and connect with database for doing CRUD( For mikro-orm ), typeorm does it automatically
    */
   const conn = await createConnection({
     type: "postgres",
@@ -32,7 +33,7 @@ const main = async () => {
     password: process.env.PG_PASSWORD,
     logging: true,
     synchronize: true,
-    entities: [User, Feed],
+    entities: [User, Feed, Reaction],
   });
 
   console.log(conn.isConnected);

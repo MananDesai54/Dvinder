@@ -52,3 +52,9 @@ export class UserResponse {
   @Field()
   success?: boolean;
 }
+
+export enum reactionType {
+  nope = 0,
+  like = 1,
+  superLink = 2,
+}

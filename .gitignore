@@ -3,6 +3,7 @@ mikro-orm.config.ts
 mikro-orm.config.js
 migrations/
 comments.txt
+package-lock.json
 
 # Logs
 logs

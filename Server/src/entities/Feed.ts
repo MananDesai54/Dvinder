@@ -5,9 +5,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -15,6 +17,9 @@ export class Feed extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @ManyToOne(() => User, (user) => user.feeds)
+  user!: User;
 
   @Field()
   @Column()

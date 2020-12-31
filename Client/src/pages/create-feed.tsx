@@ -1,5 +1,6 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
+import { useRouter } from "next/router";
 import React, { FC } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
@@ -9,6 +10,7 @@ interface CreateFeedProps {}
 
 const CreateFeed: FC<CreateFeedProps> = ({}) => {
   const [, createFeed] = useCreateFeedMutation();
+  const router = useRouter();
 
   return (
     <Formik
@@ -16,6 +18,9 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
       initialValues={{ title: "", imageUrl: "" }}
       onSubmit={async (values, errors) => {
         const response = await createFeed(values);
+        if (response.data?.createFeed.feed) {
+          router.push("/");
+        }
       }}
     >
       {() => (

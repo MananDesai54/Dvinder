@@ -16,6 +16,7 @@ import cors from "cors";
 import { User } from "./entities/User";
 import { Feed } from "./entities/Feed";
 import { Reaction } from "./entities/Reaction";
+import { FeedResolver } from "./resolvers/feed";
 
 dotenv.config();
 
@@ -103,7 +104,7 @@ const main = async () => {
    */
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [HelloResolver, UserResolver, FeedResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({

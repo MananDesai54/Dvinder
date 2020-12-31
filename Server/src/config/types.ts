@@ -2,8 +2,12 @@ import { Request, Response } from "express";
 import { Session, SessionData } from "express-session";
 import { Redis } from "ioredis";
 import { Field, InputType, ObjectType } from "type-graphql";
+import { Feed } from "../entities/Feed";
 import { User } from "../entities/User";
 
+/**
+ * Types and classes
+ */
 export type MyContext = {
   req: Request & {
     session: Session & Partial<SessionData> & { userId?: number };
@@ -20,6 +24,18 @@ export class ValidationField {
   ) {}
 }
 
+/**
+ * Enums
+ */
+export enum reactionType {
+  nope = 0,
+  like = 1,
+  superLink = 2,
+}
+
+/**
+ * GraphQL Input Types
+ */
 @InputType()
 export class UserData {
   @Field()
@@ -32,6 +48,30 @@ export class UserData {
   username?: string;
 }
 
+@InputType()
+export class FeedData {
+  @Field()
+  title!: string;
+
+  @Field()
+  imageUrl!: string;
+}
+
+@InputType()
+export class FeedUpdateData {
+  @Field()
+  title?: string;
+
+  @Field()
+  imageUrl?: string;
+
+  @Field()
+  id?: number;
+}
+
+/**
+ * GraphQL Object types
+ */
 @ObjectType()
 export class ErrorResponse {
   @Field()
@@ -53,8 +93,14 @@ export class UserResponse {
   success?: boolean;
 }
 
-export enum reactionType {
-  nope = 0,
-  like = 1,
-  superLink = 2,
+@ObjectType()
+export class FeedResponse {
+  @Field(() => [ErrorResponse], { nullable: true })
+  errors?: ErrorResponse[];
+
+  @Field(() => Feed, { nullable: true })
+  feed?: Feed;
+
+  @Field(() => [Feed], { nullable: true })
+  feeds?: Feed[];
 }

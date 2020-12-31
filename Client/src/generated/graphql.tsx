@@ -19,15 +19,43 @@ export type Query = {
   hello: Scalars['String'];
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
+  feeds?: Maybe<Array<Feed>>;
+  feed?: Maybe<Feed>;
+};
+
+
+export type QueryFeedArgs = {
+  id: Scalars['Float'];
 };
 
 export type User = {
   __typename?: 'User';
   id: Scalars['Int'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
+  feeds: Array<Feed>;
+  reactions: Array<Reaction>;
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type Feed = {
+  __typename?: 'Feed';
+  id: Scalars['Int'];
+  creatorId: Scalars['Int'];
+  title: Scalars['String'];
+  imageUrl: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type Reaction = {
+  __typename?: 'Reaction';
+  id: Scalars['Int'];
+  type: Scalars['Float'];
+  userId: Scalars['Int'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type Mutation = {
@@ -39,6 +67,9 @@ export type Mutation = {
   changePassword?: Maybe<UserResponse>;
   updateUser?: Maybe<User>;
   deleteUser: Scalars['Boolean'];
+  createFeed: FeedResponse;
+  updateFeed: FeedResponse;
+  deleteFeed: Scalars['Boolean'];
 };
 
 
@@ -75,6 +106,21 @@ export type MutationDeleteUserArgs = {
   id: Scalars['Float'];
 };
 
+
+export type MutationCreateFeedArgs = {
+  feedData: FeedData;
+};
+
+
+export type MutationUpdateFeedArgs = {
+  feedData: FeedUpdateData;
+};
+
+
+export type MutationDeleteFeedArgs = {
+  id: Scalars['Float'];
+};
+
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<ErrorResponse>>;
@@ -94,9 +140,43 @@ export type UserData = {
   username?: Maybe<Scalars['String']>;
 };
 
+export type FeedResponse = {
+  __typename?: 'FeedResponse';
+  errors?: Maybe<Array<ErrorResponse>>;
+  feed?: Maybe<Feed>;
+  feeds?: Maybe<Array<Feed>>;
+};
+
+export type FeedData = {
+  title: Scalars['String'];
+  imageUrl: Scalars['String'];
+};
+
+export type FeedUpdateData = {
+  title: Scalars['String'];
+  imageUrl: Scalars['String'];
+  id: Scalars['Float'];
+};
+
 export type RegularErrorFragment = (
   { __typename?: 'ErrorResponse' }
   & Pick<ErrorResponse, 'field' | 'message'>
+);
+
+export type RegularFeedFragment = (
+  { __typename?: 'Feed' }
+  & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'id' | 'createdAt' | 'updatedAt'>
+);
+
+export type RegularFeedResponseFragment = (
+  { __typename?: 'FeedResponse' }
+  & { feed?: Maybe<(
+    { __typename?: 'Feed' }
+    & RegularFeedFragment
+  )>, errors?: Maybe<Array<(
+    { __typename?: 'ErrorResponse' }
+    & RegularErrorFragment
+  )>> }
 );
 
 export type RegularUserFragment = (
@@ -127,6 +207,20 @@ export type ChangePasswordMutation = (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   )> }
+);
+
+export type CreateFeedMutationVariables = Exact<{
+  title: Scalars['String'];
+  imageUrl: Scalars['String'];
+}>;
+
+
+export type CreateFeedMutation = (
+  { __typename?: 'Mutation' }
+  & { createFeed: (
+    { __typename?: 'FeedResponse' }
+    & RegularFeedResponseFragment
+  ) }
 );
 
 export type ForgetPasswordMutationVariables = Exact<{
@@ -198,11 +292,12 @@ export type UsersQuery = (
   )>> }
 );
 
-export const RegularUserFragmentDoc = gql`
-    fragment RegularUser on User {
+export const RegularFeedFragmentDoc = gql`
+    fragment RegularFeed on Feed {
+  creatorId
+  title
+  imageUrl
   id
-  username
-  email
   createdAt
   updatedAt
 }
@@ -211,6 +306,26 @@ export const RegularErrorFragmentDoc = gql`
     fragment RegularError on ErrorResponse {
   field
   message
+}
+    `;
+export const RegularFeedResponseFragmentDoc = gql`
+    fragment RegularFeedResponse on FeedResponse {
+  feed {
+    ...RegularFeed
+  }
+  errors {
+    ...RegularError
+  }
+}
+    ${RegularFeedFragmentDoc}
+${RegularErrorFragmentDoc}`;
+export const RegularUserFragmentDoc = gql`
+    fragment RegularUser on User {
+  id
+  username
+  email
+  createdAt
+  updatedAt
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`
@@ -234,6 +349,17 @@ export const ChangePasswordDocument = gql`
 
 export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
+};
+export const CreateFeedDocument = gql`
+    mutation CreateFeed($title: String!, $imageUrl: String!) {
+  createFeed(feedData: {title: $title, imageUrl: $imageUrl}) {
+    ...RegularFeedResponse
+  }
+}
+    ${RegularFeedResponseFragmentDoc}`;
+
+export function useCreateFeedMutation() {
+  return Urql.useMutation<CreateFeedMutation, CreateFeedMutationVariables>(CreateFeedDocument);
 };
 export const ForgetPasswordDocument = gql`
     mutation ForgetPassword($email: String!) {

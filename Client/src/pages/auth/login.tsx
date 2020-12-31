@@ -35,7 +35,7 @@ const Login: FC<LoginProps> = ({}) => {
       }}
     >
       {() => (
-        <Wrapper>
+        <Wrapper variant="small">
           <Form>
             <InputField name="email" type="text" label="Username Or Email" />
             <Box mt={4}>

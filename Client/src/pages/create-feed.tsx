@@ -1,16 +1,19 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
-import { useCreateFeedMutation } from "../generated/graphql";
+import { useCreateFeedMutation, useMeQuery } from "../generated/graphql";
+import { useIsAuth } from "../hooks/useIsAuth";
 
 interface CreateFeedProps {}
 
 const CreateFeed: FC<CreateFeedProps> = ({}) => {
   const [, createFeed] = useCreateFeedMutation();
   const router = useRouter();
+
+  useIsAuth();
 
   return (
     <Formik

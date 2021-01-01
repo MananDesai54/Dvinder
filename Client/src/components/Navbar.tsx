@@ -49,6 +49,9 @@ const Navbar: FC<NavbarProps> = ({}) => {
 
   return (
     <Flex bg="tan" p={4}>
+      <NextLink href="/create-feed">
+        <Link mx={4}> Create Feed </Link>
+      </NextLink>
       <Box ml="auto">{body}</Box>
     </Flex>
   );

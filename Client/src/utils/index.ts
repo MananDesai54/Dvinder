@@ -25,7 +25,11 @@ export const handleAuthAndError = (
   if (operation.errors) {
     setErrors(arrayToObject(operation.errors));
   } else if (operation.user) {
-    router.push("/");
+    if (router.query.next) {
+      router.push(router.query.next.toString());
+    } else {
+      router.push("/");
+    }
   }
 };
 

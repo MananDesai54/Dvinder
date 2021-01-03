@@ -104,3 +104,12 @@ export class FeedResponse {
   @Field(() => [Feed], { nullable: true })
   feeds?: Feed[];
 }
+
+@ObjectType()
+export class FeedPagination {
+  @Field(() => [Feed])
+  feeds!: Feed[];
+
+  @Field(() => Boolean)
+  hasMore!: boolean;
+}

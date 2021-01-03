@@ -1,4 +1,10 @@
-import { createClient, dedupExchange, fetchExchange, Exchange } from "urql";
+import {
+  createClient,
+  dedupExchange,
+  fetchExchange,
+  Exchange,
+  stringifyVariables,
+} from "urql";
 import { betterUpdateQuery } from ".";
 import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
 import {
@@ -37,13 +43,32 @@ export const cursorPagination = (): Resolver => {
       return undefined;
     }
 
+    const isInCache = cache.resolve(
+      cache.resolveFieldByKey(
+        entityKey,
+        `${fieldName}(${stringifyVariables(fieldArgs)})`
+      ) as string,
+      "feeds"
+    );
+    info.partial = !isInCache;
+
     const results: string[] = [];
+    let hasMore = true;
     fieldInfos.forEach((fi) => {
-      const data = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string[];
+      const key = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string;
+      const data = cache.resolve(key, "feeds") as string[];
+      // hasMore = hasMore && cache.resolve(key, "hasMore") as boolean;
+      const _hasMore = hasMore && (cache.resolve(key, "hasMore") as boolean);
+      if (!_hasMore) {
+        hasMore = _hasMore;
+      }
+      console.log("data: ", data);
       results.push(...data);
     });
-
-    return results;
+    return {
+      hasMore,
+      feeds: results,
+    };
 
     // const visited = new Set();
     // let result: NullArray<string> = [];
@@ -108,6 +133,9 @@ export const createClientUrql = () =>
     exchanges: [
       dedupExchange,
       cacheExchange({
+        keys: {
+          FeedPagination: () => null,
+        },
         resolvers: {
           Query: {
             feeds: cursorPagination(),

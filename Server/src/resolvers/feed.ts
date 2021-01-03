@@ -15,6 +15,7 @@ import {
   FeedData,
   MyContext,
   FeedResponse,
+  FeedPagination,
 } from "../config/types";
 import { Feed } from "../entities/Feed";
 import { isAuth } from "../middleware/isAuth";
@@ -27,26 +28,30 @@ export class FeedResolver {
     return root.imageUrl.slice(0, 50);
   }
 
-  @Query(() => [Feed], { nullable: true })
+  @Query(() => FeedPagination, { nullable: true })
   // @UseMiddleware(isAuth)
   async feeds(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null
-  ): Promise<Feed[] | null> {
+  ): Promise<FeedPagination | null> {
     const realLimit = Math.min(50, limit);
+    const realLimitPlusOne = realLimit + 1;
     try {
       const qb = getConnection()
         .getRepository(Feed)
         .createQueryBuilder("f")
         .orderBy('"createdAt"', "DESC")
-        .take(realLimit);
+        .take(realLimitPlusOne);
       if (cursor) {
         qb.where('"createdAt" < :cursor', {
           cursor: new Date(parseInt(cursor)),
         });
       }
-
-      return qb.getMany();
+      const feeds = await qb.getMany();
+      return {
+        feeds: feeds.slice(0, realLimit),
+        hasMore: feeds.length === realLimitPlusOne,
+      };
     } catch (error) {
       console.log(error.message);
       return null;

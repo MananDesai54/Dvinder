@@ -25,7 +25,8 @@
     "start2": "ts-node src/server.js",
     "dev": "nodemon dist/server.ts",
     "dev2": "nodemon --exec ts-node src/server.ts",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "migration": "npx typeorm migration:create -n MockFeeds"
   },
   "dependencies": {
     "@types/validator": "^13.1.2",

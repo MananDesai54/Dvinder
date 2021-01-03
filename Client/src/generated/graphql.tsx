@@ -19,7 +19,7 @@ export type Query = {
   hello: Scalars['String'];
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
-  feeds?: Maybe<Array<Feed>>;
+  feeds?: Maybe<FeedPagination>;
   feed?: Maybe<Feed>;
 };
 
@@ -63,6 +63,12 @@ export type Reaction = {
   userId: Scalars['Int'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+};
+
+export type FeedPagination = {
+  __typename?: 'FeedPagination';
+  feeds: Array<Feed>;
+  hasMore: Scalars['Boolean'];
 };
 
 export type Mutation = {
@@ -285,10 +291,14 @@ export type FeedsQueryVariables = Exact<{
 
 export type FeedsQuery = (
   { __typename?: 'Query' }
-  & { feeds?: Maybe<Array<(
-    { __typename?: 'Feed' }
-    & RegularFeedFragment
-  )>> }
+  & { feeds?: Maybe<(
+    { __typename?: 'FeedPagination' }
+    & Pick<FeedPagination, 'hasMore'>
+    & { feeds: Array<(
+      { __typename?: 'Feed' }
+      & RegularFeedFragment
+    )> }
+  )> }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -427,7 +437,10 @@ export function useRegisterMutation() {
 export const FeedsDocument = gql`
     query Feeds($limit: Int!, $cursor: String) {
   feeds(limit: $limit, cursor: $cursor) {
-    ...RegularFeed
+    feeds {
+      ...RegularFeed
+    }
+    hasMore
   }
 }
     ${RegularFeedFragmentDoc}`;

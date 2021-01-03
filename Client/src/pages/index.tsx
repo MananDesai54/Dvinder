@@ -1,4 +1,5 @@
 import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../utils/createUrqlClient";
@@ -15,10 +16,12 @@ import { useFeedsQuery } from "../generated/graphql";
  */
 
 const Index = () => {
+  const [variables, setVariables] = useState({
+    limit: 10,
+    cursor: null as null | string,
+  });
   const [{ data, fetching }] = useFeedsQuery({
-    variables: {
-      limit: 5,
-    },
+    variables,
   });
 
   if (!fetching && !data) {
@@ -32,7 +35,7 @@ const Index = () => {
         "Loading..."
       ) : (
         <Stack spacing={8} mx={16} my={8}>
-          {data!.feeds?.map((feed) => (
+          {data!.feeds?.feeds?.map((feed) => (
             <Box key={feed.id} shadow="md" borderWidth="1px" p={4}>
               <Heading>{feed.title}</Heading>
               <Text>{feed.imageUrlSlice}</Text>
@@ -40,10 +43,25 @@ const Index = () => {
           ))}
         </Stack>
       )}
-      {data && (
-        <Button isLoading={fetching} colorScheme="teal" my={4} mx={16}>
+      {data && data.feeds?.hasMore ? (
+        <Button
+          onClick={() =>
+            setVariables({
+              limit: variables.limit,
+              cursor: data.feeds
+                ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
+                : null,
+            })
+          }
+          isLoading={fetching}
+          colorScheme="teal"
+          my={4}
+          mx={16}
+        >
           Load More
         </Button>
+      ) : (
+        ""
       )}
     </>
   );

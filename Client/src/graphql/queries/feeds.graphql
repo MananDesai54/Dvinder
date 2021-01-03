@@ -1,5 +1,8 @@
 query Feeds($limit: Int!, $cursor: String) {
   feeds(limit: $limit, cursor: $cursor) {
-    ...RegularFeed
+    feeds {
+      ...RegularFeed
+    }
+    hasMore
   }
 }

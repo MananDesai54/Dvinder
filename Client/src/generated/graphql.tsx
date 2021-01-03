@@ -24,6 +24,12 @@ export type Query = {
 };
 
 
+export type QueryFeedsArgs = {
+  cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Int'];
+};
+
+
 export type QueryFeedArgs = {
   id: Scalars['Float'];
 };
@@ -47,6 +53,7 @@ export type Feed = {
   imageUrl: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  imageUrlSlice: Scalars['String'];
 };
 
 export type Reaction = {
@@ -165,7 +172,7 @@ export type RegularErrorFragment = (
 
 export type RegularFeedFragment = (
   { __typename?: 'Feed' }
-  & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'id' | 'createdAt' | 'updatedAt'>
+  & Pick<Feed, 'creatorId' | 'title' | 'imageUrlSlice' | 'id' | 'createdAt' | 'updatedAt'>
 );
 
 export type RegularFeedResponseFragment = (
@@ -270,6 +277,20 @@ export type RegisterMutation = (
   ) }
 );
 
+export type FeedsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor?: Maybe<Scalars['String']>;
+}>;
+
+
+export type FeedsQuery = (
+  { __typename?: 'Query' }
+  & { feeds?: Maybe<Array<(
+    { __typename?: 'Feed' }
+    & RegularFeedFragment
+  )>> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -296,7 +317,7 @@ export const RegularFeedFragmentDoc = gql`
     fragment RegularFeed on Feed {
   creatorId
   title
-  imageUrl
+  imageUrlSlice
   id
   createdAt
   updatedAt
@@ -402,6 +423,17 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const FeedsDocument = gql`
+    query Feeds($limit: Int!, $cursor: String) {
+  feeds(limit: $limit, cursor: $cursor) {
+    ...RegularFeed
+  }
+}
+    ${RegularFeedFragmentDoc}`;
+
+export function useFeedsQuery(options: Omit<Urql.UseQueryArgs<FeedsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<FeedsQuery>({ query: FeedsDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {

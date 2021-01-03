@@ -1,7 +1,8 @@
+import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../utils/createUrqlClient";
-import { useUsersQuery } from "../generated/graphql";
+import { useFeedsQuery } from "../generated/graphql";
 
 /**
  * How SSR works
@@ -14,14 +15,36 @@ import { useUsersQuery } from "../generated/graphql";
  */
 
 const Index = () => {
-  const [{ data, fetching }] = useUsersQuery();
+  const [{ data, fetching }] = useFeedsQuery({
+    variables: {
+      limit: 5,
+    },
+  });
+
+  if (!fetching && !data) {
+    return <p>Something went wrong</p>;
+  }
 
   return (
     <>
       <Navbar></Navbar>
-      {!data
-        ? "Loading..."
-        : data.users?.map((user) => <div key={user.id}>{user.username}</div>)}
+      {!data && fetching ? (
+        "Loading..."
+      ) : (
+        <Stack spacing={8} mx={16} my={8}>
+          {data!.feeds?.map((feed) => (
+            <Box key={feed.id} shadow="md" borderWidth="1px" p={4}>
+              <Heading>{feed.title}</Heading>
+              <Text>{feed.imageUrlSlice}</Text>
+            </Box>
+          ))}
+        </Stack>
+      )}
+      {data && (
+        <Button isLoading={fetching} colorScheme="teal" my={4} mx={16}>
+          Load More
+        </Button>
+      )}
     </>
   );
 };

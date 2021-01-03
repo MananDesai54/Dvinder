@@ -1,7 +1,7 @@
 fragment RegularFeed on Feed {
   creatorId
   title
-  imageUrl
+  imageUrlSlice
   id
   createdAt
   updatedAt

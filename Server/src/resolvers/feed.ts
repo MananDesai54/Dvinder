@@ -1,11 +1,15 @@
 import {
   Arg,
   Ctx,
+  FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from "type-graphql";
+import { getConnection } from "typeorm";
 import {
   FeedUpdateData,
   FeedData,
@@ -16,14 +20,33 @@ import { Feed } from "../entities/Feed";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 
-@Resolver()
+@Resolver(Feed)
 export class FeedResolver {
+  @FieldResolver(() => String)
+  imageUrlSlice(@Root() root: Feed) {
+    return root.imageUrl.slice(0, 50);
+  }
+
   @Query(() => [Feed], { nullable: true })
-  @UseMiddleware(isAuth)
-  async feeds(): Promise<Feed[] | null> {
+  // @UseMiddleware(isAuth)
+  async feeds(
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+  ): Promise<Feed[] | null> {
+    const realLimit = Math.min(50, limit);
     try {
-      const feeds = await Feed.find({});
-      return feeds;
+      const qb = getConnection()
+        .getRepository(Feed)
+        .createQueryBuilder("f")
+        .orderBy('"createdAt"', "DESC")
+        .take(realLimit);
+      if (cursor) {
+        qb.where('"createdAt" < :cursor', {
+          cursor: new Date(parseInt(cursor)),
+        });
+      }
+
+      return qb.getMany();
     } catch (error) {
       console.log(error.message);
       return null;

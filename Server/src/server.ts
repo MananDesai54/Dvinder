@@ -17,6 +17,7 @@ import { User } from "./entities/User";
 import { Feed } from "./entities/Feed";
 import { Reaction } from "./entities/Reaction";
 import { FeedResolver } from "./resolvers/feed";
+import path from "path";
 
 dotenv.config();
 
@@ -35,9 +36,10 @@ const main = async () => {
     logging: true,
     synchronize: true,
     entities: [User, Feed, Reaction],
+    migrations: [path.join(__dirname, "./migrations/*")],
   });
-
   console.log(conn.isConnected);
+  await conn.runMigrations();
 
   /**
    * Preparing express server

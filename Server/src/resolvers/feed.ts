@@ -37,18 +37,38 @@ export class FeedResolver {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
     try {
-      const qb = getConnection()
-        .getRepository(Feed)
-        .createQueryBuilder("f")
-        .innerJoinAndSelect("f.creator", "u", 'u.id = f."creatorId"')
-        .orderBy('f."createdAt"', "DESC")
-        .take(realLimitPlusOne);
+      const replacements: any[] = [realLimitPlusOne];
       if (cursor) {
-        qb.where('f."createdAt" < :cursor', {
-          cursor: new Date(parseInt(cursor)),
-        });
+        replacements.push(new Date(parseInt(cursor)));
       }
-      const feeds = await qb.getMany();
+      const feeds = await getConnection().query(
+        `
+        select f.*, json_build_object(
+            'id', u.id,
+            'username', u.username,
+            'email', u.email,
+            'createdAt', u."createdAt",
+            'updatedAt', u."updatedAt"
+          ) creator from 
+        feed f INNER JOIN public.user u on u.id = f."creatorId"
+        ${cursor ? `where f."createdAt" < $2` : ""}
+        order by f."createdAt" DESC
+        limit $1
+      `,
+        replacements
+      );
+      // const qb = getConnection()
+      //   .getRepository(Feed)
+      //   .createQueryBuilder("f")
+      //   .innerJoinAndSelect("f.creator", "u", 'u.id = f."creatorId"')
+      //   .orderBy('f."createdAt"', "DESC")
+      //   .take(realLimitPlusOne);
+      // if (cursor) {
+      //   qb.where('f."createdAt" < :cursor', {
+      //     cursor: new Date(parseInt(cursor)),
+      //   });
+      // }
+      // const feeds = await qb.getMany();
       return {
         feeds: feeds.slice(0, realLimit),
         hasMore: feeds.length === realLimitPlusOne,

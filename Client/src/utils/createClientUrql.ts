@@ -66,6 +66,7 @@ export const cursorPagination = (): Resolver => {
       results.push(...data);
     });
     return {
+      __typename: "FeedPagination",
       hasMore,
       feeds: results,
     };

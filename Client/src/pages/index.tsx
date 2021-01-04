@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../utils/createUrqlClient";
 import { useFeedsQuery } from "../generated/graphql";
+import { useIsAuth } from "../hooks/useIsAuth";
 
 /**
  * How SSR works
@@ -16,6 +17,7 @@ import { useFeedsQuery } from "../generated/graphql";
  */
 
 const Index = () => {
+  useIsAuth();
   const [variables, setVariables] = useState({
     limit: 10,
     cursor: null as null | string,

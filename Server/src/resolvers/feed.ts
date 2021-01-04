@@ -29,7 +29,7 @@ export class FeedResolver {
   }
 
   @Query(() => FeedPagination, { nullable: true })
-  // @UseMiddleware(isAuth)
+  @UseMiddleware(isAuth)
   async feeds(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null
@@ -40,10 +40,11 @@ export class FeedResolver {
       const qb = getConnection()
         .getRepository(Feed)
         .createQueryBuilder("f")
-        .orderBy('"createdAt"', "DESC")
+        .innerJoinAndSelect("f.creator", "u", 'u.id = f."creatorId"')
+        .orderBy('f."createdAt"', "DESC")
         .take(realLimitPlusOne);
       if (cursor) {
-        qb.where('"createdAt" < :cursor', {
+        qb.where('f."createdAt" < :cursor', {
           cursor: new Date(parseInt(cursor)),
         });
       }

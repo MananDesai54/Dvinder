@@ -17,6 +17,7 @@ export class Feed extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field(() => User)
   @ManyToOne(() => User, (user) => user.feeds)
   creator!: User;
 

@@ -5,4 +5,8 @@ fragment RegularFeed on Feed {
   id
   createdAt
   updatedAt
+  creator {
+    username
+    id
+  }
 }

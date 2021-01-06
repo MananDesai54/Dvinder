@@ -20,7 +20,8 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
       // username included for matching types for handleAuthAndError
       initialValues={{ title: "", imageUrl: "" }}
       onSubmit={async (values, errors) => {
-        const response = await createFeed(values);
+        const response = await createFeed({ ...values, type: "showcase" });
+        console.log(response);
         if (response.data?.createFeed.feed) {
           router.push("/");
         }

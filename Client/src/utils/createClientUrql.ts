@@ -14,6 +14,7 @@ import {
   RegisterMutation,
   LogoutMutation,
   ChangePasswordMutation,
+  FeedsDocument,
 } from "../generated/graphql";
 import { pipe, tap } from "wonka";
 import Router from "next/router";
@@ -37,7 +38,6 @@ export const cursorPagination = (): Resolver => {
 
     const allFields = cache.inspectFields(entityKey);
     const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
-    console.log(fieldInfos);
     const size = fieldInfos.length;
     if (size === 0) {
       return undefined;
@@ -62,7 +62,6 @@ export const cursorPagination = (): Resolver => {
       if (!_hasMore) {
         hasMore = _hasMore;
       }
-      console.log("data: ", data);
       results.push(...data);
     });
     return {
@@ -192,22 +191,15 @@ export const createClientUrql = () =>
                 }
               );
             },
-            // changePassword: (_result, args, cache, info) => {
-            //   betterUpdateQuery<ChangePasswordMutation, MeQuery>(
-            //     cache,
-            //     { query: MeDocument },
-            //     _result,
-            //     (result, query) => {
-            //       if (!result.changePassword) {
-            //         return query;
-            //       } else {
-            //         return {
-            //           me: null,
-            //         };
-            //       }
-            //     }
-            //   );
-            // },
+            createFeed: (_result, args, cache, info) => {
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "feeds"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "feeds", fi.arguments || {});
+              });
+            },
           },
         },
       }),

@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Feed } from "./Feed";
 import { Reaction } from "./Reaction";
+import { Updoot } from "./Updoot";
 
 @ObjectType()
 @Entity()
@@ -36,6 +37,9 @@ export class User extends BaseEntity {
   @Field(() => [Reaction])
   @OneToMany(() => Reaction, (reaction) => reaction.user)
   reactions!: [Feed];
+
+  @OneToMany(() => Updoot, (updoot) => updoot.user)
+  updoots!: [Updoot];
 
   @Field(() => String)
   @CreateDateColumn()

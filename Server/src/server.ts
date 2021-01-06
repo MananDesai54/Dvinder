@@ -18,6 +18,7 @@ import { Feed } from "./entities/Feed";
 import { Reaction } from "./entities/Reaction";
 import { FeedResolver } from "./resolvers/feed";
 import path from "path";
+import { Updoot } from "./entities/Updoot";
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ const main = async () => {
     password: process.env.PG_PASSWORD,
     logging: true,
     synchronize: true,
-    entities: [User, Feed, Reaction],
+    entities: [User, Feed, Reaction, Updoot],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
   console.log(conn.isConnected);

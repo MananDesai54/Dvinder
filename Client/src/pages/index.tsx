@@ -19,7 +19,7 @@ import { useIsAuth } from "../hooks/useIsAuth";
 const Index = () => {
   useIsAuth();
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 2,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = useFeedsQuery({
@@ -39,7 +39,7 @@ const Index = () => {
         <Stack spacing={8} mx={16} my={8}>
           {data!.feeds?.feeds?.map((feed) => (
             <Box key={feed.id} shadow="md" borderWidth="1px" p={4}>
-              <Heading>{feed.title}</Heading>
+              <Heading>{feed.title}</Heading> by {feed.creator.username}
               <Text>{feed.imageUrlSlice}</Text>
             </Box>
           ))}

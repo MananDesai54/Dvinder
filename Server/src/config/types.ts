@@ -27,11 +27,6 @@ export class ValidationField {
 /**
  * Enums
  */
-export enum reactionType {
-  nope = 0,
-  like = 1,
-  superLink = 2,
-}
 
 /**
  * GraphQL Input Types
@@ -55,6 +50,9 @@ export class FeedData {
 
   @Field()
   imageUrl!: string;
+
+  @Field()
+  type!: "showcase" | "matches";
 }
 
 @InputType()

@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User";
-import { reactionType } from "../config/types";
 
 @ObjectType()
 @Entity()
@@ -19,7 +18,7 @@ export class Reaction {
 
   @Field()
   @Column()
-  type!: reactionType;
+  type!: "like" | "nope" | "superLike";
 
   @ManyToOne(() => User, (user) => user.reactions)
   user!: User;

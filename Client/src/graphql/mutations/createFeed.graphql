@@ -1,5 +1,17 @@
-mutation CreateFeed($title: String!, $imageUrl: String!) {
-  createFeed(feedData: { title: $title, imageUrl: $imageUrl }) {
-    ...RegularFeedResponse
+mutation CreateFeed($title: String!, $imageUrl: String!, $type: String!) {
+  createFeed(feedData: { title: $title, imageUrl: $imageUrl, type: $type }) {
+    feed {
+      creatorId
+      title
+      imageUrl
+      id
+      createdAt
+      updatedAt
+      type
+    }
+    errors {
+      field
+      message
+    }
   }
 }

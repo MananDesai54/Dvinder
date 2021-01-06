@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Updoot } from "./Updoot";
 import { User } from "./User";
 
 @ObjectType()
@@ -21,6 +23,9 @@ export class Feed extends BaseEntity {
   @ManyToOne(() => User, (user) => user.feeds)
   creator!: User;
 
+  @OneToMany(() => Updoot, (updoot) => updoot.feed)
+  updoots!: [Updoot];
+
   @Field(() => Int)
   @Column({ type: "number" })
   creatorId!: number;
@@ -28,6 +33,14 @@ export class Feed extends BaseEntity {
   @Field()
   @Column()
   title!: string;
+
+  @Field()
+  @Column()
+  type!: "showcase" | "matches";
+
+  @Field(() => Int)
+  @Column({ type: "int", default: 0 })
+  points?: number;
 
   @Field()
   @Column()

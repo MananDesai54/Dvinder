@@ -18,6 +18,7 @@ import {
   FeedPagination,
 } from "../config/types";
 import { Feed } from "../entities/Feed";
+// import { Updoot } from "../entities/Updoot";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 
@@ -103,8 +104,10 @@ export class FeedResolver {
   ): Promise<FeedResponse> {
     try {
       const feed = await Feed.create({
-        ...feedData,
         creatorId: req.session.userId,
+        title: feedData.title,
+        imageUrl: feedData.imageUrl,
+        type: feedData.type,
       }).save();
 
       return {
@@ -168,4 +171,53 @@ export class FeedResolver {
       return false;
     }
   }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("feedId", () => Int) feedId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() { req }: MyContext
+  ) {
+    try {
+      const { userId } = req.session;
+      const isUpdoot = value !== -1;
+      const realValue = isUpdoot ? 1 : -1;
+
+      ///transaction syntax
+      await getConnection().query(
+        `
+        START TRANSACTION;
+
+        insert into updoot ("userId", "feedId", value)
+        values(${userId}, ${feedId}, ${realValue});
+
+        update feed
+        set points = points + ${realValue}
+        where id = ${feedId};
+        
+        COMMIT;
+      `
+      );
+
+      // await Updoot.insert({
+      //   userId,
+      //   feedId,
+      //   value: realValue,
+      // });
+      // await getConnection().query(
+      //   `
+      //   update feed
+      //   set points = points + $1
+      //   where id = $2
+      // `,
+      //   [realValue, feedId]
+      // );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  //update and delete vote
 }

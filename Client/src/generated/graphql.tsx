@@ -48,8 +48,11 @@ export type User = {
 export type Feed = {
   __typename?: 'Feed';
   id: Scalars['Int'];
+  creator: User;
   creatorId: Scalars['Int'];
   title: Scalars['String'];
+  type: Scalars['String'];
+  points: Scalars['Int'];
   imageUrl: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -59,7 +62,7 @@ export type Feed = {
 export type Reaction = {
   __typename?: 'Reaction';
   id: Scalars['Int'];
-  type: Scalars['Float'];
+  type: Scalars['String'];
   userId: Scalars['Int'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -83,6 +86,7 @@ export type Mutation = {
   createFeed: FeedResponse;
   updateFeed: FeedResponse;
   deleteFeed: Scalars['Boolean'];
+  vote: Scalars['Boolean'];
 };
 
 
@@ -134,6 +138,12 @@ export type MutationDeleteFeedArgs = {
   id: Scalars['Float'];
 };
 
+
+export type MutationVoteArgs = {
+  value: Scalars['Int'];
+  feedId: Scalars['Int'];
+};
+
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<ErrorResponse>>;
@@ -163,6 +173,7 @@ export type FeedResponse = {
 export type FeedData = {
   title: Scalars['String'];
   imageUrl: Scalars['String'];
+  type: Scalars['String'];
 };
 
 export type FeedUpdateData = {
@@ -179,6 +190,10 @@ export type RegularErrorFragment = (
 export type RegularFeedFragment = (
   { __typename?: 'Feed' }
   & Pick<Feed, 'creatorId' | 'title' | 'imageUrlSlice' | 'id' | 'createdAt' | 'updatedAt'>
+  & { creator: (
+    { __typename?: 'User' }
+    & Pick<User, 'username' | 'id'>
+  ) }
 );
 
 export type RegularFeedResponseFragment = (
@@ -225,6 +240,7 @@ export type ChangePasswordMutation = (
 export type CreateFeedMutationVariables = Exact<{
   title: Scalars['String'];
   imageUrl: Scalars['String'];
+  type: Scalars['String'];
 }>;
 
 
@@ -232,7 +248,13 @@ export type CreateFeedMutation = (
   { __typename?: 'Mutation' }
   & { createFeed: (
     { __typename?: 'FeedResponse' }
-    & RegularFeedResponseFragment
+    & { feed?: Maybe<(
+      { __typename?: 'Feed' }
+      & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'id' | 'createdAt' | 'updatedAt' | 'type'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'ErrorResponse' }
+      & Pick<ErrorResponse, 'field' | 'message'>
+    )>> }
   ) }
 );
 
@@ -331,6 +353,10 @@ export const RegularFeedFragmentDoc = gql`
   id
   createdAt
   updatedAt
+  creator {
+    username
+    id
+  }
 }
     `;
 export const RegularErrorFragmentDoc = gql`
@@ -382,12 +408,24 @@ export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
 };
 export const CreateFeedDocument = gql`
-    mutation CreateFeed($title: String!, $imageUrl: String!) {
-  createFeed(feedData: {title: $title, imageUrl: $imageUrl}) {
-    ...RegularFeedResponse
+    mutation CreateFeed($title: String!, $imageUrl: String!, $type: String!) {
+  createFeed(feedData: {title: $title, imageUrl: $imageUrl, type: $type}) {
+    feed {
+      creatorId
+      title
+      imageUrl
+      id
+      createdAt
+      updatedAt
+      type
+    }
+    errors {
+      field
+      message
+    }
   }
 }
-    ${RegularFeedResponseFragmentDoc}`;
+    `;
 
 export function useCreateFeedMutation() {
   return Urql.useMutation<CreateFeedMutation, CreateFeedMutationVariables>(CreateFeedDocument);

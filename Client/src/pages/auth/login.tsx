@@ -7,8 +7,8 @@ import Wrapper from "../../components/Wrapper";
 import { useLoginMutation, useMeQuery } from "../../generated/graphql";
 import { handleAuthAndError, isServer } from "../../utils";
 import NextLink from "next/link";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../../utils/createUrqlClient";
 
 interface LoginProps {}
 
@@ -62,5 +62,5 @@ const Login: FC<LoginProps> = ({}) => {
   );
 };
 
-export default Login;
-// export default withUrqlClient(createUrqlClient)(Login);
+// export default Login;
+export default withUrqlClient(createUrqlClient, { ssr: false })(Login);

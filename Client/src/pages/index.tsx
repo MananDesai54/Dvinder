@@ -13,8 +13,8 @@ import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery } from "../generated/graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../utils/createUrqlClient";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 /**
  * How SSR works
@@ -24,12 +24,16 @@ import { useIsAuth } from "../hooks/useIsAuth";
  * next.js build HTML
  * send it back to client
  * the first page we render will be SSR other all will be client side
+ *
+ * so in srr browser send cookie to next server and
+ * and in normal or not ssr browser send cookie to direct graphQL server
+ * so in ssr cookie is not being send from next server to graphQL server so we need to explicitly pass it using ctx in createUrqlClient
  */
 
 const Index = () => {
   useIsAuth();
   const [variables, setVariables] = useState({
-    limit: 2,
+    limit: 10,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = useFeedsQuery({
@@ -82,5 +86,5 @@ const Index = () => {
   );
 };
 
-export default Index;
-// export default withUrqlClient(createUrqlClient, { ssr: false })(Index);
+// export default Index;
+export default withUrqlClient(createUrqlClient, { ssr: true })(Index);

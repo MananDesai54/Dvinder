@@ -13,11 +13,11 @@ import {
   MeDocument,
   RegisterMutation,
   LogoutMutation,
-  ChangePasswordMutation,
-  FeedsDocument,
+  VoteMutationVariables,
 } from "../generated/graphql";
 import { pipe, tap } from "wonka";
 import Router from "next/router";
+import gql from "graphql-tag";
 
 const errorExchange: Exchange = ({ forward }) => (ops$) => {
   return pipe(
@@ -199,6 +199,38 @@ export const createClientUrql = () =>
               fieldInfos.forEach((fi) => {
                 cache.invalidate("Query", "feeds", fi.arguments || {});
               });
+            },
+            vote: (_result, args, cache, info) => {
+              const { feedId, value } = args as VoteMutationVariables;
+              const data = cache.readFragment(
+                gql`
+                  fragment _ on Feed {
+                    id
+                    points
+                    voteStatus
+                  }
+                `,
+                { id: feedId }
+              );
+              if (data) {
+                if (((data as any).voteStatus as number) === value) {
+                  return;
+                }
+                const updatePoints = ((data as any).voteStatus as number)
+                  ? 2 * value
+                  : value;
+                const newPoints =
+                  ((data as any).points as number) + updatePoints;
+                cache.writeFragment(
+                  gql`
+                    fragment __ on Feed {
+                      points
+                      voteStatus
+                    }
+                  `,
+                  { id: feedId, points: newPoints, voteStatus: value }
+                );
+              }
             },
           },
         },

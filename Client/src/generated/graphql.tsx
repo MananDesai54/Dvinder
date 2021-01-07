@@ -49,6 +49,7 @@ export type Feed = {
   __typename?: 'Feed';
   id: Scalars['Int'];
   creator: User;
+  voteStatus?: Maybe<Scalars['Int']>;
   creatorId: Scalars['Int'];
   title: Scalars['String'];
   type: Scalars['String'];
@@ -189,7 +190,7 @@ export type RegularErrorFragment = (
 
 export type RegularFeedFragment = (
   { __typename?: 'Feed' }
-  & Pick<Feed, 'creatorId' | 'title' | 'imageUrlSlice' | 'points' | 'id' | 'createdAt' | 'updatedAt'>
+  & Pick<Feed, 'creatorId' | 'title' | 'imageUrlSlice' | 'points' | 'id' | 'createdAt' | 'updatedAt' | 'voteStatus'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'username' | 'id'>
@@ -365,6 +366,7 @@ export const RegularFeedFragmentDoc = gql`
   id
   createdAt
   updatedAt
+  voteStatus
   creator {
     username
     id

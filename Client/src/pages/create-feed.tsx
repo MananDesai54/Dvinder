@@ -1,11 +1,13 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
+import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React, { FC, useEffect } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useCreateFeedMutation, useMeQuery } from "../generated/graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface CreateFeedProps {}
 
@@ -44,4 +46,5 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
   );
 };
 
-export default CreateFeed;
+// export default CreateFeed;
+export default withUrqlClient(createUrqlClient, { ssr: false })(CreateFeed);

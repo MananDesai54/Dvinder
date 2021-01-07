@@ -7,8 +7,8 @@ import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
 import { handleAuthAndError, isServer } from "../../utils";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
-// import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../../utils/createUrqlClient";
+import { withUrqlClient } from "next-urql";
 // import { REGISTER_MUTATION } from "../mutations";
 // import { useMutation } from "urql";
 
@@ -64,5 +64,5 @@ const Register: FC<registerProps> = ({}) => {
   );
 };
 
-export default Register;
-// export default withUrqlClient(createUrqlClient)(Register);
+// export default Register;
+export default withUrqlClient(createUrqlClient, { ssr: false })(Register);

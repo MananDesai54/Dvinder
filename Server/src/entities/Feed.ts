@@ -26,6 +26,9 @@ export class Feed extends BaseEntity {
   @OneToMany(() => Updoot, (updoot) => updoot.feed)
   updoots!: [Updoot];
 
+  @Field(() => Int, { nullable: true })
+  voteStatus!: number | null; // 1, -1 or null
+
   @Field(() => Int)
   @Column({ type: "number" })
   creatorId!: number;

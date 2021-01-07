@@ -6,6 +6,7 @@ fragment RegularFeed on Feed {
   id
   createdAt
   updatedAt
+  voteStatus
   creator {
     username
     id

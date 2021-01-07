@@ -1,10 +1,20 @@
-import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../utils/createUrqlClient";
+import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery } from "../generated/graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../utils/createUrqlClient";
 
 /**
  * How SSR works
@@ -38,10 +48,13 @@ const Index = () => {
       ) : (
         <Stack spacing={8} mx={16} my={8}>
           {data!.feeds?.feeds?.map((feed) => (
-            <Box key={feed.id} shadow="md" borderWidth="1px" p={4}>
-              <Heading>{feed.title}</Heading> by {feed.creator.username}
-              <Text>{feed.imageUrlSlice}</Text>
-            </Box>
+            <Flex key={feed.id} shadow="md" borderWidth="1px" p={4}>
+              <UpdootSection feed={feed} />
+              <Box>
+                <Heading>{feed.title}</Heading> by {feed.creator.username}
+                <Text>{feed.imageUrlSlice}</Text>
+              </Box>
+            </Flex>
           ))}
         </Stack>
       )}

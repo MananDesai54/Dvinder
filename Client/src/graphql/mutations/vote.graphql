@@ -1,0 +1,3 @@
+mutation Vote($value: Int!, $feedId: Int!) {
+  vote(value: $value, feedId: $feedId)
+}

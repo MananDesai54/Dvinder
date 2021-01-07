@@ -2,6 +2,7 @@ fragment RegularFeed on Feed {
   creatorId
   title
   imageUrlSlice
+  points
   id
   createdAt
   updatedAt

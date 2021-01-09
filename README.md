@@ -1,6 +1,6 @@
 # Dvinder
 
-Tinder for Develoepers
+Tinder for Developers
 
 # Technologies used
 

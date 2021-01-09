@@ -1,6 +1,5 @@
 import { Box, Button, Link } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
-import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import InputField from "../../components/InputField";
@@ -72,11 +71,4 @@ const ChangePassword: FC = () => {
   );
 };
 
-// ChangePassword.getInitialProps = ({ query }) => {
-//   return {
-//     token: query.token as string,
-//   };
-// };
-
-// export default ChangePassword;
 export default withUrqlClient(createUrqlClient, { ssr: false })(ChangePassword);

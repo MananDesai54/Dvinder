@@ -14,7 +14,7 @@ const UpdootSection: FC<UpdootSectionProps> = ({ feed }) => {
     <Flex mr={4} justifyContent="center" alignItems="center" direction="column">
       <IconButton
         // disabled={feed.voteStatus === 1}
-        // pointerEvents={feed.voteStatus === 1 ? "none" : "fill"}
+        pointerEvents={feed.voteStatus === 1 ? "none" : "fill"}
         aria-label="down"
         // variant={feed.voteStatus === 1 ? "solid" : "outline"}
         colorScheme={feed.voteStatus === 1 ? "green" : undefined}
@@ -32,7 +32,7 @@ const UpdootSection: FC<UpdootSectionProps> = ({ feed }) => {
       <Text>{feed.points}</Text>
       <IconButton
         // disabled={feed.voteStatus === -1}
-        // pointerEvents={feed.voteStatus === -1 ? "none" : "fill"}
+        pointerEvents={feed.voteStatus === -1 ? "none" : "fill"}
         aria-label="down"
         // variant={feed.voteStatus === -1 ? "solid" : "outline"}
         colorScheme={feed.voteStatus === -1 ? "red" : undefined}

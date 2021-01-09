@@ -19,7 +19,6 @@ import {
 } from "../config/types";
 import { Feed } from "../entities/Feed";
 import { Updoot } from "../entities/Updoot";
-// import { Updoot } from "../entities/Updoot";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 

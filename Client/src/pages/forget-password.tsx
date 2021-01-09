@@ -48,5 +48,4 @@ const ForgetPassword: FC<{}> = ({}) => {
   );
 };
 
-// export default ForgetPassword;
 export default withUrqlClient(createUrqlClient, { ssr: false })(ForgetPassword);

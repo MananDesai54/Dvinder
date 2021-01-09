@@ -1,13 +1,4 @@
-import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  IconButton,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
@@ -33,7 +24,7 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 const Index = () => {
   useIsAuth();
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 2,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = useFeedsQuery({
@@ -86,5 +77,4 @@ const Index = () => {
   );
 };
 
-// export default Index;
 export default withUrqlClient(createUrqlClient, { ssr: true })(Index);

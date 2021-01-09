@@ -46,5 +46,4 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
   );
 };
 
-// export default CreateFeed;
 export default withUrqlClient(createUrqlClient, { ssr: false })(CreateFeed);

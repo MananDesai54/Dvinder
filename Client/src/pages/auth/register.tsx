@@ -9,8 +9,6 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
-// import { REGISTER_MUTATION } from "../mutations";
-// import { useMutation } from "urql";
 
 interface registerProps {}
 
@@ -64,5 +62,4 @@ const Register: FC<registerProps> = ({}) => {
   );
 };
 
-// export default Register;
 export default withUrqlClient(createUrqlClient, { ssr: false })(Register);

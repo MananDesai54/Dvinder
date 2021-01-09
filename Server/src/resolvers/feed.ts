@@ -31,30 +31,40 @@ export class FeedResolver {
   }
 
   @FieldResolver(() => User)
-  creator(@Root() feed: Feed) {
-    return User.findOne(feed.creatorId);
+  creator(@Root() feed: Feed, @Ctx() { userLoader }: MyContext) {
+    return userLoader.load(feed.creatorId);
+  }
+
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(
+    @Root() feed: Feed,
+    @Ctx() { updootLoader, req }: MyContext
+  ) {
+    const updoot = await updootLoader.load({
+      feedId: feed.id,
+      userId: req.session.userId as number,
+    });
+    return updoot ? updoot.value : null;
   }
 
   @Query(() => FeedPagination, { nullable: true })
   @UseMiddleware(isAuth)
   async feeds(
     @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
-    @Ctx() { req }: MyContext
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
   ): Promise<FeedPagination | null> {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
     try {
-      const replacements: any[] = [realLimitPlusOne, req.session.userId];
+      const replacements: any[] = [realLimitPlusOne];
       if (cursor) {
         replacements.push(new Date(parseInt(cursor)));
       }
       const feeds = await getConnection().query(
         `
-        select f.*,
-        (select value from updoot where "userId" = $2 and "feedId" = f.id) "voteStatus"
+        select f.*
         from feed f 
-        ${cursor ? `where f."createdAt" < $3` : ""}
+        ${cursor ? `where f."createdAt" < $2` : ""}
         order by f."createdAt" DESC
         limit $1
       `,

@@ -24,7 +24,7 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 const Index = () => {
   useIsAuth();
   const [variables, setVariables] = useState({
-    limit: 2,
+    limit: 15,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = useFeedsQuery({

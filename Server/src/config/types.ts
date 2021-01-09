@@ -4,6 +4,7 @@ import { Redis } from "ioredis";
 import { Field, InputType, ObjectType } from "type-graphql";
 import { Feed } from "../entities/Feed";
 import { User } from "../entities/User";
+import { createUserLoader } from "../utils/createUserLoader";
 
 /**
  * Types and classes
@@ -14,6 +15,7 @@ export type MyContext = {
   };
   res: Response;
   redis: Redis;
+  userLoader: ReturnType<typeof createUserLoader>;
 };
 
 export class ValidationField {

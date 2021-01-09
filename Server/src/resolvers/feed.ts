@@ -19,6 +19,7 @@ import {
 } from "../config/types";
 import { Feed } from "../entities/Feed";
 import { Updoot } from "../entities/Updoot";
+import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 
@@ -27,6 +28,11 @@ export class FeedResolver {
   @FieldResolver(() => String)
   imageUrlSlice(@Root() root: Feed) {
     return root.imageUrl.slice(0, 50);
+  }
+
+  @FieldResolver(() => User)
+  creator(@Root() feed: Feed) {
+    return User.findOne(feed.creatorId);
   }
 
   @Query(() => FeedPagination, { nullable: true })
@@ -45,33 +51,34 @@ export class FeedResolver {
       }
       const feeds = await getConnection().query(
         `
-        select f.*, json_build_object(
-            'id', u.id,
-            'username', u.username,
-            'email', u.email,
-            'createdAt', u."createdAt",
-            'updatedAt', u."updatedAt"
-          ) creator,
+        select f.*,
         (select value from updoot where "userId" = $2 and "feedId" = f.id) "voteStatus"
-        from feed f INNER JOIN public.user u on u.id = f."creatorId"
+        from feed f 
         ${cursor ? `where f."createdAt" < $3` : ""}
         order by f."createdAt" DESC
         limit $1
       `,
         replacements
       );
-      // const qb = getConnection()
-      //   .getRepository(Feed)
-      //   .createQueryBuilder("f")
-      //   .innerJoinAndSelect("f.creator", "u", 'u.id = f."creatorId"')
-      //   .orderBy('f."createdAt"', "DESC")
-      //   .take(realLimitPlusOne);
-      // if (cursor) {
-      //   qb.where('f."createdAt" < :cursor', {
-      //     cursor: new Date(parseInt(cursor)),
-      //   });
-      // }
-      // const feeds = await qb.getMany();
+
+      // const feeds = await getConnection().query(
+      //   `
+      //   select f.*, json_build_object(
+      //       'id', u.id,
+      //       'username', u.username,
+      //       'email', u.email,
+      //       'createdAt', u."createdAt",
+      //       'updatedAt', u."updatedAt"
+      //     ) creator,
+      //   (select value from updoot where "userId" = $2 and "feedId" = f.id) "voteStatus"
+      //   from feed f INNER JOIN public.user u on u.id = f."creatorId"
+      //   ${cursor ? `where f."createdAt" < $3` : ""}
+      //   order by f."createdAt" DESC
+      //   limit $1
+      //   `,
+      //   replacements
+      //   );
+
       return {
         feeds: feeds.slice(0, realLimit),
         hasMore: feeds.length === realLimitPlusOne,
@@ -86,6 +93,7 @@ export class FeedResolver {
   @UseMiddleware(isAuth)
   async feed(@Arg("id") id: number): Promise<Feed | null> {
     try {
+      // const feed = await Feed.findOne(id, { relations: ["creator"] });
       const feed = await Feed.findOne(id);
       if (!feed) {
         console.log("Feed not found");

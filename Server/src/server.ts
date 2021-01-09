@@ -19,6 +19,7 @@ import { Reaction } from "./entities/Reaction";
 import { FeedResolver } from "./resolvers/feed";
 import path from "path";
 import { Updoot } from "./entities/Updoot";
+import { createUserLoader } from "./utils/createUserLoader";
 
 dotenv.config();
 
@@ -114,6 +115,7 @@ const main = async () => {
       req,
       res,
       redis,
+      userLoader: createUserLoader(),
     }),
   });
 

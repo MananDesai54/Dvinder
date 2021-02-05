@@ -2,8 +2,10 @@ overwrite: true
 schema: "http://127.0.0.1:5000/graphql"
 documents: "src/graphql/**/*.graphql"
 generates:
-  src/generated/graphql.tsx:
+  # src/generated/graphql.tsx:
+  src/generated/apollo-graphql.tsx:
     plugins:
       - "typescript"
       - "typescript-operations"
-      - "typescript-urql"
+      # - "typescript-urql"
+      - "typescript-react-apollo"

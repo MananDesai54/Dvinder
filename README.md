@@ -34,4 +34,6 @@ Tinder for Developers
 - GraphQL type generator for generation types for queries from server
 - next-urql for SSR
 - formik for forms
+- Apollo CLient
+- next-apollo for ssr
 ```

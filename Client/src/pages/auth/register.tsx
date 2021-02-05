@@ -3,20 +3,29 @@ import { Form, Formik } from "formik";
 import { FC } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
+// import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  useMeQuery,
+  useRegisterMutation,
+} from "../../generated/apollo-graphql";
 import { handleAuthAndError, isServer } from "../../utils";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
+import { withApolloClient } from "../../utils/withApollo";
 
 interface registerProps {}
 
 const Register: FC<registerProps> = ({}) => {
-  const [, register] = useRegisterMutation();
+  // const [, register] = useRegisterMutation();
+  const [register] = useRegisterMutation();
   const router = useRouter();
 
-  const [{ data }] = useMeQuery();
+  // const [{ data }] = useMeQuery();
+  const { data } = useMeQuery();
 
   if (data?.me && !isServer()) {
     router.replace("/");
@@ -27,7 +36,20 @@ const Register: FC<registerProps> = ({}) => {
       <Formik
         initialValues={{ username: "", password: "", email: "" }}
         onSubmit={async (values, errors) => {
-          const response = await register(values);
+          // const response = await register(values);
+          const response = await register({
+            variables: values,
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.registerUser.user,
+                },
+              });
+              cache.evict({ fieldName: "feeds" });
+            },
+          });
           console.log(typeof response.data?.registerUser);
           handleAuthAndError(errors, router, response.data?.registerUser);
         }}
@@ -62,4 +84,5 @@ const Register: FC<registerProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: false })(Register);
+// export default withUrqlClient(createUrqlClient, { ssr: false })(Register);
+export default withApolloClient({ ssr: false })(Register);

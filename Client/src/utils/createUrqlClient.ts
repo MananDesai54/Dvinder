@@ -155,13 +155,6 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
             feeds: cursorPagination(),
           },
         },
-        // isServer()
-        //   ? {}
-        //   : {
-        //       Query: {
-        //         feeds: cursorPagination() as Resolver,
-        //       },
-        //     },
         updates: {
           Mutation: {
             login: (_result, args, cache, info) => {

@@ -2,10 +2,12 @@ import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
-import { useFeedsQuery } from "../generated/graphql";
+// import { useFeedsQuery } from "../generated/graphql";
+import { FeedsQuery, useFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
+import { withApolloClient } from "../utils/withApollo";
 
 /**
  * How SSR works
@@ -23,22 +25,31 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
   useIsAuth();
-  const [variables, setVariables] = useState({
-    limit: 15,
-    cursor: null as null | string,
-  });
-  const [{ data, fetching }] = useFeedsQuery({
-    variables,
+  // const [variables, setVariables] = useState({
+  //   limit: 15,
+  //   cursor: null as null | string,
+  // });
+  // const [{ data, fetching }] = useFeedsQuery({
+  //   variables,
+  // });
+  const { data, error, loading, fetchMore, variables } = useFeedsQuery({
+    variables: {
+      limit: 15,
+      cursor: null as null | string,
+    },
+    notifyOnNetworkStatusChange: true,
   });
 
-  if (!fetching && !data) {
-    return <p>Something went wrong</p>;
+  // if (!fetching && !data) {
+  if (!loading && !data) {
+    return <p>{error?.message}</p>;
   }
 
   return (
     <>
       <Navbar></Navbar>
-      {!data && fetching ? (
+      {/* {!data && fetching ? ( */}
+      {!data && loading ? (
         "Loading..."
       ) : (
         <Stack spacing={8} mx={16} my={8}>
@@ -59,14 +70,42 @@ const Index = () => {
       {data && data.feeds?.hasMore ? (
         <Button
           onClick={() =>
-            setVariables({
-              limit: variables.limit,
-              cursor: data.feeds
-                ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
-                : null,
+            // setVariables({
+            //   limit: variables.limit,
+            //   cursor: data.feeds
+            //     ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
+            //     : null,
+            // })
+            fetchMore({
+              variables: {
+                limit: variables?.limit,
+                cursor: data.feeds
+                  ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
+                  : null,
+              },
+              // updateQuery: (
+              //   previousValues,
+              //   { fetchMoreResult }
+              // ): FeedsQuery => {
+              //   if (!fetchMoreResult) {
+              //     return previousValues as FeedsQuery;
+              //   }
+              //   return {
+              //     __typename: "Query",
+              //     feeds: {
+              //       __typename: "FeedPagination",
+              //       hasMore: (fetchMoreResult as FeedsQuery).feeds!.hasMore,
+              //       feeds: [
+              //         ...((previousValues as FeedsQuery).feeds.feeds || []),
+              //         ...((fetchMoreResult as FeedsQuery).feeds.feeds || []),
+              //       ],
+              //     },
+              //   };
+              // },
             })
           }
-          isLoading={fetching}
+          // isLoading={fetching}
+          isLoading={loading}
           colorScheme="teal"
           my={4}
           mx={16}
@@ -80,4 +119,5 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default withApolloClient({ ssr: true })(Index);
+// export default withUrqlClient(createUrqlClient, { ssr: true })(Index);

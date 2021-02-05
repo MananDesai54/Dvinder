@@ -24,8 +24,10 @@ const errorExchange: Exchange = ({ forward }) => (ops$) => {
     forward(ops$),
     tap(({ error }) => {
       if (error) {
-        if (error?.message.includes("Not Authenticated")) {
+        if (error?.message.includes("Not Authenticated") && !isServer()) {
+          console.log(error.message);
           Router.replace("/auth/login");
+          // Router.reload();
         }
       }
     })
@@ -62,7 +64,7 @@ export const cursorPagination = (): Resolver => {
       if (!_hasMore) {
         hasMore = _hasMore;
       }
-      results.push(...data);
+      data && results.push(...data);
     });
     return {
       __typename: "FeedPagination",
@@ -129,6 +131,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
   if (isServer()) {
     // console.log(ctx.req.headers.cookie);
     cookie = ctx?.req?.headers?.cookie;
+    // return;
   }
 
   return {
@@ -152,6 +155,13 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
             feeds: cursorPagination(),
           },
         },
+        // isServer()
+        //   ? {}
+        //   : {
+        //       Query: {
+        //         feeds: cursorPagination() as Resolver,
+        //       },
+        //     },
         updates: {
           Mutation: {
             login: (_result, args, cache, info) => {

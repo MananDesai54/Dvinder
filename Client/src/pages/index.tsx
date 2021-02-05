@@ -42,15 +42,18 @@ const Index = () => {
         "Loading..."
       ) : (
         <Stack spacing={8} mx={16} my={8}>
-          {data!.feeds?.feeds?.map((feed) => (
-            <Flex key={feed.id} shadow="md" borderWidth="1px" p={4}>
-              <UpdootSection feed={feed} />
-              <Box>
-                <Heading>{feed.title}</Heading> by {feed.creator.username}
-                <Text>{feed.imageUrlSlice}</Text>
-              </Box>
-            </Flex>
-          ))}
+          {data!.feeds?.feeds?.map(
+            (feed) =>
+              feed && (
+                <Flex key={feed.id} shadow="md" borderWidth="1px" p={4}>
+                  <UpdootSection feed={feed} />
+                  <Box>
+                    <Heading>{feed.title}</Heading> by {feed.creator.username}
+                    <Text>{feed.imageUrlSlice}</Text>
+                  </Box>
+                </Flex>
+              )
+          )}
         </Stack>
       )}
       {data && data.feeds?.hasMore ? (

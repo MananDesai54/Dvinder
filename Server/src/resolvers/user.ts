@@ -22,6 +22,8 @@ import { validateRegister } from "../utils/validationRegister";
 import { v4 as generateId } from "uuid";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
+import fetch from "node-fetch";
+import FormData from "form-data";
 // import { getConnection } from "typeorm";
 
 @Resolver(User)
@@ -128,6 +130,74 @@ export class UserResolver {
       console.log(error.message);
       return {
         errors: [generateErrorResponse("Server Error", error.message)],
+        success: false,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  async registerWithGithub(
+    // @Ctx() { req }: MyContext,
+    @Arg("code") code: string
+  ): Promise<UserResponse | undefined> {
+    let accessToken: string | null;
+    try {
+      const data = new FormData();
+      data.append("client_id", process.env.GITHUB_CLIENT_ID);
+      data.append("client_secret", process.env.GITHUB_CLIENT_SECRET);
+      data.append("code", code);
+      data.append("redirect_uri", process.env.GITHUB_REDIRECT_URI);
+
+      fetch(`https://github.com/login/oauth/access_token`, {
+        method: "POST",
+        body: data,
+      })
+        .then((response) => response.text())
+        .then((paramsString) => {
+          let params = new URLSearchParams(paramsString);
+          const access_token = params.get("access_token");
+          accessToken = access_token;
+          // Request to return data of a user that has been authenticated
+          return fetch(`https://api.github.com/user`, {
+            headers: {
+              Authorization: `token ${accessToken}`,
+            },
+          });
+        })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          return fetch(`https://api.github.com/user/emails`, {
+            headers: {
+              Authorization: `token ${accessToken}`,
+            },
+          });
+        })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          return {
+            errors: [
+              {
+                field: "Server error",
+                message: error.message,
+              },
+            ],
+            success: false,
+          };
+        });
+      return;
+    } catch (error) {
+      console.log(error.message);
+      return {
+        errors: [
+          {
+            field: "Server error",
+            message: "Something went wrong",
+          },
+        ],
         success: false,
       };
     }

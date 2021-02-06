@@ -27,7 +27,7 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
-  @Column()
+  @Column({ nullable: true })
   password!: string;
 
   @Field(() => [Feed])
@@ -40,6 +40,12 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Updoot, (updoot) => updoot.user)
   updoots!: [Updoot];
+
+  @Field()
+  @Column({
+    default: "https://cloud-storage-uploads.s3.amazonaws.com/profile.jpg",
+  })
+  profileUrl!: string;
 
   @Field(() => String)
   @CreateDateColumn()

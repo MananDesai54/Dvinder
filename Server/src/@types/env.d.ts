@@ -10,5 +10,8 @@ declare namespace NodeJS {
     COOKIE_NAME: string;
     EMAIL_ID: string;
     EMAIL_PASSWORD: string;
+    GITHUB_CLIENT_ID: string;
+    GITHUB_CLIENT_SECRET: string;
+    GITHUB_REDIRECT_URI: string;
   }
 }

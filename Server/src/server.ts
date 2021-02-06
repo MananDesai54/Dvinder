@@ -41,7 +41,6 @@ const main = async () => {
     entities: [User, Feed, Reaction, Updoot],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
-  console.log(conn.isConnected);
   await conn.runMigrations();
 
   /**

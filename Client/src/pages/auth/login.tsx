@@ -16,6 +16,7 @@ import NextLink from "next/link";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withApolloClient } from "../../utils/withApollo";
+import GitHubLogin from "react-github-login";
 
 interface LoginProps {}
 
@@ -61,6 +62,13 @@ const Login: FC<LoginProps> = ({}) => {
     >
       {() => (
         <Wrapper variant="small">
+          <GitHubLogin
+            clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
+            onSuccess={(response: any) => console.log(response)}
+            onFailure={(response: any) => console.log(response)}
+            redirectUri=""
+            scope="user:email"
+          />
           <Form>
             <InputField name="email" type="text" label="Username Or Email" />
             <Box mt={4}>

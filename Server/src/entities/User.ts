@@ -46,6 +46,9 @@ export class User extends BaseEntity {
     default: "https://cloud-storage-uploads.s3.amazonaws.com/profile.jpg",
   })
   profileUrl!: string;
+  @Field()
+  @Column()
+  githubId!: string;
 
   @Field(() => String)
   @CreateDateColumn()

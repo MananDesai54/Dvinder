@@ -22,8 +22,7 @@ import { validateRegister } from "../utils/validationRegister";
 import { v4 as generateId } from "uuid";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
-import fetch from "node-fetch";
-import FormData from "form-data";
+import { getUserGithubData } from "../utils/getUserGithubData";
 // import { getConnection } from "typeorm";
 
 @Resolver(User)
@@ -140,55 +139,34 @@ export class UserResolver {
     // @Ctx() { req }: MyContext,
     @Arg("code") code: string
   ): Promise<UserResponse | undefined> {
-    let accessToken: string | null;
     try {
-      const data = new FormData();
-      data.append("client_id", process.env.GITHUB_CLIENT_ID);
-      data.append("client_secret", process.env.GITHUB_CLIENT_SECRET);
-      data.append("code", code);
-      data.append("redirect_uri", process.env.GITHUB_REDIRECT_URI);
+      const userData = await getUserGithubData(code);
+      const isEmailExists = await User.findOne({
+        where: { email: userData.email },
+      });
+      if (isEmailExists) {
+        return {
+          errors: [generateErrorResponse("email", "Email already exists")],
+          success: false,
+        };
+      }
+      const isUsernameExists = await User.findOne({
+        where: { username: userData.username },
+      });
 
-      fetch(`https://github.com/login/oauth/access_token`, {
-        method: "POST",
-        body: data,
-      })
-        .then((response) => response.text())
-        .then((paramsString) => {
-          let params = new URLSearchParams(paramsString);
-          const access_token = params.get("access_token");
-          accessToken = access_token;
-          // Request to return data of a user that has been authenticated
-          return fetch(`https://api.github.com/user`, {
-            headers: {
-              Authorization: `token ${accessToken}`,
-            },
-          });
-        })
-        .then((response) => response.json())
-        .then((response) => {
-          console.log(response);
-          return fetch(`https://api.github.com/user/emails`, {
-            headers: {
-              Authorization: `token ${accessToken}`,
-            },
-          });
-        })
-        .then((response) => response.json())
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          return {
-            errors: [
-              {
-                field: "Server error",
-                message: error.message,
-              },
-            ],
-            success: false,
-          };
-        });
-      return;
+      const user = await User.create({
+        email: userData.email,
+        githubId: userData.id,
+        profileUrl: userData.profileUrl,
+        username: isUsernameExists
+          ? `${userData.username}${userData.id}`
+          : userData.username,
+      }).save();
+
+      return {
+        user,
+        success: true,
+      };
     } catch (error) {
       console.log(error.message);
       return {

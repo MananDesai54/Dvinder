@@ -1,0 +1,5 @@
+mutation RegisterWithGithub($code: String!) {
+  registerWithGithub(code: $code) {
+    ...RegularUserResponse
+  }
+}

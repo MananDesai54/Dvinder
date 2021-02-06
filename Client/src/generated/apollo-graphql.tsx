@@ -40,6 +40,8 @@ export type User = {
   email: Scalars['String'];
   feeds: Array<Feed>;
   reactions: Array<Reaction>;
+  profileUrl: Scalars['String'];
+  githubId: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -77,7 +79,9 @@ export type FeedPagination = {
 export type Mutation = {
   __typename?: 'Mutation';
   registerUser: UserResponse;
+  registerWithGithub: UserResponse;
   login: UserResponse;
+  addOrUpdatePassword: ErrorSuccessResponse;
   logout: Scalars['Boolean'];
   forgetPassword: Scalars['Boolean'];
   changePassword?: Maybe<UserResponse>;
@@ -95,9 +99,20 @@ export type MutationRegisterUserArgs = {
 };
 
 
+export type MutationRegisterWithGithubArgs = {
+  code: Scalars['String'];
+};
+
+
 export type MutationLoginArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationAddOrUpdatePasswordArgs = {
+  oldPassword?: Maybe<Scalars['String']>;
+  password: Scalars['String'];
 };
 
 
@@ -163,6 +178,12 @@ export type UserData = {
   username?: Maybe<Scalars['String']>;
 };
 
+export type ErrorSuccessResponse = {
+  __typename?: 'ErrorSuccessResponse';
+  success: Scalars['Boolean'];
+  message: Scalars['String'];
+};
+
 export type FeedResponse = {
   __typename?: 'FeedResponse';
   errors?: Maybe<Array<ErrorResponse>>;
@@ -221,6 +242,20 @@ export type RegularUserResponseFragment = (
     { __typename?: 'ErrorResponse' }
     & RegularErrorFragment
   )>> }
+);
+
+export type AddOrUpdatePasswordMutationVariables = Exact<{
+  password: Scalars['String'];
+  oldPassword?: Maybe<Scalars['String']>;
+}>;
+
+
+export type AddOrUpdatePasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { addOrUpdatePassword: (
+    { __typename?: 'ErrorSuccessResponse' }
+    & Pick<ErrorSuccessResponse, 'success' | 'message'>
+  ) }
 );
 
 export type ChangePasswordMutationVariables = Exact<{
@@ -300,6 +335,19 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = (
   { __typename?: 'Mutation' }
   & { registerUser: (
+    { __typename?: 'UserResponse' }
+    & RegularUserResponseFragment
+  ) }
+);
+
+export type RegisterWithGithubMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+
+export type RegisterWithGithubMutation = (
+  { __typename?: 'Mutation' }
+  & { registerWithGithub: (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   ) }
@@ -409,6 +457,40 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularErrorFragmentDoc}`;
+export const AddOrUpdatePasswordDocument = gql`
+    mutation AddOrUpdatePassword($password: String!, $oldPassword: String) {
+  addOrUpdatePassword(password: $password, oldPassword: $oldPassword) {
+    success
+    message
+  }
+}
+    `;
+export type AddOrUpdatePasswordMutationFn = Apollo.MutationFunction<AddOrUpdatePasswordMutation, AddOrUpdatePasswordMutationVariables>;
+
+/**
+ * __useAddOrUpdatePasswordMutation__
+ *
+ * To run a mutation, you first call `useAddOrUpdatePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddOrUpdatePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addOrUpdatePasswordMutation, { data, loading, error }] = useAddOrUpdatePasswordMutation({
+ *   variables: {
+ *      password: // value for 'password'
+ *      oldPassword: // value for 'oldPassword'
+ *   },
+ * });
+ */
+export function useAddOrUpdatePasswordMutation(baseOptions?: Apollo.MutationHookOptions<AddOrUpdatePasswordMutation, AddOrUpdatePasswordMutationVariables>) {
+        return Apollo.useMutation<AddOrUpdatePasswordMutation, AddOrUpdatePasswordMutationVariables>(AddOrUpdatePasswordDocument, baseOptions);
+      }
+export type AddOrUpdatePasswordMutationHookResult = ReturnType<typeof useAddOrUpdatePasswordMutation>;
+export type AddOrUpdatePasswordMutationResult = Apollo.MutationResult<AddOrUpdatePasswordMutation>;
+export type AddOrUpdatePasswordMutationOptions = Apollo.BaseMutationOptions<AddOrUpdatePasswordMutation, AddOrUpdatePasswordMutationVariables>;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $newPassword: String!) {
   changePassword(token: $token, newPassword: $newPassword) {
@@ -616,6 +698,38 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const RegisterWithGithubDocument = gql`
+    mutation RegisterWithGithub($code: String!) {
+  registerWithGithub(code: $code) {
+    ...RegularUserResponse
+  }
+}
+    ${RegularUserResponseFragmentDoc}`;
+export type RegisterWithGithubMutationFn = Apollo.MutationFunction<RegisterWithGithubMutation, RegisterWithGithubMutationVariables>;
+
+/**
+ * __useRegisterWithGithubMutation__
+ *
+ * To run a mutation, you first call `useRegisterWithGithubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterWithGithubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerWithGithubMutation, { data, loading, error }] = useRegisterWithGithubMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useRegisterWithGithubMutation(baseOptions?: Apollo.MutationHookOptions<RegisterWithGithubMutation, RegisterWithGithubMutationVariables>) {
+        return Apollo.useMutation<RegisterWithGithubMutation, RegisterWithGithubMutationVariables>(RegisterWithGithubDocument, baseOptions);
+      }
+export type RegisterWithGithubMutationHookResult = ReturnType<typeof useRegisterWithGithubMutation>;
+export type RegisterWithGithubMutationResult = Apollo.MutationResult<RegisterWithGithubMutation>;
+export type RegisterWithGithubMutationOptions = Apollo.BaseMutationOptions<RegisterWithGithubMutation, RegisterWithGithubMutationVariables>;
 export const VoteDocument = gql`
     mutation Vote($value: Int!, $feedId: Int!) {
   vote(value: $value, feedId: $feedId)

@@ -13,8 +13,8 @@ import {
 } from "../../generated/apollo-graphql";
 import { handleAuthAndError, isServer } from "../../utils";
 import NextLink from "next/link";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withApolloClient } from "../../utils/withApollo";
 import GitHubLogin from "react-github-login";
 

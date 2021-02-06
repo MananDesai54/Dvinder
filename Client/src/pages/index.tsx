@@ -1,12 +1,11 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
 import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
 // import { useFeedsQuery } from "../generated/graphql";
-import { FeedsQuery, useFeedsQuery } from "../generated/apollo-graphql";
+import { useFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../utils/createUrqlClient";
 import { withApolloClient } from "../utils/withApollo";
 
 /**

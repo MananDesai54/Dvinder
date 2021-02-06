@@ -12,8 +12,8 @@ import {
 } from "../../generated/apollo-graphql";
 import { arrayToObject } from "../../utils";
 import NavLink from "next/link";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withApolloClient } from "../../utils/withApollo";
 
 const ChangePassword: FC = () => {

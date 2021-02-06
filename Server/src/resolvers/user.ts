@@ -6,9 +6,11 @@ import {
   Query,
   Resolver,
   Root,
+  UseMiddleware,
 } from "type-graphql";
 import {
   ErrorResponse,
+  ErrorSuccessResponse,
   MyContext,
   UserData,
   UserResponse,
@@ -23,6 +25,7 @@ import { v4 as generateId } from "uuid";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { getUserGithubData } from "../utils/getUserGithubData";
+import { isAuth } from "../middleware/isAuth";
 // import { getConnection } from "typeorm";
 
 @Resolver(User)
@@ -136,7 +139,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async registerWithGithub(
-    // @Ctx() { req }: MyContext,
+    @Ctx() { req }: MyContext,
     @Arg("code") code: string
   ): Promise<UserResponse | undefined> {
     try {
@@ -162,6 +165,8 @@ export class UserResolver {
           ? `${userData.username}${userData.id}`
           : userData.username,
       }).save();
+
+      req.session.userId = user.id;
 
       return {
         user,
@@ -231,6 +236,52 @@ export class UserResolver {
           },
         ],
         success: false,
+      };
+    }
+  }
+
+  @Mutation(() => ErrorSuccessResponse)
+  @UseMiddleware(isAuth)
+  async addOrUpdatePassword(
+    @Ctx() { req }: MyContext,
+    @Arg("password") password: string,
+    @Arg("oldPassword", { nullable: true }) oldPassword: string
+  ): Promise<ErrorSuccessResponse> {
+    try {
+      const user = await User.findOne(req.session.userId);
+      if (!user) {
+        return {
+          success: false,
+          message: "You need to be logged in",
+        };
+      }
+      if (!user.password) {
+        const hashedPassword = await argon2.hash(password);
+        user.password = hashedPassword;
+        await user.save();
+        return {
+          success: true,
+          message: "",
+        };
+      }
+      const isMatch = await argon2.verify(user.password, oldPassword!);
+      if (!isMatch) {
+        return {
+          success: false,
+          message: "Please provide correct old password",
+        };
+      }
+      const hashedPassword = await argon2.hash(password);
+      user.password = hashedPassword;
+      return {
+        success: true,
+        message: "",
+      };
+    } catch (error) {
+      console.log(error.message);
+      return {
+        success: false,
+        message: error.message,
       };
     }
   }

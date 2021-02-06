@@ -1,6 +1,5 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
-import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React, { FC } from "react";
 import InputField from "../components/InputField";
@@ -8,7 +7,8 @@ import Wrapper from "../components/Wrapper";
 // import { useCreateFeedMutation } from "../generated/graphql";
 import { useCreateFeedMutation } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
-import { createUrqlClient } from "../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../utils/createUrqlClient";
 import { withApolloClient } from "../utils/withApollo";
 
 interface CreateFeedProps {}

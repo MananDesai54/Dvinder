@@ -75,6 +75,15 @@ export class FeedUpdateData {
  * GraphQL Object types
  */
 @ObjectType()
+export class ErrorSuccessResponse {
+  @Field()
+  success?: boolean;
+
+  @Field()
+  message?: string;
+}
+
+@ObjectType()
 export class ErrorResponse {
   @Field()
   field!: string;

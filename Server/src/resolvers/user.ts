@@ -154,7 +154,7 @@ export class UserResolver {
         };
       }
       const isUsernameExists = await User.findOne({
-        where: { username: userData.username },
+        where: { username: userData.username.toLowerCase() },
       });
 
       const user = await User.create({

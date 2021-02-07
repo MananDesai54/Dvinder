@@ -47,7 +47,7 @@ export class User extends BaseEntity {
   })
   profileUrl!: string;
   @Field()
-  @Column()
+  @Column({ nullable: true })
   githubId!: string;
 
   @Field(() => String)

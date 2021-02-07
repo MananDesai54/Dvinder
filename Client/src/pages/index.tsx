@@ -23,7 +23,7 @@ import { withApolloClient } from "../utils/withApollo";
  */
 
 const Index = () => {
-  const isAUth = useIsAuth();
+  const isAuth = useIsAuth();
   // const [variables, setVariables] = useState({
   //   limit: 15,
   //   cursor: null as null | string,
@@ -37,7 +37,7 @@ const Index = () => {
       cursor: null as null | string,
     },
     notifyOnNetworkStatusChange: true,
-    skip: !isAUth,
+    skip: !isAuth,
   });
 
   // if (!fetching && !data) {

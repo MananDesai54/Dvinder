@@ -11,7 +11,6 @@ import { Form, Formik } from "formik";
 import { FC, Fragment, useState } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-// import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
 import {
   MeDocument,
   MeQuery,
@@ -23,11 +22,12 @@ import {
 import { handleAuthAndError, isServer } from "../../utils";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
-// import { withUrqlClient } from "next-urql";
 import { withApolloClient } from "../../utils/withApollo";
 import GitHubLogin from "react-github-login";
 import { useIsAuth } from "../../hooks/useIsAuth";
+// import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
+// import { createUrqlClient } from "../../utils/createUrqlClient";
+// import { withUrqlClient } from "next-urql";
 
 interface registerProps {}
 

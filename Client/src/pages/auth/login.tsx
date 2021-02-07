@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-// import { useLoginMutation, useMeQuery } from "../../generated/graphql";
 import {
   MeDocument,
   MeQuery,
@@ -13,10 +12,11 @@ import {
 } from "../../generated/apollo-graphql";
 import { handleAuthAndError, isServer } from "../../utils";
 import NextLink from "next/link";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
 import { withApolloClient } from "../../utils/withApollo";
 import GitHubLogin from "react-github-login";
+// import { useLoginMutation, useMeQuery } from "../../generated/graphql";
+// import { withUrqlClient } from "next-urql";
+// import { createUrqlClient } from "../../utils/createUrqlClient";
 
 interface LoginProps {}
 

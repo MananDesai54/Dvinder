@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { FC } from "react";
 import NextLink from "next/link";
-// import { useMeQuery, useLogoutMutation } from "../generated/graphql";
 import {
   useMeQuery,
   useLogoutMutation,
@@ -10,6 +9,7 @@ import {
 } from "../generated/apollo-graphql";
 import { isServer } from "../utils";
 import { useApolloClient } from "@apollo/client";
+// import { useMeQuery, useLogoutMutation } from "../generated/graphql";
 
 interface NavbarProps {}
 

@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-// import { useChangePasswordMutation } from "../../generated/graphql";
 import {
   MeDocument,
   MeQuery,
@@ -12,9 +11,10 @@ import {
 } from "../../generated/apollo-graphql";
 import { arrayToObject } from "../../utils";
 import NavLink from "next/link";
+import { withApolloClient } from "../../utils/withApollo";
+// import { useChangePasswordMutation } from "../../generated/graphql";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../../utils/createUrqlClient";
-import { withApolloClient } from "../../utils/withApollo";
 
 const ChangePassword: FC = () => {
   // const [, changePassword] = useChangePasswordMutation();

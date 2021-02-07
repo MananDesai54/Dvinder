@@ -1,12 +1,12 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
-// import { useFeedsQuery } from "../generated/graphql";
 import { useFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+import { withApolloClient } from "../utils/withApollo";
+// import { useFeedsQuery } from "../generated/graphql";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../utils/createUrqlClient";
-import { withApolloClient } from "../utils/withApollo";
 
 /**
  * How SSR works

@@ -144,6 +144,15 @@ export class UserResolver {
   ): Promise<UserResponse | undefined> {
     try {
       const userData = await getUserGithubData(code);
+      const userExist = await User.findOne({
+        where: { githubId: userData.id },
+      });
+      if (userExist) {
+        return {
+          success: true,
+          user: userExist,
+        };
+      }
       const isEmailExists = await User.findOne({
         where: { email: userData.email },
       });
@@ -235,6 +244,41 @@ export class UserResolver {
             message: "Something went wrong",
           },
         ],
+        success: false,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  async loginWithGithub(
+    @Ctx() { req }: MyContext,
+    @Arg("code") code: string
+  ): Promise<UserResponse> {
+    try {
+      const userData = await getUserGithubData(code);
+      const user = await User.findOne({ where: { githubId: userData.id } });
+      if (!user) {
+        return {
+          success: false,
+          errors: [
+            generateErrorResponse(
+              "User",
+              "You have not registered with github yet"
+            ),
+          ],
+        };
+      }
+
+      req.session.userId = user.id;
+
+      return {
+        success: true,
+        user,
+      };
+    } catch (error) {
+      console.log(error.message);
+      return {
+        errors: [generateErrorResponse("Server Error", error.message)],
         success: false,
       };
     }
@@ -406,6 +450,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
   async updateUser(
     @Arg("id") id: number,
     @Arg("email", () => String, { nullable: true }) email: string,

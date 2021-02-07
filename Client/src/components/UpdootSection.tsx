@@ -1,7 +1,6 @@
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Flex, IconButton, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
-// import { RegularFeedFragment, useVoteMutation } from "../generated/graphql";
 import {
   RegularFeedFragment,
   useVoteMutation,
@@ -9,6 +8,7 @@ import {
 } from "../generated/apollo-graphql";
 import gql from "graphql-tag";
 import { ApolloCache } from "@apollo/client";
+// import { RegularFeedFragment, useVoteMutation } from "../generated/graphql";
 
 interface UpdootSectionProps {
   feed: RegularFeedFragment;

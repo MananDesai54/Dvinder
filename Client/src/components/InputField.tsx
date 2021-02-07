@@ -23,6 +23,11 @@ const InputField: FC<InputFieldProps> = (props) => {
         type={props.type}
         id={field.name}
         placeholder={props.label}
+        style={{
+          background: "var(--white-color)",
+          border: "none",
+          borderWidth: "2px",
+        }}
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>

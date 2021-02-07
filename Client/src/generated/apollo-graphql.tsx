@@ -81,6 +81,7 @@ export type Mutation = {
   registerUser: UserResponse;
   registerWithGithub: UserResponse;
   login: UserResponse;
+  loginWithGithub: UserResponse;
   addOrUpdatePassword: ErrorSuccessResponse;
   logout: Scalars['Boolean'];
   forgetPassword: Scalars['Boolean'];
@@ -107,6 +108,11 @@ export type MutationRegisterWithGithubArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationLoginWithGithubArgs = {
+  code: Scalars['String'];
 };
 
 
@@ -317,6 +323,19 @@ export type LoginMutationVariables = Exact<{
 export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
+    { __typename?: 'UserResponse' }
+    & RegularUserResponseFragment
+  ) }
+);
+
+export type LoginWithGithubMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+
+export type LoginWithGithubMutation = (
+  { __typename?: 'Mutation' }
+  & { loginWithGithub: (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   ) }
@@ -641,6 +660,38 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const LoginWithGithubDocument = gql`
+    mutation LoginWithGithub($code: String!) {
+  loginWithGithub(code: $code) {
+    ...RegularUserResponse
+  }
+}
+    ${RegularUserResponseFragmentDoc}`;
+export type LoginWithGithubMutationFn = Apollo.MutationFunction<LoginWithGithubMutation, LoginWithGithubMutationVariables>;
+
+/**
+ * __useLoginWithGithubMutation__
+ *
+ * To run a mutation, you first call `useLoginWithGithubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginWithGithubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginWithGithubMutation, { data, loading, error }] = useLoginWithGithubMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useLoginWithGithubMutation(baseOptions?: Apollo.MutationHookOptions<LoginWithGithubMutation, LoginWithGithubMutationVariables>) {
+        return Apollo.useMutation<LoginWithGithubMutation, LoginWithGithubMutationVariables>(LoginWithGithubDocument, baseOptions);
+      }
+export type LoginWithGithubMutationHookResult = ReturnType<typeof useLoginWithGithubMutation>;
+export type LoginWithGithubMutationResult = Apollo.MutationResult<LoginWithGithubMutation>;
+export type LoginWithGithubMutationOptions = Apollo.BaseMutationOptions<LoginWithGithubMutation, LoginWithGithubMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout

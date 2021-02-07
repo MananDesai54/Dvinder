@@ -1,0 +1,5 @@
+mutation LoginWithGithub($code: String!) {
+  loginWithGithub(code: $code) {
+    ...RegularUserResponse
+  }
+}

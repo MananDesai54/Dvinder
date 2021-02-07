@@ -25,6 +25,7 @@ import NextLink from "next/link";
 import { withApolloClient } from "../../utils/withApollo";
 import GitHubLogin from "react-github-login";
 import { useIsAuth } from "../../hooks/useIsAuth";
+import { FaGithub } from "react-icons/fa";
 // import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
 // import { createUrqlClient } from "../../utils/createUrqlClient";
 // import { withUrqlClient } from "next-urql";
@@ -125,21 +126,6 @@ const Register: FC<registerProps> = ({}) => {
         </form>
       ) : (
         <Fragment>
-          <GitHubLogin
-            clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
-            onSuccess={async (response: any) => {
-              const responseData = await registerWithGithub({
-                variables: { code: response.code },
-              });
-              if (responseData.data?.registerWithGithub.user) {
-                setDoneRegistration(true);
-              }
-              console.log(responseData);
-            }}
-            onFailure={(response: any) => console.log(response)}
-            redirectUri=""
-            scope="user:email"
-          />
           <Formik
             initialValues={{ username: "", password: "", email: "" }}
             onSubmit={async (values, errors) => {
@@ -162,6 +148,16 @@ const Register: FC<registerProps> = ({}) => {
           >
             {({ isSubmitting }) => (
               <Form>
+                <h1
+                  style={{
+                    margin: "2rem 0",
+                    textAlign: "center",
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Register
+                </h1>
                 <InputField name="username" type="text" label="Username" />
                 <Box mt={4}>
                   <InputField name="email" type="email" label="Email" />
@@ -175,18 +171,74 @@ const Register: FC<registerProps> = ({}) => {
                 </Box>
                 <Button
                   isLoading={isSubmitting}
+                  my={4}
+                  style={{
+                    background: "var(--background-primary)",
+                    color: "var(--text-primary)",
+                    boxShadow: "0 10px 30px rgba(0, 0, 255, 0.3)",
+                  }}
                   type="submit"
-                  colorScheme="teal"
-                  mt={4}
+                  width="100%"
                 >
                   Register
                 </Button>
-                <Box mt={2}>
+                <Box mt={2} textAlign="center">
                   Already have account ?{" "}
                   <NextLink href="/auth/login">
                     <Link fontWeight="bold"> Login</Link>
                   </NextLink>
                 </Box>
+                <Box my={4} display="flex" alignItems="center">
+                  <Box
+                    height="1px"
+                    flex="1"
+                    borderRadius={10}
+                    background="rgba(0, 0, 0, 0.2)"
+                  ></Box>
+                  <Box
+                    mx={2}
+                    style={{
+                      color: "gray",
+                    }}
+                  >
+                    Or Continue With
+                  </Box>
+                  <Box
+                    height="1px"
+                    borderRadius={10}
+                    flex="1"
+                    background="rgba(0, 0, 0, 0.2)"
+                  ></Box>
+                </Box>
+                <GitHubLogin
+                  clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
+                  onSuccess={async (response: any) => {
+                    const responseData = await registerWithGithub({
+                      variables: { code: response.code },
+                    });
+                    if (responseData.data?.registerWithGithub.user) {
+                      setDoneRegistration(true);
+                    }
+                    console.log(responseData);
+                  }}
+                  onFailure={(response: any) => console.log(response)}
+                  redirectUri=""
+                  scope="user:email"
+                >
+                  <FaGithub
+                    size={30}
+                    style={{
+                      padding: "10px",
+                      background: "var(--white-color)",
+                      borderRadius: "10px",
+                      width: "50px",
+                      height: "50px",
+                      boxShadow: "0 0 40px rgba(0, 0, 0, 0.3)",
+                      outline: "none",
+                      marginLeft: "175px",
+                    }}
+                  />{" "}
+                </GitHubLogin>
               </Form>
             )}
           </Formik>

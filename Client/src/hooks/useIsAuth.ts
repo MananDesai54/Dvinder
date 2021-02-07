@@ -10,6 +10,9 @@ export const useIsAuth = () => {
   const router = useRouter();
   useEffect(() => {
     // if (!data?.me && !fetching) {
+    if (router.pathname.includes("register")) {
+      return;
+    }
     if (!data?.me && !loading && !isServer()) {
       console.log("I 'm here");
       router.replace(`/auth/login?next=${router.pathname}`);

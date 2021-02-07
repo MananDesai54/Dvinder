@@ -162,8 +162,8 @@ export class UserResolver {
         githubId: userData.id,
         profileUrl: userData.profileUrl,
         username: isUsernameExists
-          ? `${userData.username}${userData.id}`
-          : userData.username,
+          ? `${userData.username}${userData.id}`.toLowerCase()
+          : userData.username.toLowerCase(),
       }).save();
 
       req.session.userId = user.id;
@@ -253,6 +253,7 @@ export class UserResolver {
         return {
           success: false,
           message: "You need to be logged in",
+          user: null,
         };
       }
       if (!user.password) {
@@ -262,6 +263,7 @@ export class UserResolver {
         return {
           success: true,
           message: "",
+          user,
         };
       }
       const isMatch = await argon2.verify(user.password, oldPassword!);
@@ -269,6 +271,7 @@ export class UserResolver {
         return {
           success: false,
           message: "Please provide correct old password",
+          user: null,
         };
       }
       const hashedPassword = await argon2.hash(password);
@@ -276,12 +279,14 @@ export class UserResolver {
       return {
         success: true,
         message: "",
+        user,
       };
     } catch (error) {
       console.log(error.message);
       return {
         success: false,
         message: error.message,
+        user: null,
       };
     }
   }

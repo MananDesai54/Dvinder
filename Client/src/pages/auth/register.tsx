@@ -27,6 +27,7 @@ import NextLink from "next/link";
 // import { withUrqlClient } from "next-urql";
 import { withApolloClient } from "../../utils/withApollo";
 import GitHubLogin from "react-github-login";
+import { useIsAuth } from "../../hooks/useIsAuth";
 
 interface registerProps {}
 
@@ -42,11 +43,11 @@ const Register: FC<registerProps> = ({}) => {
   const [error, setError] = useState("");
 
   const router = useRouter();
-
+  const isAuth = useIsAuth();
   // const [{ data }] = useMeQuery();
-  const { data } = useMeQuery();
+  // const { data } = useMeQuery();
 
-  if (data?.me && !isServer() && doneAddPassword) {
+  if (isAuth || doneAddPassword) {
     router.replace("/");
   }
 
@@ -63,7 +64,19 @@ const Register: FC<registerProps> = ({}) => {
                 setError("");
               }, 3000);
             } else {
-              const response = await addPassword({ variables: { password } });
+              const response = await addPassword({
+                variables: { password },
+                update: (cache, { data }) => {
+                  cache.writeQuery<MeQuery>({
+                    query: MeDocument,
+                    data: {
+                      __typename: "Query",
+                      me: data?.addOrUpdatePassword.user,
+                    },
+                  });
+                  cache.evict({ fieldName: "feeds" });
+                },
+              });
               if (response.data?.addOrUpdatePassword.success) {
                 setDoneAddPassword(true);
               } else {

@@ -81,6 +81,9 @@ export class ErrorSuccessResponse {
 
   @Field()
   message?: string;
+
+  @Field(() => User, { nullable: true })
+  user?: User | null;
 }
 
 @ObjectType()

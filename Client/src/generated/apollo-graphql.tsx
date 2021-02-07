@@ -182,6 +182,7 @@ export type ErrorSuccessResponse = {
   __typename?: 'ErrorSuccessResponse';
   success: Scalars['Boolean'];
   message: Scalars['String'];
+  user?: Maybe<User>;
 };
 
 export type FeedResponse = {
@@ -255,6 +256,10 @@ export type AddOrUpdatePasswordMutation = (
   & { addOrUpdatePassword: (
     { __typename?: 'ErrorSuccessResponse' }
     & Pick<ErrorSuccessResponse, 'success' | 'message'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )> }
   ) }
 );
 
@@ -462,9 +467,12 @@ export const AddOrUpdatePasswordDocument = gql`
   addOrUpdatePassword(password: $password, oldPassword: $oldPassword) {
     success
     message
+    user {
+      ...RegularUser
+    }
   }
 }
-    `;
+    ${RegularUserFragmentDoc}`;
 export type AddOrUpdatePasswordMutationFn = Apollo.MutationFunction<AddOrUpdatePasswordMutation, AddOrUpdatePasswordMutationVariables>;
 
 /**

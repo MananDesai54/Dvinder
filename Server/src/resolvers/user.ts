@@ -143,14 +143,18 @@ export class UserResolver {
     @Arg("code") code: string
   ): Promise<UserResponse | undefined> {
     try {
+      console.log("Hello");
       const userData = await getUserGithubData(code);
       const userExist = await User.findOne({
         where: { githubId: userData.id },
       });
       if (userExist) {
+        req.session.userId = userExist.id;
+
         return {
           success: true,
           user: userExist,
+          message: "Done",
         };
       }
       const isEmailExists = await User.findOne({

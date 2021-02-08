@@ -105,6 +105,9 @@ export class UserResponse {
 
   @Field()
   success?: boolean;
+
+  @Field(() => String, { nullable: true })
+  message?: string;
 }
 
 @ObjectType()

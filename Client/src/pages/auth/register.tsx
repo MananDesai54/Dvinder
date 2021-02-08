@@ -1,31 +1,29 @@
 import {
   Box,
   Button,
-  Link,
-  Input,
   FormControl,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
+  Input,
+  Link,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { FC, Fragment, useState } from "react";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { FC, Fragment, useEffect, useState } from "react";
+import GitHubLogin from "react-github-login";
+import { FaGithub } from "react-icons/fa";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
 import {
-  MeDocument,
-  MeQuery,
-  useMeQuery,
+  useAddOrUpdatePasswordMutation,
   useRegisterMutation,
   useRegisterWithGithubMutation,
-  useAddOrUpdatePasswordMutation,
 } from "../../generated/apollo-graphql";
-import { handleAuthAndError, isServer } from "../../utils";
-import { useRouter } from "next/router";
-import NextLink from "next/link";
-import { withApolloClient } from "../../utils/withApollo";
-import GitHubLogin from "react-github-login";
 import { useIsAuth } from "../../hooks/useIsAuth";
-import { FaGithub } from "react-icons/fa";
+import { handleAuthAndError } from "../../utils";
+import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
+import { withApolloClient } from "../../utils/withApollo";
 // import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
 // import { createUrqlClient } from "../../utils/createUrqlClient";
 // import { withUrqlClient } from "next-urql";
@@ -48,7 +46,13 @@ const Register: FC<registerProps> = ({}) => {
   // const [{ data }] = useMeQuery();
   // const { data } = useMeQuery();
 
-  if (isAuth || doneAddPassword) {
+  useEffect(() => {
+    if (isAuth) {
+      router.replace("/");
+    }
+  }, []);
+
+  if (isAuth && doneAddPassword) {
     router.replace("/");
   }
 
@@ -67,16 +71,8 @@ const Register: FC<registerProps> = ({}) => {
             } else {
               const response = await addPassword({
                 variables: { password },
-                update: (cache, { data }) => {
-                  cache.writeQuery<MeQuery>({
-                    query: MeDocument,
-                    data: {
-                      __typename: "Query",
-                      me: data?.addOrUpdatePassword.user,
-                    },
-                  });
-                  cache.evict({ fieldName: "feeds" });
-                },
+                update: (cache, { data }) =>
+                  updateUserDataInCache(cache, data?.addOrUpdatePassword),
               });
               if (response.data?.addOrUpdatePassword.success) {
                 setDoneAddPassword(true);
@@ -86,6 +82,16 @@ const Register: FC<registerProps> = ({}) => {
             }
           }}
         >
+          <h1
+            style={{
+              margin: "2rem 0",
+              textAlign: "center",
+              fontSize: "2rem",
+              fontWeight: "bold",
+            }}
+          >
+            Create Password
+          </h1>
           <FormControl>
             <FormLabel htmlFor="password">{"Password"}</FormLabel>
             <Input
@@ -120,7 +126,16 @@ const Register: FC<registerProps> = ({}) => {
             </Box>
           )}
 
-          <Button type="submit" colorScheme="teal" mt={4}>
+          <Button
+            type="submit"
+            my={4}
+            style={{
+              background: "var(--background-primary)",
+              color: "var(--text-primary)",
+              boxShadow: "0 10px 30px rgba(0, 0, 255, 0.3)",
+            }}
+            width="100%"
+          >
             Create Password
           </Button>
         </form>
@@ -132,92 +147,93 @@ const Register: FC<registerProps> = ({}) => {
               // const response = await register(values);
               const response = await register({
                 variables: values,
-                update: (cache, { data }) => {
-                  cache.writeQuery<MeQuery>({
-                    query: MeDocument,
-                    data: {
-                      __typename: "Query",
-                      me: data?.registerUser.user,
-                    },
-                  });
-                  cache.evict({ fieldName: "feeds" });
-                },
+                update: (cache, { data }) =>
+                  updateUserDataInCache(cache, data?.registerUser),
               });
               handleAuthAndError(errors, router, response.data?.registerUser);
             }}
           >
             {({ isSubmitting }) => (
-              <Form>
-                <h1
-                  style={{
-                    margin: "2rem 0",
-                    textAlign: "center",
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Register
-                </h1>
-                <InputField name="username" type="text" label="Username" />
-                <Box mt={4}>
-                  <InputField name="email" type="email" label="Email" />
-                </Box>
-                <Box mt={4}>
-                  <InputField
-                    name="password"
-                    type="password"
-                    label="Password"
-                  />
-                </Box>
-                <Button
-                  isLoading={isSubmitting}
-                  my={4}
-                  style={{
-                    background: "var(--background-primary)",
-                    color: "var(--text-primary)",
-                    boxShadow: "0 10px 30px rgba(0, 0, 255, 0.3)",
-                  }}
-                  type="submit"
-                  width="100%"
-                >
-                  Register
-                </Button>
-                <Box mt={2} textAlign="center">
-                  Already have account ?{" "}
-                  <NextLink href="/auth/login">
-                    <Link fontWeight="bold"> Login</Link>
-                  </NextLink>
-                </Box>
-                <Box my={4} display="flex" alignItems="center">
-                  <Box
-                    height="1px"
-                    flex="1"
-                    borderRadius={10}
-                    background="rgba(0, 0, 0, 0.2)"
-                  ></Box>
-                  <Box
-                    mx={2}
+              <Fragment>
+                <Form>
+                  <h1
                     style={{
-                      color: "gray",
+                      margin: "2rem 0",
+                      textAlign: "center",
+                      fontSize: "2rem",
+                      fontWeight: "bold",
                     }}
                   >
-                    Or Continue With
+                    Register
+                  </h1>
+                  <InputField name="username" type="text" label="Username" />
+                  <Box mt={4}>
+                    <InputField name="email" type="email" label="Email" />
                   </Box>
-                  <Box
-                    height="1px"
-                    borderRadius={10}
-                    flex="1"
-                    background="rgba(0, 0, 0, 0.2)"
-                  ></Box>
-                </Box>
+                  <Box mt={4}>
+                    <InputField
+                      name="password"
+                      type="password"
+                      label="Password"
+                    />
+                  </Box>
+                  <Button
+                    isLoading={isSubmitting}
+                    my={4}
+                    style={{
+                      background: "var(--background-primary)",
+                      color: "var(--text-primary)",
+                      boxShadow: "0 10px 30px rgba(0, 0, 255, 0.3)",
+                    }}
+                    type="submit"
+                    width="100%"
+                  >
+                    Register
+                  </Button>
+                  <Box mt={2} textAlign="center">
+                    Already have account ?{" "}
+                    <NextLink href="/auth/login">
+                      <Link fontWeight="bold"> Login</Link>
+                    </NextLink>
+                  </Box>
+                  <Box my={4} display="flex" alignItems="center">
+                    <Box
+                      height="1px"
+                      flex="1"
+                      borderRadius={10}
+                      background="rgba(0, 0, 0, 0.2)"
+                    ></Box>
+                    <Box
+                      mx={2}
+                      style={{
+                        color: "gray",
+                      }}
+                    >
+                      Or Continue With
+                    </Box>
+                    <Box
+                      height="1px"
+                      borderRadius={10}
+                      flex="1"
+                      background="rgba(0, 0, 0, 0.2)"
+                    ></Box>
+                  </Box>
+                </Form>
                 <GitHubLogin
                   clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
                   onSuccess={async (response: any) => {
                     const responseData = await registerWithGithub({
                       variables: { code: response.code },
+                      update: (cache, { data }) =>
+                        updateUserDataInCache(cache, data?.registerWithGithub),
                     });
                     if (responseData.data?.registerWithGithub.user) {
                       setDoneRegistration(true);
+                      if (
+                        responseData.data.registerWithGithub.message === "Done"
+                      ) {
+                        setDoneRegistration(true);
+                      }
                     }
                     console.log(responseData);
                   }}
@@ -225,21 +241,29 @@ const Register: FC<registerProps> = ({}) => {
                   redirectUri=""
                   scope="user:email"
                 >
-                  <FaGithub
-                    size={30}
+                  <div
                     style={{
-                      padding: "10px",
-                      background: "var(--white-color)",
-                      borderRadius: "10px",
-                      width: "50px",
-                      height: "50px",
-                      boxShadow: "0 0 40px rgba(0, 0, 0, 0.3)",
+                      width: "400px",
+                      display: "flex",
+                      justifyContent: "center",
                       outline: "none",
-                      marginLeft: "175px",
                     }}
-                  />{" "}
+                  >
+                    <FaGithub
+                      size={30}
+                      style={{
+                        padding: "10px",
+                        background: "var(--white-color)",
+                        borderRadius: "10px",
+                        width: "50px",
+                        height: "50px",
+                        boxShadow: "0 0 40px rgba(0, 0, 0, 0.3)",
+                        outline: "none",
+                      }}
+                    />
+                  </div>
                 </GitHubLogin>
-              </Form>
+              </Fragment>
             )}
           </Formik>
         </Fragment>

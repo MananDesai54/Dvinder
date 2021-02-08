@@ -1,22 +1,21 @@
-import { Box, Button, Link, Image } from "@chakra-ui/react";
+import { Box, Button, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 // import Image from 'next/image';
 import { FC } from "react";
+import GitHubLogin from "react-github-login";
+import { FaGithub } from "react-icons/fa";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
 import {
-  MeDocument,
-  MeQuery,
   useLoginMutation,
-  useMeQuery,
   useLoginWithGithubMutation,
+  useMeQuery,
 } from "../../generated/apollo-graphql";
 import { handleAuthAndError, isServer } from "../../utils";
-import NextLink from "next/link";
+import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
-import GitHubLogin from "react-github-login";
-import { FaGithub } from "react-icons/fa";
 // import { useLoginMutation, useMeQuery } from "../../generated/graphql";
 // import { withUrqlClient } from "next-urql";
 // import { createUrqlClient } from "../../utils/createUrqlClient";
@@ -37,85 +36,6 @@ const Login: FC<LoginProps> = ({}) => {
   }
 
   return (
-    // <Box
-    //   display="flex"
-    //   justifyContent="center"
-    //   alignItems="center"
-    //   height="70vh"
-    // >
-    //   <Box
-    //     style={{
-    //       width: "50%",
-    //       display: "flex",
-    //       flexDirection: "column",
-    //       alignItems: "center",
-    //     }}
-    //   >
-    //     <h1
-    //       style={{
-    //         fontSize: "3vw",
-    //         fontWeight: "bold",
-    //         width: "60%",
-    //         marginBottom: "3rem",
-    //       }}
-    //     >
-    //       Sign In to Grow Community
-    //     </h1>
-    //     <p
-    //       style={{
-    //         fontSize: "20px",
-    //         width: "60%",
-    //       }}
-    //     >
-    //       If you don't have an account You can{" "}
-    //       <span
-    //         style={{
-    //           color: "var(--background-primary)",
-    //           fontWeight: "bold",
-    //           cursor: "pointer",
-    //         }}
-    //         onClick={() => router.push("/auth/register")}
-    //       >
-    //         Register here!
-    //       </span>
-    //     </p>
-    //     <div
-    //       style={{
-    //         background:
-    //           "linear-gradient(var(--background-secondary), var(--background-accent) 50%, var(--background-tertiary))",
-    //         height: "350px",
-    //         width: "350px",
-    //         borderRadius: "175px",
-    //         position: "absolute",
-    //         left: "150px",
-    //         top: "20%",
-    //         zIndex: -1,
-    //         filter: "blur(100px)",
-    //         opacity: "0.8",
-    //       }}
-    //     ></div>
-    //     <Image
-    //       src="/images/heroImage.png"
-    //       style={{
-    //         position: "fixed",
-    //         bottom: 0,
-    //         left: "20px",
-    //       }}
-    //     />
-    //     <Button
-    //       style={{
-    //         color: "var(--background-primary)",
-    //         borderRadius: "100vw",
-    //         boxShadow: "0 0 40px rgba(0, 0, 0, 0.2)",
-    //         position: "absolute",
-    //         top: "20px",
-    //         right: "40px",
-    //       }}
-    //       onClick={() => router.push("/auth/register")}
-    //     >
-    //       Register
-    //     </Button>
-    //   </Box>
     <Formik
       // username included for matching types for handleAuthAndError
       initialValues={{ email: "", password: "", username: "" }}
@@ -129,22 +49,14 @@ const Login: FC<LoginProps> = ({}) => {
             usernameOrEmail: values.email,
             password: values.password,
           },
-          update: (cache, { data }) => {
-            cache.writeQuery<MeQuery>({
-              query: MeDocument,
-              data: {
-                __typename: "Query",
-                me: data?.login.user,
-              },
-            });
-            cache.evict({ fieldName: "feeds" });
-          },
+          update: (cache, { data }) =>
+            updateUserDataInCache(cache, data?.login),
         });
         handleAuthAndError(errors, router, response.data?.login);
       }}
     >
       {({ isSubmitting }) => (
-        <Wrapper variant="small" width={300}>
+        <Wrapper variant="small">
           <h1
             style={{
               margin: "2rem 0",
@@ -220,16 +132,8 @@ const Login: FC<LoginProps> = ({}) => {
             onSuccess={async (response: any) => {
               const responseData = await loginWithGithub({
                 variables: { code: response.code },
-                update: (cache, { data }) => {
-                  cache.writeQuery<MeQuery>({
-                    query: MeDocument,
-                    data: {
-                      __typename: "Query",
-                      me: data?.loginWithGithub.user,
-                    },
-                  });
-                  cache.evict({ fieldName: "feeds" });
-                },
+                update: (cache, { data }) =>
+                  updateUserDataInCache(cache, data?.loginWithGithub),
               });
               console.log(responseData);
             }}
@@ -237,19 +141,27 @@ const Login: FC<LoginProps> = ({}) => {
             redirectUri=""
             scope="user:email"
           >
-            <FaGithub
-              size={30}
+            <div
               style={{
-                padding: "10px",
-                background: "var(--white-color)",
-                borderRadius: "10px",
-                width: "50px",
-                height: "50px",
-                boxShadow: "0 0 40px rgba(0, 0, 0, 0.3)",
+                width: "400px",
+                display: "flex",
+                justifyContent: "center",
                 outline: "none",
-                marginLeft: "125px",
               }}
-            />
+            >
+              <FaGithub
+                size={30}
+                style={{
+                  padding: "10px",
+                  background: "var(--white-color)",
+                  borderRadius: "10px",
+                  width: "50px",
+                  height: "50px",
+                  boxShadow: "0 0 40px rgba(0, 0, 0, 0.3)",
+                  outline: "none",
+                }}
+              />
+            </div>
           </GitHubLogin>
         </Wrapper>
       )}

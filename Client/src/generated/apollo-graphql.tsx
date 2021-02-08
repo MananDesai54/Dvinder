@@ -170,6 +170,7 @@ export type UserResponse = {
   errors?: Maybe<Array<ErrorResponse>>;
   user?: Maybe<User>;
   success: Scalars['Boolean'];
+  message?: Maybe<Scalars['String']>;
 };
 
 export type ErrorResponse = {
@@ -373,6 +374,7 @@ export type RegisterWithGithubMutation = (
   { __typename?: 'Mutation' }
   & { registerWithGithub: (
     { __typename?: 'UserResponse' }
+    & Pick<UserResponse, 'message'>
     & RegularUserResponseFragment
   ) }
 );
@@ -761,6 +763,7 @@ export const RegisterWithGithubDocument = gql`
     mutation RegisterWithGithub($code: String!) {
   registerWithGithub(code: $code) {
     ...RegularUserResponse
+    message
   }
 }
     ${RegularUserResponseFragmentDoc}`;

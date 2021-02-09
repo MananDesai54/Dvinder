@@ -27,7 +27,7 @@ import { generateErrorResponse } from "../utils/generateErrorResponse";
 export class FeedResolver {
   @FieldResolver(() => String)
   imageUrlSlice(@Root() root: Feed) {
-    return root.imageUrl.slice(0, 50);
+    return root.imageUrl?.slice(0, 50);
   }
 
   @FieldResolver(() => User)
@@ -126,9 +126,14 @@ export class FeedResolver {
       const feed = await Feed.create({
         creatorId: req.session.userId,
         title: feedData.title,
-        imageUrl: feedData.imageUrl,
         type: feedData.type,
-      }).save();
+      });
+
+      if (feedData.imageUrl) feed.imageUrl = feedData.imageUrl;
+      if (feedData.code) feed.code = feedData.code;
+      if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
+
+      await feed.save();
 
       return {
         feed,

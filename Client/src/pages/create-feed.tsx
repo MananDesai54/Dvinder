@@ -2,6 +2,7 @@ import { Box, Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
 import React, { FC } from "react";
+import AceEditor from "../components/AceEditor";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useCreateFeedMutation } from "../generated/apollo-graphql";
@@ -40,6 +41,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
     >
       {() => (
         <Wrapper variant="small">
+          <AceEditor />
           <Form>
             <InputField name="title" type="text" label="Title" />
             <Box mt={4}>

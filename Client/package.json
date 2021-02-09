@@ -22,6 +22,7 @@
     "next-apollo": "^5.0.4",
     "next-urql": "^2.1.1",
     "react": "^17.0.1",
+    "react-ace": "^9.3.0",
     "react-dom": "^17.0.1",
     "react-github-login": "^1.0.3",
     "react-icons": "^4.2.0",

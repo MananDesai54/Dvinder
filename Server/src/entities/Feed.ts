@@ -45,9 +45,17 @@ export class Feed extends BaseEntity {
   @Column({ type: "int", default: 0 })
   points?: number;
 
-  @Field()
-  @Column()
-  imageUrl!: string;
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  imageUrl?: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  code?: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  projectIdea?: string;
 
   @Field(() => String)
   @CreateDateColumn()

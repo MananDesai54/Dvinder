@@ -53,10 +53,16 @@ export class FeedData {
   title!: string;
 
   @Field()
-  imageUrl!: string;
-
-  @Field()
   type!: "showcase" | "matches";
+
+  @Field(() => String, { nullable: true })
+  imageUrl?: string;
+
+  @Field(() => String, { nullable: true })
+  code?: string;
+
+  @Field(() => String, { nullable: true })
+  projectIdea?: string;
 }
 
 @InputType()

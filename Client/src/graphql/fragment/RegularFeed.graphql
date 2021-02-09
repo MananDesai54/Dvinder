@@ -2,6 +2,8 @@ fragment RegularFeed on Feed {
   creatorId
   title
   imageUrlSlice
+  code
+  projectIdea
   points
   id
   createdAt

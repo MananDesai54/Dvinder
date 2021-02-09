@@ -46,9 +46,42 @@ export class User extends BaseEntity {
     default: "https://cloud-storage-uploads.s3.amazonaws.com/profile.jpg",
   })
   profileUrl!: string;
+
   @Field()
   @Column({ nullable: true })
   githubId!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  bio!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  flair!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  lookingFor!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  gender!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  showMe!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  minAge!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  maxAge!: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  notificationSubscription!: string;
 
   @Field(() => String)
   @CreateDateColumn()

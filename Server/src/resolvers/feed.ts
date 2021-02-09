@@ -123,14 +123,35 @@ export class FeedResolver {
     @Arg("feedData") feedData: FeedData
   ): Promise<FeedResponse> {
     try {
+      if (!feedData.title) {
+        return {
+          errors: [
+            generateErrorResponse("title", "Please provide valid title"),
+          ],
+        };
+      }
+      if (!feedData.code && !feedData.projectIdea) {
+        return {
+          errors: [
+            generateErrorResponse(
+              "title",
+              "Please provide code, image or project idea"
+            ),
+          ],
+        };
+      }
+
       const feed = await Feed.create({
         creatorId: req.session.userId,
         title: feedData.title,
         type: feedData.type,
       });
 
-      if (feedData.imageUrl) feed.imageUrl = feedData.imageUrl;
-      if (feedData.code) feed.code = feedData.code;
+      if (feedData.code) {
+        feed.code = feedData.code;
+        feed.theme = feedData.theme;
+        feed.language = feedData.language;
+      }
       if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
 
       await feed.save();
@@ -167,6 +188,12 @@ export class FeedResolver {
       }
       if (feedData.imageUrl) {
         feed.imageUrl = updateData.imageUrl = feedData.imageUrl;
+      }
+      if (feedData.code) {
+        feed.code = updateData.code = feedData.code;
+      }
+      if (feedData.projectIdea) {
+        feed.projectIdea = updateData.projectIdea = feedData.projectIdea;
       }
 
       await Feed.update({ id: feedData.id }, updateData);

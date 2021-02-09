@@ -51,7 +51,15 @@ export class Feed extends BaseEntity {
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
-  code?: string;
+  code?: String;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  theme?: String;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  language?: String;
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })

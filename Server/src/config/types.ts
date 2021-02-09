@@ -28,6 +28,18 @@ export class ValidationField {
   ) {}
 }
 
+@ObjectType()
+export class Code {
+  @Field()
+  code!: string;
+
+  @Field()
+  theme!: string;
+
+  @Field()
+  language!: string;
+}
+
 /**
  * Enums
  */
@@ -56,10 +68,13 @@ export class FeedData {
   type!: "showcase" | "matches";
 
   @Field(() => String, { nullable: true })
-  imageUrl?: string;
+  code?: String;
 
   @Field(() => String, { nullable: true })
-  code?: string;
+  theme?: String;
+
+  @Field(() => String, { nullable: true })
+  language?: String;
 
   @Field(() => String, { nullable: true })
   projectIdea?: string;
@@ -67,14 +82,20 @@ export class FeedData {
 
 @InputType()
 export class FeedUpdateData {
-  @Field()
+  @Field(() => String, { nullable: true })
   title?: string;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   imageUrl?: string;
+
+  @Field(() => String, { nullable: true })
+  code?: String;
 
   @Field()
   id?: number;
+
+  @Field(() => String, { nullable: true })
+  projectIdea?: string;
 }
 
 /**

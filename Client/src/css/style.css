@@ -9,3 +9,6 @@
   --text-primary: #e5e6e9;
   --white-color: #f1f6fd;
 }
+.code-editor {
+  border-radius: 10px;
+}

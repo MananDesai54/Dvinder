@@ -9,8 +9,9 @@ import { FC, InputHTMLAttributes } from "react";
 
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
-  label: string;
+  label?: string;
   type: string;
+  placeholder?: string;
 };
 
 const InputField: FC<InputFieldProps> = (props) => {
@@ -22,12 +23,13 @@ const InputField: FC<InputFieldProps> = (props) => {
         {...field}
         type={props.type}
         id={field.name}
-        placeholder={props.label}
+        placeholder={props.label ? props.label : props.placeholder}
         style={{
           background: "var(--white-color)",
           border: "none",
           borderWidth: "2px",
         }}
+        autoFocus={props.autoFocus}
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>

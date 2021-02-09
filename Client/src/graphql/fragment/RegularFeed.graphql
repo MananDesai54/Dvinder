@@ -1,8 +1,10 @@
 fragment RegularFeed on Feed {
   creatorId
   title
-  imageUrlSlice
+  imageUrl
   code
+  theme
+  language
   projectIdea
   points
   id

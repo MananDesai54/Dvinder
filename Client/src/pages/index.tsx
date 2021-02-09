@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery } from "../generated/apollo-graphql";
@@ -46,8 +47,7 @@ const Index = () => {
   }
 
   return (
-    <>
-      <Navbar></Navbar>
+    <Layout>
       {/* {!data && fetching ? ( */}
       {!data && loading ? (
         "Loading..."
@@ -60,7 +60,7 @@ const Index = () => {
                   <UpdootSection feed={feed} />
                   <Box>
                     <Heading>{feed.title}</Heading> by {feed.creator.username}
-                    <Text>{feed.imageUrlSlice}</Text>
+                    <Text>{feed.code}</Text>
                   </Box>
                 </Flex>
               )
@@ -115,7 +115,7 @@ const Index = () => {
       ) : (
         ""
       )}
-    </>
+    </Layout>
   );
 };
 

@@ -42,6 +42,14 @@ export type User = {
   reactions: Array<Reaction>;
   profileUrl: Scalars['String'];
   githubId: Scalars['String'];
+  bio?: Maybe<Scalars['String']>;
+  flair?: Maybe<Scalars['String']>;
+  lookingFor?: Maybe<Scalars['String']>;
+  gender?: Maybe<Scalars['String']>;
+  showMe?: Maybe<Scalars['String']>;
+  minAge?: Maybe<Scalars['String']>;
+  maxAge?: Maybe<Scalars['String']>;
+  notificationSubscription?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -55,7 +63,11 @@ export type Feed = {
   title: Scalars['String'];
   type: Scalars['String'];
   points: Scalars['Int'];
-  imageUrl: Scalars['String'];
+  imageUrl?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+  theme?: Maybe<Scalars['String']>;
+  language?: Maybe<Scalars['String']>;
+  projectIdea?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   imageUrlSlice: Scalars['String'];
@@ -201,14 +213,19 @@ export type FeedResponse = {
 
 export type FeedData = {
   title: Scalars['String'];
-  imageUrl: Scalars['String'];
   type: Scalars['String'];
+  code?: Maybe<Scalars['String']>;
+  theme?: Maybe<Scalars['String']>;
+  language?: Maybe<Scalars['String']>;
+  projectIdea?: Maybe<Scalars['String']>;
 };
 
 export type FeedUpdateData = {
-  title: Scalars['String'];
-  imageUrl: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
+  imageUrl?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
+  projectIdea?: Maybe<Scalars['String']>;
 };
 
 export type RegularErrorFragment = (
@@ -218,7 +235,7 @@ export type RegularErrorFragment = (
 
 export type RegularFeedFragment = (
   { __typename?: 'Feed' }
-  & Pick<Feed, 'creatorId' | 'title' | 'imageUrlSlice' | 'points' | 'id' | 'createdAt' | 'updatedAt' | 'voteStatus'>
+  & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'code' | 'theme' | 'language' | 'projectIdea' | 'points' | 'id' | 'createdAt' | 'updatedAt' | 'voteStatus'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'username' | 'id'>
@@ -286,8 +303,11 @@ export type ChangePasswordMutation = (
 
 export type CreateFeedMutationVariables = Exact<{
   title: Scalars['String'];
-  imageUrl: Scalars['String'];
   type: Scalars['String'];
+  code?: Maybe<Scalars['String']>;
+  theme?: Maybe<Scalars['String']>;
+  language?: Maybe<Scalars['String']>;
+  projectIdea?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -297,7 +317,7 @@ export type CreateFeedMutation = (
     { __typename?: 'FeedResponse' }
     & { feed?: Maybe<(
       { __typename?: 'Feed' }
-      & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'id' | 'createdAt' | 'updatedAt' | 'type'>
+      & Pick<Feed, 'creatorId' | 'title' | 'imageUrl' | 'id' | 'createdAt' | 'updatedAt' | 'type' | 'code' | 'theme' | 'language' | 'projectIdea'>
     )>, errors?: Maybe<Array<(
       { __typename?: 'ErrorResponse' }
       & Pick<ErrorResponse, 'field' | 'message'>
@@ -434,7 +454,11 @@ export const RegularFeedFragmentDoc = gql`
     fragment RegularFeed on Feed {
   creatorId
   title
-  imageUrlSlice
+  imageUrl
+  code
+  theme
+  language
+  projectIdea
   points
   id
   createdAt
@@ -554,8 +578,10 @@ export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswo
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const CreateFeedDocument = gql`
-    mutation CreateFeed($title: String!, $imageUrl: String!, $type: String!) {
-  createFeed(feedData: {title: $title, imageUrl: $imageUrl, type: $type}) {
+    mutation CreateFeed($title: String!, $type: String!, $code: String, $theme: String, $language: String, $projectIdea: String) {
+  createFeed(
+    feedData: {title: $title, type: $type, code: $code, theme: $theme, language: $language, projectIdea: $projectIdea}
+  ) {
     feed {
       creatorId
       title
@@ -564,6 +590,10 @@ export const CreateFeedDocument = gql`
       createdAt
       updatedAt
       type
+      code
+      theme
+      language
+      projectIdea
     }
     errors {
       field
@@ -588,8 +618,11 @@ export type CreateFeedMutationFn = Apollo.MutationFunction<CreateFeedMutation, C
  * const [createFeedMutation, { data, loading, error }] = useCreateFeedMutation({
  *   variables: {
  *      title: // value for 'title'
- *      imageUrl: // value for 'imageUrl'
  *      type: // value for 'type'
+ *      code: // value for 'code'
+ *      theme: // value for 'theme'
+ *      language: // value for 'language'
+ *      projectIdea: // value for 'projectIdea'
  *   },
  * });
  */

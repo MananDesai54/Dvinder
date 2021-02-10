@@ -1,3 +1,4 @@
+// import { FileUpload, GraphQLUpload } from "graphql-upload";
 import {
   Arg,
   Ctx,
@@ -119,9 +120,11 @@ export class FeedResolver {
   @Mutation(() => FeedResponse)
   @UseMiddleware(isAuth)
   async createFeed(
-    @Ctx() { req }: MyContext,
-    @Arg("feedData") feedData: FeedData
-  ): Promise<FeedResponse> {
+    // @Ctx() { req }: MyContext,
+    @Arg("feedData") feedData: FeedData,
+    // @Arg("file", () => GraphQLUpload, { nullable: true }) file: FileUpload
+    @Arg("file", { nullable: true }) file: string
+  ): Promise<FeedResponse | undefined> {
     try {
       if (!feedData.title) {
         return {
@@ -130,7 +133,8 @@ export class FeedResolver {
           ],
         };
       }
-      if (!feedData.code && !feedData.projectIdea) {
+      if (!feedData.code && !feedData.projectIdea && !file) {
+        console.log(file);
         return {
           errors: [
             generateErrorResponse(
@@ -140,25 +144,26 @@ export class FeedResolver {
           ],
         };
       }
+      console.log(file);
+      return;
+      // const feed = await Feed.create({
+      //   creatorId: req.session.userId,
+      //   title: feedData.title,
+      //   type: feedData.type,
+      // });
 
-      const feed = await Feed.create({
-        creatorId: req.session.userId,
-        title: feedData.title,
-        type: feedData.type,
-      });
+      // if (feedData.code) {
+      //   feed.code = feedData.code;
+      //   feed.theme = feedData.theme;
+      //   feed.language = feedData.language;
+      // }
+      // if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
 
-      if (feedData.code) {
-        feed.code = feedData.code;
-        feed.theme = feedData.theme;
-        feed.language = feedData.language;
-      }
-      if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
+      // await feed.save();
 
-      await feed.save();
-
-      return {
-        feed,
-      };
+      // return {
+      //   feed,
+      // };
     } catch (error) {
       console.log(error.message);
       return {

@@ -3,6 +3,7 @@ import { Controlled as Editor } from "react-codemirror2";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/xml/xml";
+import "codemirror/mode/markdown/markdown";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/mode/css/css";
 import "codemirror/addon/hint/show-hint";

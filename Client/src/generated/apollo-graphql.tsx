@@ -11,6 +11,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Query = {
@@ -158,6 +160,7 @@ export type MutationDeleteUserArgs = {
 
 
 export type MutationCreateFeedArgs = {
+  file?: Maybe<Scalars['Upload']>;
   feedData: FeedData;
 };
 
@@ -210,6 +213,7 @@ export type FeedResponse = {
   feed?: Maybe<Feed>;
   feeds?: Maybe<Array<Feed>>;
 };
+
 
 export type FeedData = {
   title: Scalars['String'];
@@ -308,6 +312,7 @@ export type CreateFeedMutationVariables = Exact<{
   theme?: Maybe<Scalars['String']>;
   language?: Maybe<Scalars['String']>;
   projectIdea?: Maybe<Scalars['String']>;
+  file?: Maybe<Scalars['Upload']>;
 }>;
 
 
@@ -578,9 +583,10 @@ export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswo
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const CreateFeedDocument = gql`
-    mutation CreateFeed($title: String!, $type: String!, $code: String, $theme: String, $language: String, $projectIdea: String) {
+    mutation CreateFeed($title: String!, $type: String!, $code: String, $theme: String, $language: String, $projectIdea: String, $file: Upload) {
   createFeed(
     feedData: {title: $title, type: $type, code: $code, theme: $theme, language: $language, projectIdea: $projectIdea}
+    file: $file
   ) {
     feed {
       creatorId
@@ -623,6 +629,7 @@ export type CreateFeedMutationFn = Apollo.MutationFunction<CreateFeedMutation, C
  *      theme: // value for 'theme'
  *      language: // value for 'language'
  *      projectIdea: // value for 'projectIdea'
+ *      file: // value for 'file'
  *   },
  * });
  */

@@ -23,6 +23,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
   // const [, createFeed] = useCreateFeedMutation();
   const [wantToAdd, setWantToAdd] = useState("editor");
   const [imageSrc, setImageSrc] = useState<any>();
+  const [file, setFile] = useState<any>();
   const [createFeed, { loading }] = useCreateFeedMutation();
   const router = useRouter();
 
@@ -39,17 +40,17 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
         language: "xml",
       }}
       onSubmit={async (values, { setErrors }) => {
-        console.log(values);
+        console.log(values.code, file);
         // const response = await createFeed({ ...values, type: "showcase" });
         const response = await createFeed({
-          variables: { ...values, type: "showcase" },
+          variables: { ...values, type: "showcase", file },
           update: (cache) => {
             cache.evict({ fieldName: "feeds" }); //evict is same as invalidate
           },
         });
         console.log(response);
         if (response.data?.createFeed.feed) {
-          router.push("/");
+          // router.push("/");
         }
         if (response.data?.createFeed.errors) {
           setErrors(arrayToObject(response.data.createFeed.errors));
@@ -146,6 +147,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
 
                       reader.onloadend = () => {
                         setImageSrc([reader.result]);
+                        setFile(file);
                       };
                     }}
                   >
@@ -154,7 +156,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                         <div
                           {...getRootProps()}
                           style={{
-                            height: "200px",
+                            height: "300px",
                             border: "1px dashed",
                             borderRadius: "1rem",
                             display: "flex",
@@ -180,6 +182,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                                 }}
                                 onClick={() => {
                                   setImageSrc(null);
+                                  setFile(null);
                                 }}
                               >
                                 <FaTimes size={30} height="10px" width="10px" />
@@ -225,6 +228,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                       type="text"
                       placeholder="Project Idea"
                       autoFocus={true}
+                      isTextArea
                     />
                   </Box>
                 </ScaleFade>

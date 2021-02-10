@@ -1,9 +1,10 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-// import { withCreateApolloClient } from "./withCreateApolloClient";
+import { createUploadLink } from "apollo-upload-client";
 import { createWithApollo } from "./createApolloClient";
 import { FeedPagination } from "../generated/apollo-graphql";
 import { isServer } from ".";
 import { NextPageContext } from "next";
+// import { withCreateApolloClient } from "./withCreateApolloClient";
 
 const createClient = (ctx: NextPageContext) =>
   new ApolloClient({

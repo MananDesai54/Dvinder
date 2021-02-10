@@ -5,6 +5,7 @@ mutation CreateFeed(
   $theme: String
   $language: String
   $projectIdea: String
+  $file: Upload
 ) {
   createFeed(
     feedData: {
@@ -15,6 +16,7 @@ mutation CreateFeed(
       language: $language
       projectIdea: $projectIdea
     }
+    file: $file
   ) {
     feed {
       creatorId

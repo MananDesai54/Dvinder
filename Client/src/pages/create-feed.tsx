@@ -30,6 +30,7 @@ interface CreateFeedProps {}
 
 const CreateFeed: FC<CreateFeedProps> = ({}) => {
   // const [, createFeed] = useCreateFeedMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const [wantToAdd, setWantToAdd] = useState("editor");
   const [imageSrc, setImageSrc] = useState<any>();
   const [file, setFile] = useState<any>();
@@ -41,14 +42,20 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
 
   useEffect(() => {
     if (imageRef.current) {
+      setIsLoading(true);
       model
         .then(async (model: any) => {
           console.log(imageRef.current);
           const prediction = await model.classify(imageRef.current);
-          console.log(prediction);
+          const [neutral, porn, hentai, sexy, drawing] = prediction;
+          console.log(
+            `neutral: ${neutral.probability}, porn: ${porn.probability}, hentai: ${hentai.probability}, sexy: ${sexy.probability}, drawing: ${drawing.probability}`
+          );
+          setIsLoading(false);
         })
         .catch((error: any) => {
           console.log(error);
+          setIsLoading(false);
         });
     }
   }, [imageRef.current]);
@@ -266,7 +273,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                 }}
                 type="submit"
                 width="100%"
-                isLoading={loading}
+                isLoading={loading || isLoading}
               >
                 Create Feed
               </Button>

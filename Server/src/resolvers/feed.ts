@@ -1,4 +1,4 @@
-// import { FileUpload, GraphQLUpload } from "graphql-upload";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
 import {
   Arg,
   Ctx,
@@ -23,6 +23,8 @@ import { Updoot } from "../entities/Updoot";
 import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
+import { S3 } from "../utils/awsSetup";
+import { v4 as generateId } from "uuid";
 
 @Resolver(Feed)
 export class FeedResolver {
@@ -120,10 +122,9 @@ export class FeedResolver {
   @Mutation(() => FeedResponse)
   @UseMiddleware(isAuth)
   async createFeed(
-    // @Ctx() { req }: MyContext,
+    @Ctx() { req }: MyContext,
     @Arg("feedData") feedData: FeedData,
-    // @Arg("file", () => GraphQLUpload, { nullable: true }) file: FileUpload
-    @Arg("file", { nullable: true }) file: string
+    @Arg("file", () => GraphQLUpload, { nullable: true }) file: FileUpload
   ): Promise<FeedResponse | undefined> {
     try {
       if (!feedData.title) {
@@ -134,7 +135,6 @@ export class FeedResolver {
         };
       }
       if (!feedData.code && !feedData.projectIdea && !file) {
-        console.log(file);
         return {
           errors: [
             generateErrorResponse(
@@ -144,26 +144,44 @@ export class FeedResolver {
           ],
         };
       }
-      console.log(file);
-      return;
-      // const feed = await Feed.create({
-      //   creatorId: req.session.userId,
-      //   title: feedData.title,
-      //   type: feedData.type,
-      // });
 
-      // if (feedData.code) {
-      //   feed.code = feedData.code;
-      //   feed.theme = feedData.theme;
-      //   feed.language = feedData.language;
-      // }
-      // if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
+      const feed = await Feed.create({
+        creatorId: req.session.userId,
+        title: feedData.title,
+        type: feedData.type,
+      });
 
-      // await feed.save();
+      if (file) {
+        const { filename, mimetype, encoding, createReadStream } = await file;
+        const stream = createReadStream();
+        const data = await S3.upload({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: `${generateId()}:${filename}`,
+          Body: stream,
+          ContentType: mimetype,
+          ContentEncoding: encoding,
+        }).promise();
+        if (data.Location) {
+          feed.imageUrl = data.Location;
+        } else {
+          return {
+            errors: [generateErrorResponse("title", "failed to upload image")],
+          };
+        }
+      }
 
-      // return {
-      //   feed,
-      // };
+      if (feedData.code) {
+        feed.code = feedData.code;
+        feed.theme = feedData.theme;
+        feed.language = feedData.language;
+      }
+      if (feedData.projectIdea) feed.projectIdea = feedData.projectIdea;
+
+      await feed.save();
+
+      return {
+        feed,
+      };
     } catch (error) {
       console.log(error.message);
       return {

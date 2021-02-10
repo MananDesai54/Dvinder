@@ -1,7 +1,14 @@
 import { Box, Button, Fade, Flex, ScaleFade } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
-import React, { FC, Fragment, useState } from "react";
+import React, {
+  FC,
+  Fragment,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import InputField from "../components/InputField";
 import Layout from "../components/Layout";
 import Wrapper from "../components/Wrapper";
@@ -12,6 +19,8 @@ import { arrayToObject, isServer } from "../utils/index";
 import Dropzone from "react-dropzone";
 import { VscNewFile } from "react-icons/vsc";
 import { FaTimes } from "react-icons/fa";
+import SwapButtons from "../components/SwapButtons";
+import * as nsfwjs from "nsfwjs";
 const Editor = React.lazy(() => import("../components/CodeEditor"));
 // import { useCreateFeedMutation } from "../generated/graphql";
 // import { withUrqlClient } from "next-urql";
@@ -24,8 +33,25 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
   const [wantToAdd, setWantToAdd] = useState("editor");
   const [imageSrc, setImageSrc] = useState<any>();
   const [file, setFile] = useState<any>();
+  const imageRef = useRef<any>();
+  const model = useMemo(() => nsfwjs.load(), []);
+
   const [createFeed, { loading }] = useCreateFeedMutation();
   const router = useRouter();
+
+  useEffect(() => {
+    if (imageRef.current) {
+      model
+        .then(async (model: any) => {
+          console.log(imageRef.current);
+          const prediction = await model.classify(imageRef.current);
+          console.log(prediction);
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    }
+  }, [imageRef.current]);
 
   useIsAuth();
 
@@ -40,20 +66,24 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
         language: "xml",
       }}
       onSubmit={async (values, { setErrors }) => {
-        console.log(values.code, file);
-        // const response = await createFeed({ ...values, type: "showcase" });
-        const response = await createFeed({
-          variables: { ...values, type: "showcase", file },
-          update: (cache) => {
-            cache.evict({ fieldName: "feeds" }); //evict is same as invalidate
-          },
-        });
-        console.log(response);
-        if (response.data?.createFeed.feed) {
-          // router.push("/");
-        }
-        if (response.data?.createFeed.errors) {
-          setErrors(arrayToObject(response.data.createFeed.errors));
+        try {
+          console.log(values.code, file);
+          // const response = await createFeed({ ...values, type: "showcase" });
+          const response = await createFeed({
+            variables: { ...values, type: "showcase", file },
+            update: (cache) => {
+              cache.evict({ fieldName: "feeds" }); //evict is same as invalidate
+            },
+          });
+          console.log(response);
+          if (response.data?.createFeed.feed) {
+            router.push("/");
+          }
+          if (response.data?.createFeed.errors) {
+            setErrors(arrayToObject(response.data.createFeed.errors));
+          }
+        } catch (error) {
+          console.log(error.message);
         }
       }}
     >
@@ -71,49 +101,38 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                   Want to add
                 </h1>
                 <Flex justifyContent="space-around" my={4}>
-                  <Button
-                    style={{
-                      background:
-                        wantToAdd.toLowerCase() === "editor"
-                          ? "var(--background-secondary)"
-                          : "var(--background-tertiary)",
-                      color:
-                        wantToAdd.toLowerCase() === "editor"
-                          ? "white"
-                          : "black",
+                  <SwapButtons
+                    addTitle="editor"
+                    title="Code Snippet"
+                    wantToAdd={wantToAdd}
+                    setWantToAdd={() => setWantToAdd("editor")}
+                    resetOthers={() => {
+                      setFieldValue("projectIdea", "");
+                      setFile(null);
+                      setImageSrc(null);
                     }}
-                    onClick={() => setWantToAdd("editor")}
-                  >
-                    Code Snippet
-                  </Button>
-                  <Button
-                    style={{
-                      background:
-                        wantToAdd.toLowerCase() === "image"
-                          ? "var(--background-secondary)"
-                          : "var(--background-tertiary)",
-                      color:
-                        wantToAdd.toLowerCase() === "image" ? "white" : "black",
+                  />
+                  <SwapButtons
+                    addTitle="image"
+                    title="Image"
+                    wantToAdd={wantToAdd}
+                    setWantToAdd={() => setWantToAdd("image")}
+                    resetOthers={() => {
+                      setFieldValue("code", "");
+                      setFieldValue("projectIdea", "");
                     }}
-                    onClick={() => setWantToAdd("image")}
-                  >
-                    Image
-                  </Button>
-                  <Button
-                    style={{
-                      background:
-                        wantToAdd.toLowerCase() === "project"
-                          ? "var(--background-secondary)"
-                          : "var(--background-tertiary)",
-                      color:
-                        wantToAdd.toLowerCase() === "project"
-                          ? "white"
-                          : "black",
+                  />
+                  <SwapButtons
+                    addTitle="project"
+                    title="Project Idea"
+                    wantToAdd={wantToAdd}
+                    setWantToAdd={() => setWantToAdd("project")}
+                    resetOthers={() => {
+                      setFile(null);
+                      setImageSrc(null);
+                      setFieldValue("code", "");
                     }}
-                    onClick={() => setWantToAdd("project")}
-                  >
-                    Project Idea
-                  </Button>
+                  />
                 </Flex>
               </Box>
 
@@ -140,7 +159,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
               {wantToAdd.toLowerCase() === "image" && (
                 <ScaleFade in={wantToAdd.toLowerCase() === "image"}>
                   <Dropzone
-                    onDrop={(acceptedFiles) => {
+                    onDrop={async (acceptedFiles) => {
                       const file = acceptedFiles[0];
                       const reader = new FileReader();
                       const url = reader.readAsDataURL(file);
@@ -193,6 +212,7 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                                 style={{
                                   objectFit: "cover",
                                 }}
+                                ref={imageRef}
                                 src={imageSrc}
                                 alt="selected File"
                               />
@@ -208,9 +228,13 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                             >
                               <VscNewFile size={30} />
                               <input {...getInputProps()} accept="image/*" />
-                              <p>
-                                Drag 'n' drop file here, or click to select
-                                files
+                              <p
+                                style={{
+                                  textAlign: "center",
+                                }}
+                              >
+                                Drag 'n' drop coding meme or some amazing
+                                programming photo here, or click to select one
                               </p>
                             </Fade>
                           )}

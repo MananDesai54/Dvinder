@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
 import { createWithApollo } from "./createApolloClient";
 import { FeedPagination } from "../generated/apollo-graphql";
@@ -8,7 +8,13 @@ import { NextPageContext } from "next";
 
 const createClient = (ctx: NextPageContext) =>
   new ApolloClient({
-    uri: process.env.NEXT_PUBLIC_API_URL as string,
+    link: createUploadLink({
+      uri: process.env.NEXT_PUBLIC_API_URL as string,
+      credentials: "include",
+      headers: {
+        cookie: (isServer() ? ctx?.req?.headers.cookie : undefined) || "",
+      },
+    }) as any,
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
@@ -30,10 +36,6 @@ const createClient = (ctx: NextPageContext) =>
         },
       },
     }),
-    credentials: "include",
-    headers: {
-      cookie: (isServer() ? ctx?.req?.headers.cookie : undefined) || "",
-    },
   });
 
 export const withApolloClient = createWithApollo(createClient);

@@ -21,6 +21,7 @@ import path from "path";
 import { Updoot } from "./entities/Updoot";
 import { createUserLoader } from "./utils/createUserLoader";
 import { createUpdootLoader } from "./utils/createUpdootLoader";
+import { graphqlUploadExpress } from "graphql-upload";
 
 dotenv.config();
 
@@ -103,6 +104,8 @@ const main = async () => {
     })
   );
 
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+
   /**
    * Setup Apollo server for graphQL
    */
@@ -118,6 +121,7 @@ const main = async () => {
       userLoader: createUserLoader(),
       updootLoader: createUpdootLoader(),
     }),
+    uploads: false,
   });
 
   apolloServer.applyMiddleware({ app, cors: false });

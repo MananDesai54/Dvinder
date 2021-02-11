@@ -27,6 +27,7 @@ const SwapButtons: FC<SwapButtonProps> = ({
           wantToAdd.toLowerCase() === addTitle.toLowerCase()
             ? "white"
             : "black",
+        margin: "0.5rem",
       }}
       onClick={() => {
         setWantToAdd();

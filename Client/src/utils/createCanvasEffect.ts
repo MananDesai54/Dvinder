@@ -23,6 +23,12 @@ export const createCanvasEffect = (canvas: HTMLCanvasElement): void => {
     x: 0,
     y: 0,
   };
+
+  window.addEventListener("resize", () => {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+  });
+
   window.addEventListener("mousemove", (e) => {
     mouse.x = e.x;
     mouse.y = e.y;

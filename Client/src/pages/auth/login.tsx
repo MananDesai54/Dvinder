@@ -16,6 +16,7 @@ import {
 import { handleAuthAndError, isServer } from "../../utils";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
+import { useIsAuth } from "../../hooks/useIsAuth";
 
 interface LoginProps {}
 
@@ -53,6 +54,7 @@ const Login: FC<LoginProps> = ({}) => {
               textAlign: "center",
               fontSize: "2rem",
               fontWeight: "bold",
+              color: "var(--text-primary)",
             }}
           >
             Login

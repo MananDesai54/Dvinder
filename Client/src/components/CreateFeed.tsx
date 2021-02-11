@@ -15,7 +15,6 @@ import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, useRef, useState } from "react";
 import InputField from "./InputField";
-import Layout from "./Layout";
 import Wrapper from "./Wrapper";
 import { useCreateFeedMutation } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
@@ -24,6 +23,8 @@ import Dropzone from "react-dropzone";
 import { VscNewFile } from "react-icons/vsc";
 import { FaTimes } from "react-icons/fa";
 import SwapButtons from "./SwapButtons";
+import LanguageSelect from "./LanguageSelect";
+import ThemeSelect from "./ThemeSelect";
 const Editor = React.lazy(() => import("./CodeEditor"));
 
 interface CreateFeedProps {
@@ -36,6 +37,8 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
   const [wantToAdd, setWantToAdd] = useState("editor");
   const [imageSrc, setImageSrc] = useState<any>();
   const [file, setFile] = useState<any>();
+  const [language, setLanguage] = useState<string>("javascript");
+  const [theme, setTheme] = useState<string>("material");
   const imageRef = useRef<HTMLImageElement>();
 
   const [createFeed, { loading }] = useCreateFeedMutation();
@@ -61,19 +64,34 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                 title: "",
                 code: "",
                 projectIdea: "",
-                theme: "material",
-                language: "xml",
               }}
-              onSubmit={async (values, { setErrors }) => {
+              onSubmit={async (values, { setErrors, setFieldValue }) => {
                 try {
                   console.log(values.code, file);
                   const response = await createFeed({
-                    variables: { ...values, type: "showcase", file },
-                    update: (cache) => {
-                      cache.evict({ fieldName: "feeds" }); //evict is same as invalidate
+                    variables: {
+                      ...values,
+                      type: "showcase",
+                      file,
+                      language,
+                      theme,
+                    },
+                    update: (cache, { data }) => {
+                      if (data?.createFeed.feed) {
+                        cache.evict({ fieldName: "feeds" }); //evict is same as invalidate
+                      }
                     },
                   });
                   console.log(response);
+                  if (response.data?.createFeed.feed) {
+                    setFile(null);
+                    setImageSrc(null);
+                    setFieldValue("title", "");
+                    setFieldValue("projectIdea", "");
+                    setFieldValue("code", "");
+                    onClose();
+                    return;
+                  }
                   if (response.data?.createFeed.errors) {
                     setErrors(arrayToObject(response.data.createFeed.errors));
                   }
@@ -134,19 +152,32 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                     {!isServer() && (
                       <React.Suspense fallback={<Fragment></Fragment>}>
                         {wantToAdd.toLowerCase() === "editor" && (
-                          <ScaleFade
-                            in={wantToAdd.toLowerCase() === "editor"}
-                            style={{
-                              borderRadius: "1rem",
-                              overflow: "hidden",
-                            }}
-                          >
-                            <Editor
-                              onChange={(text: string) =>
-                                setFieldValue("code", text)
-                              }
-                              value={values.code}
-                            />
+                          <ScaleFade in={wantToAdd.toLowerCase() === "editor"}>
+                            <Flex my={4} justifyContent="space-between">
+                              <LanguageSelect
+                                onChange={(value) => setLanguage(value)}
+                                value={language}
+                              />
+                              <ThemeSelect
+                                onChange={(value) => setTheme(value)}
+                                value={theme}
+                              />
+                            </Flex>
+                            <Box
+                              style={{
+                                borderRadius: "1rem",
+                                overflow: "hidden",
+                              }}
+                            >
+                              <Editor
+                                onChange={(text: string) =>
+                                  setFieldValue("code", text)
+                                }
+                                value={values.code}
+                                language={language}
+                                theme={theme}
+                              />
+                            </Box>
                           </ScaleFade>
                         )}
                       </React.Suspense>
@@ -172,7 +203,7 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                                 {...getRootProps()}
                                 style={{
                                   height: "300px",
-                                  border: "1px dashed",
+                                  border: "1px dashed var(--text-primary)",
                                   borderRadius: "1rem",
                                   display: "flex",
                                   justifyContent: "center",
@@ -224,7 +255,10 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <VscNewFile size={30} />
+                                    <VscNewFile
+                                      size={30}
+                                      color="var(--text-primary)"
+                                    />
                                     <input
                                       {...getInputProps()}
                                       accept="image/*"
@@ -232,6 +266,7 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                                     <p
                                       style={{
                                         textAlign: "center",
+                                        color: "var(--text-primary)",
                                       }}
                                     >
                                       Drag 'n' drop coding meme or some amazing
@@ -262,9 +297,8 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                     <Button
                       my={10}
                       style={{
-                        background: "var(--background-primary)",
+                        background: "var(--background-secondary)",
                         color: "var(--text-primary)",
-                        boxShadow: "0 10px 30px rgba(0, 0, 255, 0.3)",
                       }}
                       type="submit"
                       width="100%"

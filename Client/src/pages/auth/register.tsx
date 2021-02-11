@@ -82,6 +82,7 @@ const Register: FC<registerProps> = ({}) => {
               textAlign: "center",
               fontSize: "2rem",
               fontWeight: "bold",
+              color: "var(--text-primary)",
             }}
           >
             Create Password

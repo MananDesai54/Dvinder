@@ -1,6 +1,8 @@
 # Dvinder
 
-Tinder for Developers
+**_Make a better community_**.
+
+**Tinder** for **Developers**. Make **Friends**, find **love**, find **project** partner. Share **codes**, project ideas, **memes** and more.
 
 # Technologies used
 
@@ -16,18 +18,18 @@ Tinder for Developers
 
 ## Concepts Used for backend
 
-```js
-  - Node.js + TypeScript + PostgreSQL + GraphQL
-  - Apollo Server
-  - TypeORM ( Mikro ORM was used previously then switched to TypeORM )
-  - TypeGraphQL
-  - Redis
-  - DataLoader for better queries to database
+```md
+- Node.js + TypeScript + PostgreSQL + GraphQL
+- Apollo Server
+- TypeORM ( Mikro ORM was used previously then switched to TypeORM )
+- TypeGraphQL
+- Redis
+- DataLoader for better queries to database
 ```
 
 ## Concepts used for frontend
 
-```js
+```md
 - Next.js + React + ChakraUI
 - URQL as GraphQL client to query to the server
 - URQL caches( updating, invalidation, read write fragments )
@@ -36,4 +38,27 @@ Tinder for Developers
 - formik for forms
 - Apollo CLient
 - next-apollo for ssr
+```
+
+## How to Run Front-end
+
+- install Node.js
+
+```bash
+$ git clone https://github.com/MananDesai54/Dvinder.git
+$ cd client
+$ yarn install
+$ yarn dev
+```
+
+## How to Run Back-end
+
+- install Node.js, postgreSQL, Redis
+
+```bash
+$ git clone https://github.com/MananDesai54/Dvinder.git
+$ cd server
+$ yarn install
+$ yarn watch
+$ yarn start
 ```

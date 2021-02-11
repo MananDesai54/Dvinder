@@ -4,6 +4,7 @@ mikro-orm.config.js
 comments.txt
 package-lock.json
 feed.sql
+test-images
 
 # Logs
 logs

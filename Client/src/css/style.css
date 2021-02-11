@@ -8,7 +8,22 @@
   --background-extra3: #809391;
   --text-primary: #e5e6e9;
   --white-color: #f1f6fd;
+
+  --canvas-background: "#151e29";
 }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .code-editor {
   border-radius: 10px;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }

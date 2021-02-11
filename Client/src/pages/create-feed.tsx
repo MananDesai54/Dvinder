@@ -20,7 +20,6 @@ import Dropzone from "react-dropzone";
 import { VscNewFile } from "react-icons/vsc";
 import { FaTimes } from "react-icons/fa";
 import SwapButtons from "../components/SwapButtons";
-import * as nsfwjs from "nsfwjs";
 const Editor = React.lazy(() => import("../components/CodeEditor"));
 // import { useCreateFeedMutation } from "../generated/graphql";
 // import { withUrqlClient } from "next-urql";
@@ -34,31 +33,10 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
   const [wantToAdd, setWantToAdd] = useState("editor");
   const [imageSrc, setImageSrc] = useState<any>();
   const [file, setFile] = useState<any>();
-  const imageRef = useRef<any>();
-  const model = useMemo(() => nsfwjs.load(), []);
+  const imageRef = useRef<HTMLImageElement>();
 
   const [createFeed, { loading }] = useCreateFeedMutation();
   const router = useRouter();
-
-  useEffect(() => {
-    if (imageRef.current) {
-      setIsLoading(true);
-      model
-        .then(async (model: any) => {
-          console.log(imageRef.current);
-          const prediction = await model.classify(imageRef.current);
-          const [neutral, porn, hentai, sexy, drawing] = prediction;
-          console.log(
-            `neutral: ${neutral.probability}, porn: ${porn.probability}, hentai: ${hentai.probability}, sexy: ${sexy.probability}, drawing: ${drawing.probability}`
-          );
-          setIsLoading(false);
-        })
-        .catch((error: any) => {
-          console.log(error);
-          setIsLoading(false);
-        });
-    }
-  }, [imageRef.current]);
 
   useIsAuth();
 
@@ -214,12 +192,10 @@ const CreateFeed: FC<CreateFeedProps> = ({}) => {
                                 <FaTimes size={30} height="10px" width="10px" />
                               </div>
                               <img
-                                width="100%"
-                                height="100%"
                                 style={{
                                   objectFit: "cover",
                                 }}
-                                ref={imageRef}
+                                ref={imageRef as any}
                                 src={imageSrc}
                                 alt="selected File"
                               />

@@ -25,6 +25,8 @@ import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { S3 } from "../utils/awsSetup";
 import { v4 as generateId } from "uuid";
+// import tf from '@tensorflow/tfjs-node';
+// import nsfw from 'nsfwjs';
 
 @Resolver(Feed)
 export class FeedResolver {

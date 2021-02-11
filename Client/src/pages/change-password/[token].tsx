@@ -12,12 +12,8 @@ import {
 import { arrayToObject } from "../../utils";
 import NavLink from "next/link";
 import { withApolloClient } from "../../utils/withApollo";
-// import { useChangePasswordMutation } from "../../generated/graphql";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
 
 const ChangePassword: FC = () => {
-  // const [, changePassword] = useChangePasswordMutation();
   const [changePassword] = useChangePasswordMutation();
   const router = useRouter();
   const [tokenError, setTokenError] = useState("");
@@ -26,11 +22,6 @@ const ChangePassword: FC = () => {
     <Formik
       initialValues={{ newPassword: "" }}
       onSubmit={async (values, { setErrors }) => {
-        // const response = await changePassword({
-        //   token:
-        //     typeof router.query.token === "string" ? router.query.token : "",
-        //   newPassword: values.newPassword,
-        // });
         const response = await changePassword({
           variables: {
             token:
@@ -95,5 +86,4 @@ const ChangePassword: FC = () => {
   );
 };
 
-// export default withUrqlClient(createUrqlClient, { ssr: false })(ChangePassword);
 export default withApolloClient({ ssr: false })(ChangePassword);

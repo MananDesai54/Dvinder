@@ -24,14 +24,10 @@ import { useIsAuth } from "../../hooks/useIsAuth";
 import { handleAuthAndError } from "../../utils";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
-// import { useMeQuery, useRegisterMutation } from "../../generated/graphql";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
-// import { withUrqlClient } from "next-urql";
 
 interface registerProps {}
 
 const Register: FC<registerProps> = ({}) => {
-  // const [, register] = useRegisterMutation();
   const [register] = useRegisterMutation();
   const [registerWithGithub] = useRegisterWithGithubMutation();
   const [addPassword] = useAddOrUpdatePasswordMutation();
@@ -43,8 +39,6 @@ const Register: FC<registerProps> = ({}) => {
 
   const router = useRouter();
   const isAuth = useIsAuth();
-  // const [{ data }] = useMeQuery();
-  // const { data } = useMeQuery();
 
   useEffect(() => {
     if (isAuth) {
@@ -179,7 +173,7 @@ const Register: FC<registerProps> = ({}) => {
                   </Box>
                   <Button
                     isLoading={isSubmitting}
-                    my={4}
+                    mt={10}
                     style={{
                       background: "var(--background-primary)",
                       color: "var(--text-primary)",
@@ -190,7 +184,13 @@ const Register: FC<registerProps> = ({}) => {
                   >
                     Register
                   </Button>
-                  <Box mt={2} textAlign="center">
+                  <Box
+                    mt={2}
+                    textAlign="center"
+                    style={{
+                      color: "var(--white-color)",
+                    }}
+                  >
                     Already have account ?{" "}
                     <NextLink href="/auth/login">
                       <Link fontWeight="bold"> Login</Link>
@@ -201,7 +201,7 @@ const Register: FC<registerProps> = ({}) => {
                       height="1px"
                       flex="1"
                       borderRadius={10}
-                      background="rgba(0, 0, 0, 0.2)"
+                      background="rgba(255, 255, 255, 0.5)"
                     ></Box>
                     <Box
                       mx={2}
@@ -215,7 +215,7 @@ const Register: FC<registerProps> = ({}) => {
                       height="1px"
                       borderRadius={10}
                       flex="1"
-                      background="rgba(0, 0, 0, 0.2)"
+                      background="rgba(255, 255, 255, 0.5)"
                     ></Box>
                   </Box>
                 </Form>
@@ -272,5 +272,4 @@ const Register: FC<registerProps> = ({}) => {
   );
 };
 
-// export default withUrqlClient(createUrqlClient, { ssr: false })(Register);
 export default withApolloClient({ ssr: false })(Register);

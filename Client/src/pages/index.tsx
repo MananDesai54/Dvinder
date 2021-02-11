@@ -1,13 +1,12 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import CreateFeed from "../components/CreateFeed";
 import Layout from "../components/Layout";
-import Navbar from "../components/Navbar";
 import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { withApolloClient } from "../utils/withApollo";
-// import { useFeedsQuery } from "../generated/graphql";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../utils/createUrqlClient";
 
 /**
  * How SSR works
@@ -20,18 +19,12 @@ import { withApolloClient } from "../utils/withApollo";
  *
  * so in srr browser send cookie to next server and
  * and in normal or not ssr browser send cookie to direct graphQL server
- * so in ssr cookie is not being send from next server to graphQL server so we need to explicitly pass it using ctx in createUrqlClient
+ * so in ssr cookie is not being send from next server to graphQL server so we need to explicitly pass it using ctx in withApollo
  */
 
 const Index = () => {
+  const [createFeed, setCreateFeed] = useState(false);
   const isAuth = useIsAuth();
-  // const [variables, setVariables] = useState({
-  //   limit: 15,
-  //   cursor: null as null | string,
-  // });
-  // const [{ data, fetching }] = useFeedsQuery({
-  //   variables,
-  // });
   const { data, error, loading, fetchMore, variables } = useFeedsQuery({
     variables: {
       limit: 15,
@@ -41,14 +34,19 @@ const Index = () => {
     skip: !isAuth,
   });
 
-  // if (!fetching && !data) {
   if (!loading && !data) {
     return <p>{error?.message}</p>;
   }
 
   return (
     <Layout>
-      {/* {!data && fetching ? ( */}
+      <CreateFeed
+        open={createFeed}
+        onClose={() => {
+          setCreateFeed(false);
+        }}
+      />
+      <FaPlus size={30} color="white" onClick={() => setCreateFeed(true)} />
       {!data && loading ? (
         "Loading..."
       ) : (
@@ -70,12 +68,6 @@ const Index = () => {
       {data && data.feeds?.hasMore ? (
         <Button
           onClick={() =>
-            // setVariables({
-            //   limit: variables.limit,
-            //   cursor: data.feeds
-            //     ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
-            //     : null,
-            // })
             fetchMore({
               variables: {
                 limit: variables?.limit,
@@ -83,28 +75,8 @@ const Index = () => {
                   ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
                   : null,
               },
-              // updateQuery: (
-              //   previousValues,
-              //   { fetchMoreResult }
-              // ): FeedsQuery => {
-              //   if (!fetchMoreResult) {
-              //     return previousValues as FeedsQuery;
-              //   }
-              //   return {
-              //     __typename: "Query",
-              //     feeds: {
-              //       __typename: "FeedPagination",
-              //       hasMore: (fetchMoreResult as FeedsQuery).feeds!.hasMore,
-              //       feeds: [
-              //         ...((previousValues as FeedsQuery).feeds.feeds || []),
-              //         ...((fetchMoreResult as FeedsQuery).feeds.feeds || []),
-              //       ],
-              //     },
-              //   };
-              // },
             })
           }
-          // isLoading={fetching}
           isLoading={loading}
           colorScheme="teal"
           my={4}
@@ -120,4 +92,3 @@ const Index = () => {
 };
 
 export default withApolloClient({ ssr: true })(Index);
-// export default withUrqlClient(createUrqlClient, { ssr: true })(Index);

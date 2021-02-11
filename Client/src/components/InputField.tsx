@@ -25,7 +25,9 @@ const InputField: FC<InputFieldProps> = (props) => {
   }
   return (
     <FormControl isInvalid={!!error}>
-      <FormLabel htmlFor={field.name}>{props.label}</FormLabel>
+      <FormLabel color="var(--white-color)" htmlFor={field.name}>
+        {props.label}
+      </FormLabel>
       <InputOrTextarea
         {...field}
         type={props.type}
@@ -33,8 +35,7 @@ const InputField: FC<InputFieldProps> = (props) => {
         placeholder={props.label ? props.label : props.placeholder}
         style={{
           background: "var(--white-color)",
-          border: "none",
-          borderWidth: "2px",
+          // color: "var(--white-color)",
         }}
         autoFocus={props.autoFocus}
       />

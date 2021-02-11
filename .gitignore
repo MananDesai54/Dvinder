@@ -5,6 +5,8 @@ comments.txt
 package-lock.json
 feed.sql
 test-images
+createUrqlClientUsed.ts
+createUrqlClientNotUsed.ts
 
 # Logs
 logs

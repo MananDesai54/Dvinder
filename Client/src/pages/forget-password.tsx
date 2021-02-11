@@ -5,12 +5,8 @@ import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useForgetPasswordMutation } from "../generated/apollo-graphql";
 import { withApolloClient } from "../utils/withApollo";
-// import { useForgetPasswordMutation } from "../generated/graphql";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../utils/createUrqlClient";
 
 const ForgetPassword: FC<{}> = ({}) => {
-  // const [, forgetPassword] = useForgetPasswordMutation();
   const [forgetPassword] = useForgetPasswordMutation();
   const [message, setMessage] = useState("");
 
@@ -18,7 +14,6 @@ const ForgetPassword: FC<{}> = ({}) => {
     <Formik
       initialValues={{ email: "" }}
       onSubmit={async (values) => {
-        // const response = await forgetPassword(values);
         const response = await forgetPassword({ variables: values });
         if (response.data?.forgetPassword) {
           setMessage(
@@ -52,5 +47,4 @@ const ForgetPassword: FC<{}> = ({}) => {
   );
 };
 
-// export default withUrqlClient(createUrqlClient, { ssr: false })(ForgetPassword);
 export default withApolloClient({ ssr: false })(ForgetPassword);

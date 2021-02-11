@@ -16,19 +16,14 @@ import {
 import { handleAuthAndError, isServer } from "../../utils";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
-// import { useLoginMutation, useMeQuery } from "../../generated/graphql";
-// import { withUrqlClient } from "next-urql";
-// import { createUrqlClient } from "../../utils/createUrqlClient";
 
 interface LoginProps {}
 
 const Login: FC<LoginProps> = ({}) => {
-  // const [, login] = useLoginMutation();
   const [login] = useLoginMutation();
   const [loginWithGithub] = useLoginWithGithubMutation();
   const router = useRouter();
 
-  // const [{ data }] = useMeQuery();
   const { data } = useMeQuery();
 
   if (data?.me && !isServer()) {
@@ -37,13 +32,8 @@ const Login: FC<LoginProps> = ({}) => {
 
   return (
     <Formik
-      // username included for matching types for handleAuthAndError
       initialValues={{ email: "", password: "", username: "" }}
       onSubmit={async (values, errors) => {
-        // const response = await login({
-        //   usernameOrEmail: values.email,
-        //   password: values.password,
-        // });
         const response = await login({
           variables: {
             usernameOrEmail: values.email,
@@ -99,7 +89,13 @@ const Login: FC<LoginProps> = ({}) => {
               Login
             </Button>
           </Form>
-          <Box mt={2} textAlign="center">
+          <Box
+            mt={2}
+            textAlign="center"
+            style={{
+              color: "var(--white-color)",
+            }}
+          >
             Already have account ?{" "}
             <NextLink href="/auth/register">
               <Link fontWeight="bold"> Register</Link>
@@ -110,7 +106,7 @@ const Login: FC<LoginProps> = ({}) => {
               height="1px"
               flex="1"
               borderRadius={10}
-              background="rgba(0, 0, 0, 0.2)"
+              background="rgba(255, 255, 255, 0.5)"
             ></Box>
             <Box
               mx={2}
@@ -124,7 +120,7 @@ const Login: FC<LoginProps> = ({}) => {
               height="1px"
               borderRadius={10}
               flex="1"
-              background="rgba(0, 0, 0, 0.2)"
+              background="rgba(255, 255, 255, 0.5)"
             ></Box>
           </Box>
           <GitHubLogin
@@ -170,5 +166,4 @@ const Login: FC<LoginProps> = ({}) => {
   );
 };
 
-// export default withUrqlClient(createUrqlClient, { ssr: false })(Login);
 export default withApolloClient({ ssr: false })(Login);

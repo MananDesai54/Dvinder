@@ -104,6 +104,20 @@ export class FeedResolver {
     }
   }
 
+  @Query(() => [Feed])
+  @UseMiddleware(isAuth)
+  async userFeeds(@Ctx() { req }: MyContext): Promise<Feed[]> {
+    try {
+      const feeds = await Feed.find({
+        where: { creatorId: req.session.userId },
+      });
+      return feeds;
+    } catch (error) {
+      console.log(error.message);
+      return [];
+    }
+  }
+
   @Query(() => Feed, { nullable: true })
   @UseMiddleware(isAuth)
   async feed(@Arg("id") id: number): Promise<Feed | null> {

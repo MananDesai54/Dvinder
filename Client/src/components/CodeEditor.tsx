@@ -128,12 +128,16 @@ const AceEditor: FC<EditorProps> = (props) => {
         lineWrapping: true,
         spellCheck: true,
         autofocus: true,
+        readonly: !!props.readonly,
       }}
       onChange={(editor, data, value) => {}}
-      onBeforeChange={(editor, data, value) => {
-        props.onChange(value);
-      }}
-      className="code-editor"
+      onBeforeChange={
+        props.onChange
+          ? (editor, data, value) => {
+              props.onChange(value);
+            }
+          : () => {}
+      }
     />
   );
 };

@@ -21,6 +21,7 @@ export type Query = {
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
   feeds?: Maybe<FeedPagination>;
+  userFeeds: Array<Feed>;
   feed?: Maybe<Feed>;
 };
 
@@ -259,7 +260,7 @@ export type RegularFeedResponseFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt'>
+  & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt' | 'profileUrl'>
 );
 
 export type RegularUserResponseFragment = (
@@ -444,6 +445,17 @@ export type MeQuery = (
   )> }
 );
 
+export type UserFeedsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserFeedsQuery = (
+  { __typename?: 'Query' }
+  & { userFeeds: Array<(
+    { __typename?: 'Feed' }
+    & RegularFeedFragment
+  )> }
+);
+
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -499,6 +511,7 @@ export const RegularUserFragmentDoc = gql`
   email
   createdAt
   updatedAt
+  profileUrl
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`
@@ -932,6 +945,38 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const UserFeedsDocument = gql`
+    query UserFeeds {
+  userFeeds {
+    ...RegularFeed
+  }
+}
+    ${RegularFeedFragmentDoc}`;
+
+/**
+ * __useUserFeedsQuery__
+ *
+ * To run a query within a React component, call `useUserFeedsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserFeedsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserFeedsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUserFeedsQuery(baseOptions?: Apollo.QueryHookOptions<UserFeedsQuery, UserFeedsQueryVariables>) {
+        return Apollo.useQuery<UserFeedsQuery, UserFeedsQueryVariables>(UserFeedsDocument, baseOptions);
+      }
+export function useUserFeedsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserFeedsQuery, UserFeedsQueryVariables>) {
+          return Apollo.useLazyQuery<UserFeedsQuery, UserFeedsQueryVariables>(UserFeedsDocument, baseOptions);
+        }
+export type UserFeedsQueryHookResult = ReturnType<typeof useUserFeedsQuery>;
+export type UserFeedsLazyQueryHookResult = ReturnType<typeof useUserFeedsLazyQuery>;
+export type UserFeedsQueryResult = Apollo.QueryResult<UserFeedsQuery, UserFeedsQueryVariables>;
 export const UsersDocument = gql`
     query Users {
   users {

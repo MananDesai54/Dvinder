@@ -1,0 +1,5 @@
+query UserFeeds {
+  userFeeds {
+    ...RegularFeed
+  }
+}

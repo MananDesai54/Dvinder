@@ -19,7 +19,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
 
   const [logout, { loading: logoutFetching }] = useLogoutMutation();
 
-  return <p>Hello</p>;
+  return <p></p>;
 };
 
 export default Navbar;

@@ -1,12 +1,23 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Stack,
+} from "@chakra-ui/react";
+import React, { Fragment, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
 import Layout from "../components/Layout";
+import ProfileSideBar from "../components/ProfileSideBar";
 import UpdootSection from "../components/UpdootSection";
-import { useFeedsQuery } from "../generated/apollo-graphql";
+import { useFeedsQuery, useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+import { isServer } from "../utils";
 import { withApolloClient } from "../utils/withApollo";
+const Editor = React.lazy(() => import("../components/CodeEditor"));
 
 /**
  * How SSR works
@@ -24,6 +35,8 @@ import { withApolloClient } from "../utils/withApollo";
 
 const Index = () => {
   const [createFeed, setCreateFeed] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const { data: user } = useMeQuery();
   const isAuth = useIsAuth();
   const { data, error, loading, fetchMore, variables } = useFeedsQuery({
     variables: {
@@ -46,19 +59,77 @@ const Index = () => {
           setCreateFeed(false);
         }}
       />
-      <FaPlus size={30} color="white" onClick={() => setCreateFeed(true)} />
+      <ProfileSideBar
+        open={showProfile}
+        onClose={() => {
+          setShowProfile(false);
+        }}
+      />
+      <Button
+        style={{
+          background: "var(--background-secondary)",
+          color: "var(--text-primary)",
+        }}
+        position="fixed"
+        top="1rem"
+        right="4rem"
+        onClick={() => setCreateFeed(true)}
+      >
+        <FaPlus
+          size={14}
+          color="white"
+          style={{
+            marginRight: "0.5rem",
+          }}
+        />{" "}
+        Add Feed
+      </Button>
+      {user?.me && (
+        <Flex
+          onClick={() => setShowProfile(true)}
+          zIndex={1001}
+          cursor="pointer"
+          position="fixed"
+          top="1rem"
+          left="4rem"
+          alignItems="center"
+        >
+          <Avatar name={user.me.username} src={user.me.profileUrl} />
+          <Box ml="0.5rem" fontSize="1.2rem" color="white" fontWeight="bold">
+            {user.me.username}
+          </Box>
+        </Flex>
+      )}
       {!data && loading ? (
         "Loading..."
       ) : (
-        <Stack spacing={8} mx={16} my={8}>
+        <Stack spacing={8} m={16}>
           {data!.feeds?.feeds?.map(
             (feed) =>
               feed && (
-                <Flex key={feed.id} shadow="md" borderWidth="1px" p={4}>
+                <Flex
+                  key={feed.id}
+                  shadow="md"
+                  borderWidth="1px"
+                  p={4}
+                  color="white"
+                >
                   <UpdootSection feed={feed} />
                   <Box>
                     <Heading>{feed.title}</Heading> by {feed.creator.username}
-                    <Text>{feed.code}</Text>
+                    {feed.imageUrl && (
+                      <Image src={feed.imageUrl} alt={feed.title} />
+                    )}
+                    {feed.code && !isServer() && (
+                      <React.Suspense fallback={<Fragment></Fragment>}>
+                        <Editor
+                          language={(feed.language as string) || ""}
+                          theme={(feed.theme as string) || ""}
+                          value={feed.code || ""}
+                          readonly
+                        />
+                      </React.Suspense>
+                    )}
                   </Box>
                 </Flex>
               )

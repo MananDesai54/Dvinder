@@ -43,7 +43,7 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
   useIsAuth();
 
   return (
-    <Drawer isOpen={open} onClose={onClose} placement="left">
+    <Drawer isOpen={open} onClose={onClose} placement="left" size="md">
       <DrawerOverlay
         style={{
           backdropFilter: "blur(2px)",
@@ -80,8 +80,9 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                   style={{
                     color: "var(--text-primary)",
                   }}
+                  alignItems="center"
                 >
-                  <span>JavaScript</span>
+                  <span>{data?.me?.username.toUpperCase()}, 20</span>
                   <FaJs />
                 </Flex>
               </Box>

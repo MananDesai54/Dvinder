@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Session, SessionData } from "express-session";
 import { Redis } from "ioredis";
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { Feed } from "../entities/Feed";
 import { User } from "../entities/User";
 import { createUpdootLoader } from "../utils/createUpdootLoader";
@@ -96,6 +96,33 @@ export class FeedUpdateData {
 
   @Field(() => String, { nullable: true })
   projectIdea?: string;
+}
+
+@InputType()
+export class MoreUserData {
+  @Field(() => String, { nullable: true })
+  bio?: string;
+
+  @Field(() => String, { nullable: true })
+  flair?: string;
+
+  @Field(() => String, { nullable: true })
+  gender?: string;
+
+  @Field(() => String, { nullable: true })
+  showMe?: string;
+
+  @Field(() => Int, { nullable: true })
+  minAge?: number;
+
+  @Field(() => Int, { nullable: true })
+  maxAge?: number;
+
+  @Field(() => String, { nullable: true })
+  birthDate?: string;
+
+  @Field(() => String, { nullable: true })
+  lookingFor?: string;
 }
 
 /**

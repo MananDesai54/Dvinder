@@ -1,0 +1,32 @@
+mutation AddMoreDetail(
+  $bio: String
+  $flair: String
+  $gender: String
+  $maxAge: Int
+  $minAge: Int
+  $showMe: String
+  $birthDate: String
+  $lookingFor: String
+) {
+  addMoreDetail(
+    moreData: {
+      bio: $bio
+      flair: $flair
+      gender: $gender
+      maxAge: $maxAge
+      minAge: $minAge
+      showMe: $showMe
+      birthDate: $birthDate
+      lookingFor: $lookingFor
+    }
+  ) {
+    success
+    message
+    user {
+      ...RegularUser
+    }
+    errors {
+      ...RegularError
+    }
+  }
+}

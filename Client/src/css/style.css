@@ -16,6 +16,14 @@
   padding: 0;
   box-sizing: border-box;
 }
+*::-webkit-scrollbar-thumb {
+  background: var(--background-secondary);
+  border-radius: 5px;
+}
+*::-webkit-scrollbar {
+  background: #2d3748;
+  width: 5px;
+}
 
 .code-editor {
   border-radius: 10px;

@@ -47,7 +47,7 @@ const Register: FC<registerProps> = ({}) => {
   }, []);
 
   if (isAuth && doneAddPassword) {
-    router.replace("/");
+    router.replace("/auth/user-data");
   }
 
   return (
@@ -88,18 +88,23 @@ const Register: FC<registerProps> = ({}) => {
             Create Password
           </h1>
           <FormControl>
-            <FormLabel htmlFor="password">{"Password"}</FormLabel>
+            <FormLabel color="white" htmlFor="password">
+              {"Password"}
+            </FormLabel>
             <Input
               name="password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{
+                background: "white",
+              }}
             />
             {error && <FormErrorMessage>{error}</FormErrorMessage>}
           </FormControl>
           <FormControl mt={4}>
-            <FormLabel htmlFor="reEnterPassword">
+            <FormLabel color="white" htmlFor="reEnterPassword">
               {"Re-Enter Password"}
             </FormLabel>
             <Input
@@ -108,6 +113,9 @@ const Register: FC<registerProps> = ({}) => {
               placeholder="Re-Enter Password"
               value={reEnterPassword}
               onChange={(e) => setReEnterPassword(e.target.value)}
+              style={{
+                background: "white",
+              }}
             />
             {error && <FormErrorMessage>{error}</FormErrorMessage>}
           </FormControl>

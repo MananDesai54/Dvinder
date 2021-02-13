@@ -11,6 +11,7 @@ import {
 import {
   ErrorResponse,
   ErrorSuccessResponse,
+  MoreUserData,
   MyContext,
   UserData,
   UserResponse,
@@ -26,6 +27,7 @@ import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { getUserGithubData } from "../utils/getUserGithubData";
 import { isAuth } from "../middleware/isAuth";
+import { validateAddDetail } from "../utils/validationAddDetail";
 // import { getConnection } from "typeorm";
 
 @Resolver(User)
@@ -278,6 +280,57 @@ export class UserResolver {
       return {
         success: true,
         user,
+      };
+    } catch (error) {
+      console.log(error.message);
+      return {
+        errors: [generateErrorResponse("Server Error", error.message)],
+        success: false,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async addMoreDetail(
+    @Ctx() { req }: MyContext,
+    @Arg("moreData") moreData: MoreUserData
+  ): Promise<UserResponse> {
+    try {
+      const errors: ErrorResponse[] = validateAddDetail(moreData);
+
+      if (errors.length > 0) {
+        return {
+          errors,
+          success: false,
+        };
+      }
+
+      const user = await User.findOne(req.session.userId);
+      if (!user) {
+        return {
+          errors: [
+            generateErrorResponse(
+              "User",
+              "Use not found, Please register/login"
+            ),
+          ],
+        };
+      }
+      if (moreData.bio) user.bio = moreData.bio;
+      if (moreData.flair) user.flair = moreData.flair;
+      if (moreData.gender) user.gender = moreData.gender;
+      if (moreData.maxAge) user.maxAge = moreData.maxAge;
+      if (moreData.minAge) user.minAge = moreData.minAge;
+      if (moreData.showMe) user.showMe = moreData.showMe;
+      if (moreData.birthDate) user.birthDate = new Date(moreData.birthDate);
+      if (moreData.lookingFor) user.lookingFor = moreData.lookingFor;
+
+      await user.save();
+
+      return {
+        user,
+        success: true,
       };
     } catch (error) {
       console.log(error.message);

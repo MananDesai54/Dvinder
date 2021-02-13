@@ -47,12 +47,13 @@ export type User = {
   githubId: Scalars['String'];
   bio?: Maybe<Scalars['String']>;
   flair?: Maybe<Scalars['String']>;
-  lookingFor?: Maybe<Scalars['String']>;
   gender?: Maybe<Scalars['String']>;
   showMe?: Maybe<Scalars['String']>;
-  minAge?: Maybe<Scalars['String']>;
-  maxAge?: Maybe<Scalars['String']>;
+  lookingFor?: Maybe<Scalars['String']>;
+  minAge?: Maybe<Scalars['Int']>;
+  maxAge?: Maybe<Scalars['Int']>;
   notificationSubscription?: Maybe<Scalars['String']>;
+  birthDate?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -97,6 +98,7 @@ export type Mutation = {
   registerWithGithub: UserResponse;
   login: UserResponse;
   loginWithGithub: UserResponse;
+  addMoreDetail: UserResponse;
   addOrUpdatePassword: ErrorSuccessResponse;
   logout: Scalars['Boolean'];
   forgetPassword: Scalars['Boolean'];
@@ -128,6 +130,11 @@ export type MutationLoginArgs = {
 
 export type MutationLoginWithGithubArgs = {
   code: Scalars['String'];
+};
+
+
+export type MutationAddMoreDetailArgs = {
+  moreData: MoreUserData;
 };
 
 
@@ -201,6 +208,17 @@ export type UserData = {
   username?: Maybe<Scalars['String']>;
 };
 
+export type MoreUserData = {
+  bio?: Maybe<Scalars['String']>;
+  flair?: Maybe<Scalars['String']>;
+  gender?: Maybe<Scalars['String']>;
+  showMe?: Maybe<Scalars['String']>;
+  minAge?: Maybe<Scalars['Int']>;
+  maxAge?: Maybe<Scalars['Int']>;
+  birthDate?: Maybe<Scalars['String']>;
+  lookingFor?: Maybe<Scalars['String']>;
+};
+
 export type ErrorSuccessResponse = {
   __typename?: 'ErrorSuccessResponse';
   success: Scalars['Boolean'];
@@ -272,6 +290,33 @@ export type RegularUserResponseFragment = (
     { __typename?: 'ErrorResponse' }
     & RegularErrorFragment
   )>> }
+);
+
+export type AddMoreDetailMutationVariables = Exact<{
+  bio?: Maybe<Scalars['String']>;
+  flair?: Maybe<Scalars['String']>;
+  gender?: Maybe<Scalars['String']>;
+  maxAge?: Maybe<Scalars['Int']>;
+  minAge?: Maybe<Scalars['Int']>;
+  showMe?: Maybe<Scalars['String']>;
+  birthDate?: Maybe<Scalars['String']>;
+  lookingFor?: Maybe<Scalars['String']>;
+}>;
+
+
+export type AddMoreDetailMutation = (
+  { __typename?: 'Mutation' }
+  & { addMoreDetail: (
+    { __typename?: 'UserResponse' }
+    & Pick<UserResponse, 'success' | 'message'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'ErrorResponse' }
+      & RegularErrorFragment
+    )>> }
+  ) }
 );
 
 export type AddOrUpdatePasswordMutationVariables = Exact<{
@@ -532,6 +577,55 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularErrorFragmentDoc}`;
+export const AddMoreDetailDocument = gql`
+    mutation AddMoreDetail($bio: String, $flair: String, $gender: String, $maxAge: Int, $minAge: Int, $showMe: String, $birthDate: String, $lookingFor: String) {
+  addMoreDetail(
+    moreData: {bio: $bio, flair: $flair, gender: $gender, maxAge: $maxAge, minAge: $minAge, showMe: $showMe, birthDate: $birthDate, lookingFor: $lookingFor}
+  ) {
+    success
+    message
+    user {
+      ...RegularUser
+    }
+    errors {
+      ...RegularError
+    }
+  }
+}
+    ${RegularUserFragmentDoc}
+${RegularErrorFragmentDoc}`;
+export type AddMoreDetailMutationFn = Apollo.MutationFunction<AddMoreDetailMutation, AddMoreDetailMutationVariables>;
+
+/**
+ * __useAddMoreDetailMutation__
+ *
+ * To run a mutation, you first call `useAddMoreDetailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddMoreDetailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addMoreDetailMutation, { data, loading, error }] = useAddMoreDetailMutation({
+ *   variables: {
+ *      bio: // value for 'bio'
+ *      flair: // value for 'flair'
+ *      gender: // value for 'gender'
+ *      maxAge: // value for 'maxAge'
+ *      minAge: // value for 'minAge'
+ *      showMe: // value for 'showMe'
+ *      birthDate: // value for 'birthDate'
+ *      lookingFor: // value for 'lookingFor'
+ *   },
+ * });
+ */
+export function useAddMoreDetailMutation(baseOptions?: Apollo.MutationHookOptions<AddMoreDetailMutation, AddMoreDetailMutationVariables>) {
+        return Apollo.useMutation<AddMoreDetailMutation, AddMoreDetailMutationVariables>(AddMoreDetailDocument, baseOptions);
+      }
+export type AddMoreDetailMutationHookResult = ReturnType<typeof useAddMoreDetailMutation>;
+export type AddMoreDetailMutationResult = Apollo.MutationResult<AddMoreDetailMutation>;
+export type AddMoreDetailMutationOptions = Apollo.BaseMutationOptions<AddMoreDetailMutation, AddMoreDetailMutationVariables>;
 export const AddOrUpdatePasswordDocument = gql`
     mutation AddOrUpdatePassword($password: String!, $oldPassword: String) {
   addOrUpdatePassword(password: $password, oldPassword: $oldPassword) {

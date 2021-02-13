@@ -5,4 +5,11 @@ fragment RegularUser on User {
   createdAt
   updatedAt
   profileUrl
+  bio
+  flair
+  gender
+  showMe
+  minAge
+  maxAge
+  githubId
 }

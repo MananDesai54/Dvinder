@@ -260,7 +260,7 @@ export type RegularFeedResponseFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt' | 'profileUrl'>
+  & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt' | 'profileUrl' | 'bio' | 'flair' | 'gender' | 'showMe' | 'minAge' | 'maxAge' | 'githubId'>
 );
 
 export type RegularUserResponseFragment = (
@@ -512,6 +512,13 @@ export const RegularUserFragmentDoc = gql`
   createdAt
   updatedAt
   profileUrl
+  bio
+  flair
+  gender
+  showMe
+  minAge
+  maxAge
+  githubId
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`

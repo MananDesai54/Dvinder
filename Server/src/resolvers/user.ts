@@ -323,7 +323,7 @@ export class UserResolver {
       if (moreData.maxAge) user.maxAge = moreData.maxAge;
       if (moreData.minAge) user.minAge = moreData.minAge;
       if (moreData.showMe) user.showMe = moreData.showMe;
-      if (moreData.birthDate) user.birthDate = new Date(moreData.birthDate);
+      if (moreData.birthDate) user.birthDate = moreData.birthDate;
       if (moreData.lookingFor) user.lookingFor = moreData.lookingFor;
 
       await user.save();

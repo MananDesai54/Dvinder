@@ -25,19 +25,24 @@ const InputField: FC<InputFieldProps> = (props) => {
   }
   return (
     <FormControl isInvalid={!!error}>
-      <FormLabel color="var(--white-color)" htmlFor={field.name}>
+      <FormLabel
+        fontSize="1.2rem"
+        color="var(--white-color)"
+        htmlFor={field.name}
+      >
         {props.label}
       </FormLabel>
       <InputOrTextarea
         {...field}
         type={props.type}
         id={field.name}
-        placeholder={props.label ? props.label : props.placeholder}
+        placeholder={props.placeholder ? props.placeholder : props.label}
         style={{
           background: "var(--white-color)",
           // color: "var(--white-color)",
         }}
         autoFocus={props.autoFocus}
+        _placeholder={{ fontWeight: 500 }}
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>

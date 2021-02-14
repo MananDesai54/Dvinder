@@ -67,7 +67,6 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
               }}
               onSubmit={async (values, { setErrors, setFieldValue }) => {
                 try {
-                  console.log(values.code, file);
                   const response = await createFeed({
                     variables: {
                       ...values,

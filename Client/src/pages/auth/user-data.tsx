@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  Flex,
   FormLabel,
   Radio,
   RadioGroup,
@@ -8,15 +10,16 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
+import Flairs from "../../components/Flairs";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
 import {
   useAddMoreDetailMutation,
   useMeQuery,
 } from "../../generated/apollo-graphql";
-import { useIsAuth } from "../../hooks/useIsAuth";
 import { arrayToObject } from "../../utils";
+import { getCheckboxValue } from "../../utils/getCheckBoxValues";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
 
@@ -25,6 +28,16 @@ interface UserDataProps {}
 const UserData: FC<UserDataProps> = ({}) => {
   // useIsAuth();
   const [addMoreDetail] = useAddMoreDetailMutation();
+  const [showMeArray, setShowMeArray] = useState([false, false, false, false]);
+  const [lookingForArray, setLookingForArray] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const [genderError, setGenderError] = useState("");
+  const [flairError, setFlairError] = useState("");
+  const [ageError, setAgeError] = useState("");
   const router = useRouter();
 
   const { data } = useMeQuery();
@@ -35,21 +48,49 @@ const UserData: FC<UserDataProps> = ({}) => {
         bio: "",
         flair: "",
         gender: "",
-        maxAge: 15,
+        maxAge: 30,
         minAge: 18,
         showMe: "all",
-        birthDate: new Date().toString(),
-        lookingFor: "",
+        birthDate: "",
+        lookingFor: "all",
       }}
       onSubmit={async (values, { setErrors }) => {
+        if (+values.minAge > +values.maxAge) {
+          setAgeError("Please provide valid age range");
+          setTimeout(() => {
+            setAgeError("");
+          }, 5000);
+          return;
+        }
+        const showMeValue = getCheckboxValue(showMeArray, "showMe");
+        const lookingForValue = getCheckboxValue(lookingForArray, "lookingFor");
         const response = await addMoreDetail({
-          variables: values,
+          variables: {
+            ...values,
+            showMe: showMeValue,
+            lookingFor: lookingForValue,
+          },
           update: (cache, { data }) =>
             updateUserDataInCache(cache, data?.addMoreDetail),
         });
-        console.log(response);
+        if (response.data?.addMoreDetail.success) {
+          router.replace("/");
+          return;
+        }
         if (response.data?.addMoreDetail.errors) {
           setErrors(arrayToObject(response.data.addMoreDetail.errors));
+          const gender = response.data.addMoreDetail.errors.find(
+            (error) => error.field === "gender"
+          );
+          if (gender) {
+            setGenderError(gender.message);
+          }
+          const flair = response.data.addMoreDetail.errors.find(
+            (error) => error.field === "flair"
+          );
+          if (flair) {
+            setFlairError(flair.message);
+          }
         }
       }}
     >
@@ -57,7 +98,7 @@ const UserData: FC<UserDataProps> = ({}) => {
         <Wrapper variant="small">
           <h1
             style={{
-              margin: "1rem 0",
+              marginBottom: "1rem",
               textAlign: "center",
               fontSize: "2rem",
               fontWeight: "bold",
@@ -68,15 +109,27 @@ const UserData: FC<UserDataProps> = ({}) => {
           </h1>
           <Form>
             <InputField name="bio" type="text" label="Bio" isTextArea />
-            <Box mt={4}>
-              <InputField name="flair" type="text" label="Flair" />
+            <Box mt={6}>
+              <Flairs
+                value={values.flair}
+                onChange={(value) => setFieldValue("flair", value)}
+              />
+              {flairError && !values.flair && (
+                <p
+                  style={{
+                    color: "#FC8181",
+                  }}
+                >
+                  {flairError}
+                </p>
+              )}
             </Box>
             <RadioGroup
               onChange={(nextValue) => setFieldValue("gender", nextValue)}
               value={values.gender}
-              mt={4}
+              mt={6}
             >
-              <FormLabel color="var(--white-color)">
+              <FormLabel fontSize="1.2rem" color="var(--white-color)">
                 How do you like to be called?
               </FormLabel>
               <Stack direction="row" color="white">
@@ -84,44 +137,184 @@ const UserData: FC<UserDataProps> = ({}) => {
                 <Radio value="female">She/Her</Radio>
                 <Radio value="none">Non binary</Radio>
               </Stack>
-            </RadioGroup>
-            <RadioGroup
-              onChange={(nextValue) => setFieldValue("showMe", nextValue)}
-              value={values.showMe}
-              mt={4}
-            >
-              <FormLabel color="var(--white-color)">Show Me</FormLabel>
-              <Stack direction="row" color="white">
-                <Radio value="male">Male</Radio>
-                <Radio value="female">Female</Radio>
-                <Radio value="none">Non Binary</Radio>
-                <Radio value="all">All</Radio>
-              </Stack>
-            </RadioGroup>
-            <RadioGroup
-              onChange={(nextValue) => setFieldValue("lookingFor", nextValue)}
-              value={values.lookingFor}
-              mt={4}
-            >
-              <FormLabel color="var(--white-color)">Looking For</FormLabel>
-              <Stack direction="row" color="white">
-                <Radio value="love">Love</Radio>
-                <Radio value="friend">Friend</Radio>
-                <Radio value="project">Project Buddy</Radio>
-              </Stack>
+              {genderError && !values.gender && (
+                <p
+                  style={{
+                    color: "#FC8181",
+                  }}
+                >
+                  {genderError}
+                </p>
+              )}
             </RadioGroup>
             <Box mt={4}>
-              <InputField name="minAge" type="number" label="Min Age" />
+              <FormLabel fontSize="1.2rem" color="var(--white-color)">
+                Show Me
+              </FormLabel>
+              <Flex color="white">
+                <Checkbox
+                  mx={1}
+                  isChecked={showMeArray[0]}
+                  onChange={(e) =>
+                    setShowMeArray([
+                      e.target.checked,
+                      showMeArray[1],
+                      showMeArray[2],
+                      showMeArray[3],
+                    ])
+                  }
+                >
+                  Male
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={showMeArray[1]}
+                  onChange={(e) =>
+                    setShowMeArray([
+                      showMeArray[0],
+                      e.target.checked,
+                      showMeArray[2],
+                      showMeArray[3],
+                    ])
+                  }
+                >
+                  Female
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={showMeArray[2]}
+                  onChange={(e) =>
+                    setShowMeArray([
+                      showMeArray[0],
+                      showMeArray[1],
+                      e.target.checked,
+                      showMeArray[3],
+                    ])
+                  }
+                >
+                  Non Binary
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={showMeArray[3]}
+                  onChange={(e) =>
+                    setShowMeArray([
+                      showMeArray[0],
+                      showMeArray[1],
+                      showMeArray[2],
+                      e.target.checked,
+                    ])
+                  }
+                >
+                  All
+                </Checkbox>
+              </Flex>
             </Box>
-            <Box mt={4}>
-              <InputField name="maxAge" type="number" label="Max Age" />
+            <Box mt={6}>
+              <FormLabel fontSize="1.2rem" color="var(--white-color)">
+                Looking For
+              </FormLabel>
+              <Flex color="white">
+                <Checkbox
+                  mx={1}
+                  isChecked={lookingForArray[0]}
+                  onChange={(e) =>
+                    setLookingForArray([
+                      e.target.checked,
+                      lookingForArray[1],
+                      lookingForArray[2],
+                      lookingForArray[3],
+                    ])
+                  }
+                >
+                  Love
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={lookingForArray[1]}
+                  onChange={(e) =>
+                    setLookingForArray([
+                      lookingForArray[0],
+                      e.target.checked,
+                      lookingForArray[2],
+                      lookingForArray[3],
+                    ])
+                  }
+                >
+                  Friend
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={lookingForArray[2]}
+                  onChange={(e) =>
+                    setLookingForArray([
+                      lookingForArray[0],
+                      lookingForArray[1],
+                      e.target.checked,
+                      lookingForArray[3],
+                    ])
+                  }
+                >
+                  Project Buddy
+                </Checkbox>
+                <Checkbox
+                  mx={1}
+                  isChecked={lookingForArray[3]}
+                  onChange={(e) =>
+                    setLookingForArray([
+                      lookingForArray[0],
+                      lookingForArray[1],
+                      lookingForArray[2],
+                      e.target.checked,
+                    ])
+                  }
+                >
+                  All
+                </Checkbox>
+              </Flex>
             </Box>
-            <Box mt={4}>
-              <InputField name="birthDate" type="text" label="Show Me" />
+            <Box mt={6} position="relative">
+              <FormLabel fontSize="1.2rem" color="var(--white-color)">
+                Age Range
+              </FormLabel>
+              <Flex>
+                <Box mr={4} width="100px">
+                  <InputField
+                    name="minAge"
+                    type="number"
+                    placeholder="Min Age"
+                  />
+                </Box>
+                <Box mr={4} width="100px">
+                  <InputField
+                    name="maxAge"
+                    type="number"
+                    placeholder="Max Age"
+                  />
+                </Box>
+              </Flex>
+              {ageError && (
+                <p
+                  style={{
+                    color: "#FC8181",
+                  }}
+                >
+                  {ageError}
+                </p>
+              )}
+            </Box>
+            <Box mt={6}>
+              <InputField
+                name="birthDate"
+                type="text"
+                label="Birth Date"
+                placeholder="DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY"
+              />
             </Box>
             <Button
               isLoading={isSubmitting}
-              my={4}
+              mt={4}
+              mb={16}
               style={{
                 background: "var(--background-primary)",
                 color: "var(--text-primary)",

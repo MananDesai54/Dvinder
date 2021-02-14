@@ -39,6 +39,7 @@ const LanguageSelect: FC<LanguageSelectProps> = ({
       <option value="javascript">javascript</option>
       <option value="jsx">jsx</option>
       <option value="julia">julia</option>
+      <option value="javascript">kotlin</option>
       <option value="markdown">markdown</option>
       <option value="nginx">nginx</option>
       <option value="pascal">pascal</option>

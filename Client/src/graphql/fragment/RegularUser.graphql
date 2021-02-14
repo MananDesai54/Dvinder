@@ -12,4 +12,5 @@ fragment RegularUser on User {
   minAge
   maxAge
   githubId
+  birthDate
 }

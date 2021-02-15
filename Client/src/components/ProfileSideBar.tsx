@@ -272,7 +272,9 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                       </Fragment>
                     )}
                     <Flex mt={8} justifyContent="flex-end">
-                      <Button colorScheme="facebook">Logout</Button>
+                      <Button mx={4} colorScheme="facebook">
+                        Logout
+                      </Button>
                       <Button colorScheme="red">Delete Account</Button>
                     </Flex>
                   </TabPanel>

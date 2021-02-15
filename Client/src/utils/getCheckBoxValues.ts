@@ -14,3 +14,17 @@ export const getCheckboxValue = (values: boolean[], type: string) => {
   });
   return finalValue;
 };
+
+export const getCheckboxBoolean = (values: string, type: string) => {
+  if (values === "all") {
+    return [false, false, false, true];
+  } else {
+    const valuesArray = values.split(" ");
+    if (valuesArray.length === 3) {
+      return [false, false, false, true];
+    } else {
+      const finalResult = [false, false, false, false];
+      const valueToGetOf: string[] = type === "showMe" ? showMe : lookingFor;
+    }
+  }
+};

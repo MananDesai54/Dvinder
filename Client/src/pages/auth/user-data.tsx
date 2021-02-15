@@ -1,5 +1,8 @@
 import {
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
@@ -106,6 +109,15 @@ const UserData: FC<UserDataProps> = ({}) => {
     >
       {({ isSubmitting, setFieldValue, values }) => (
         <Wrapper variant="small">
+          <Breadcrumb color="white">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbItem>
+              <BreadcrumbLink href="#">Detail</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
           <h1
             style={{
               marginBottom: "1rem",

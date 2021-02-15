@@ -1,13 +1,5 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Image,
-  Stack,
-} from "@chakra-ui/react";
-import React, { Fragment, useState } from "react";
+import { Avatar, Box, Button, Flex, Heading, Stack } from "@chakra-ui/react";
+import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
 import FeedDisplay from "../components/FeedDisplay";
@@ -16,9 +8,8 @@ import ProfileSideBar from "../components/ProfileSideBar";
 import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery, useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
-import { isServer } from "../utils";
 import { withApolloClient } from "../utils/withApollo";
-const Editor = React.lazy(() => import("../components/CodeEditor"));
+import SwipeCard from "react-tinder-card";
 
 /**
  * How SSR works
@@ -48,6 +39,14 @@ const Index = () => {
     skip: !isAuth,
   });
 
+  const onSwipe = (direction: any) => {
+    console.log("You swiped: " + direction);
+  };
+
+  const onCardLeftScreen = (myIdentifier: any) => {
+    console.log(myIdentifier + " left the screen");
+  };
+
   if (!loading && !data) {
     return <p>{error?.message}</p>;
   }
@@ -66,6 +65,13 @@ const Index = () => {
           setShowProfile(false);
         }}
       />
+      <SwipeCard
+        onSwipe={onSwipe}
+        onCardLeftScreen={() => onCardLeftScreen("fooBar")}
+        preventSwipe={["right", "left"]}
+      >
+        Hello World
+      </SwipeCard>
       <Button
         style={{
           background: "var(--background-secondary)",

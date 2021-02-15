@@ -200,19 +200,15 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                           {data?.me?.gender}
                         </p>
                       </Box>
-                      <FaEdit
-                        size={30}
-                        style={{
-                          position: "absolute",
-                          right: 0,
-                          top: "-1rem",
-                          color: "white",
-                          cursor: "pointer",
-                        }}
+                      <Button
+                        my={4}
+                        colorScheme="facebook"
                         onClick={() => {
                           router.push("/auth/user-data?edit=true");
                         }}
-                      />
+                      >
+                        Edit Profile
+                      </Button>
                     </Box>
 
                     {repos.length > 0 && (

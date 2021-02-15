@@ -20,6 +20,7 @@ export const getCheckboxBoolean = (values: string, type: string) => {
     return [false, false, false, true];
   } else {
     const valuesArray = values.split(" ");
+    valuesArray.length = valuesArray.length - 1;
     if (valuesArray.length === 3) {
       return [false, false, false, true];
     } else {

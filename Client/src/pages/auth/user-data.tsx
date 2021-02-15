@@ -30,7 +30,6 @@ interface UserDataProps {}
 
 const UserData: FC<UserDataProps> = ({}) => {
   const router = useRouter();
-  const isEdit = useRef(router.query);
   const [addMoreDetail] = useAddMoreDetailMutation();
   const [showMeArray, setShowMeArray] = useState([false, false, false, false]);
   const [lookingForArray, setLookingForArray] = useState([
@@ -45,28 +44,24 @@ const UserData: FC<UserDataProps> = ({}) => {
 
   const { data } = useMeQuery();
   useEffect(() => {
-    if (isEdit.current && data?.me) {
+    if (data?.me) {
       setShowMeArray(getCheckboxBoolean(data.me.showMe as string, "showMe"));
       setLookingForArray(
         getCheckboxBoolean(data.me.lookingFor as string, "lookingFor")
       );
-      console.log(getCheckboxBoolean(data.me.showMe as string, "showMe"));
-      console.log(
-        getCheckboxBoolean(data.me.lookingFor as string, "lookingFor")
-      );
     }
-  }, [isEdit.current, data?.me]);
+  }, [data?.me]);
 
   return (
     <Formik
       initialValues={{
-        bio: isEdit && data?.me ? data.me.bio : "",
-        flair: isEdit && data?.me ? (data.me.flair as string) : "",
-        gender: isEdit && data?.me ? data.me.gender : "",
-        maxAge: isEdit && data?.me ? data.me.maxAge : 30,
-        minAge: isEdit && data?.me ? data.me.minAge : 18,
+        bio: data?.me ? data.me.bio : "",
+        flair: data?.me ? (data.me.flair as string) : "",
+        gender: data?.me ? data.me.gender : "",
+        maxAge: data?.me ? data.me.maxAge : 30,
+        minAge: data?.me ? data.me.minAge : 18,
         showMe: "all",
-        birthDate: isEdit && data?.me ? data.me.birthDate : "",
+        birthDate: data?.me ? data.me.birthDate : "",
         lookingFor: "all",
       }}
       onSubmit={async (values, { setErrors }) => {
@@ -120,7 +115,7 @@ const UserData: FC<UserDataProps> = ({}) => {
               color: "var(--text-primary)",
             }}
           >
-            Add Detail
+            {data?.me ? "Edit" : "Add"} Detail
           </h1>
           <Form>
             <InputField name="bio" type="text" label="Bio" isTextArea />
@@ -338,7 +333,7 @@ const UserData: FC<UserDataProps> = ({}) => {
               type="submit"
               width="100%"
             >
-              Add UserData
+              {data?.me ? "Edit" : "Add"} UserData
             </Button>
           </Form>
         </Wrapper>

@@ -19,7 +19,10 @@ import {
   useMeQuery,
 } from "../../generated/apollo-graphql";
 import { arrayToObject } from "../../utils";
-import { getCheckboxValue } from "../../utils/getCheckBoxValues";
+import {
+  getCheckboxValue,
+  getCheckboxBoolean,
+} from "../../utils/getCheckBoxValues";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
 
@@ -40,12 +43,19 @@ const UserData: FC<UserDataProps> = ({}) => {
   const [flairError, setFlairError] = useState("");
   const [ageError, setAgeError] = useState("");
 
-  useEffect(() => {
-    if (isEdit.current) {
-    }
-  }, [isEdit.current]);
-
   const { data } = useMeQuery();
+  useEffect(() => {
+    if (isEdit.current && data?.me) {
+      setShowMeArray(getCheckboxBoolean(data.me.showMe as string, "showMe"));
+      setLookingForArray(
+        getCheckboxBoolean(data.me.lookingFor as string, "lookingFor")
+      );
+      console.log(getCheckboxBoolean(data.me.showMe as string, "showMe"));
+      console.log(
+        getCheckboxBoolean(data.me.lookingFor as string, "lookingFor")
+      );
+    }
+  }, [isEdit.current, data?.me]);
 
   return (
     <Formik

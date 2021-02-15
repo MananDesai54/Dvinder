@@ -13,4 +13,5 @@ fragment RegularUser on User {
   maxAge
   githubId
   birthDate
+  lookingFor
 }

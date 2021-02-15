@@ -25,6 +25,10 @@ export const getCheckboxBoolean = (values: string, type: string) => {
     } else {
       const finalResult = [false, false, false, false];
       const valueToGetOf: string[] = type === "showMe" ? showMe : lookingFor;
+      valuesArray.forEach((value) => {
+        finalResult[valueToGetOf.indexOf(value)] = true;
+      });
+      return finalResult;
     }
   }
 };

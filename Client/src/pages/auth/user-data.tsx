@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import Flairs from "../../components/Flairs";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
@@ -26,7 +26,8 @@ import { withApolloClient } from "../../utils/withApollo";
 interface UserDataProps {}
 
 const UserData: FC<UserDataProps> = ({}) => {
-  // useIsAuth();
+  const router = useRouter();
+  const isEdit = useRef(router.query);
   const [addMoreDetail] = useAddMoreDetailMutation();
   const [showMeArray, setShowMeArray] = useState([false, false, false, false]);
   const [lookingForArray, setLookingForArray] = useState([
@@ -38,24 +39,28 @@ const UserData: FC<UserDataProps> = ({}) => {
   const [genderError, setGenderError] = useState("");
   const [flairError, setFlairError] = useState("");
   const [ageError, setAgeError] = useState("");
-  const router = useRouter();
+
+  useEffect(() => {
+    if (isEdit.current) {
+    }
+  }, [isEdit.current]);
 
   const { data } = useMeQuery();
 
   return (
     <Formik
       initialValues={{
-        bio: "",
-        flair: "",
-        gender: "",
-        maxAge: 30,
-        minAge: 18,
+        bio: isEdit && data?.me ? data.me.bio : "",
+        flair: isEdit && data?.me ? (data.me.flair as string) : "",
+        gender: isEdit && data?.me ? data.me.gender : "",
+        maxAge: isEdit && data?.me ? data.me.maxAge : 30,
+        minAge: isEdit && data?.me ? data.me.minAge : 18,
         showMe: "all",
-        birthDate: "",
+        birthDate: isEdit && data?.me ? data.me.birthDate : "",
         lookingFor: "all",
       }}
       onSubmit={async (values, { setErrors }) => {
-        if (+values.minAge > +values.maxAge) {
+        if (+(values!.minAge as any) > +(values!.maxAge as any)) {
           setAgeError("Please provide valid age range");
           setTimeout(() => {
             setAgeError("");
@@ -111,7 +116,7 @@ const UserData: FC<UserDataProps> = ({}) => {
             <InputField name="bio" type="text" label="Bio" isTextArea />
             <Box mt={6}>
               <Flairs
-                value={values.flair}
+                value={values.flair as string}
                 onChange={(value) => setFieldValue("flair", value)}
               />
               {flairError && !values.flair && (
@@ -126,7 +131,7 @@ const UserData: FC<UserDataProps> = ({}) => {
             </Box>
             <RadioGroup
               onChange={(nextValue) => setFieldValue("gender", nextValue)}
-              value={values.gender}
+              value={values.gender as string}
               mt={6}
             >
               <FormLabel fontSize="1.2rem" color="var(--white-color)">

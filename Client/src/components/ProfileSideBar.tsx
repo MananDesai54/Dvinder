@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Drawer,
   DrawerBody,
@@ -11,25 +12,21 @@ import {
   Flex,
   Image,
   Tab,
-  Table,
-  TableCaption,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Tbody,
-  Td,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
+  Text,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, Fragment, useEffect, useState } from "react";
+import { FaCodeBranch, FaEdit, FaGithub, FaStar } from "react-icons/fa";
 import { useMeQuery, useUserFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
-import FeedDisplay from "./FeedDisplay";
 
 interface ProfileSideBarProps {
   open: boolean;
@@ -139,13 +136,13 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
               >
                 <TabList>
                   <Tab color="rgba(255, 255, 255, 0.5)">Profile</Tab>
+                  <Tab color="rgba(255, 255, 255, 0.5)">Feeds</Tab>
                   <Tab color="rgba(255, 255, 255, 0.5)">Matches</Tab>
-                  <Tab color="rgba(255, 255, 255, 0.5)">Messages</Tab>
                 </TabList>
 
                 <TabPanels>
                   <TabPanel>
-                    <Box>
+                    <Box position="relative">
                       <Box mt="0.8rem" color="white">
                         <p
                           style={{
@@ -203,24 +200,87 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                           {data?.me?.gender}
                         </p>
                       </Box>
+                      <FaEdit
+                        size={30}
+                        style={{
+                          position: "absolute",
+                          right: 0,
+                          top: "-1rem",
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          router.push("/auth/user-data?edit=true");
+                        }}
+                      />
                     </Box>
-                    {feeds &&
-                      feeds.userFeeds.map(
-                        (feed) =>
-                          feed && (
-                            <FeedDisplay feed={feed as any} key={feed.id} />
-                          )
-                      )}
-                    {repos.length > 0 &&
-                      repos.map((repo: any, index) => (
-                        <p key={index}>{repo.name}</p>
-                      ))}
+
+                    {repos.length > 0 && (
+                      <Fragment>
+                        <p
+                          style={{
+                            color: "var(--white-color)",
+                            fontSize: "1.2rem",
+                            margin: "2rem 0 0",
+                            display: "flex",
+                          }}
+                        >
+                          <FaGithub size={30} />{" "}
+                          <span style={{ marginLeft: "0.5rem" }}>
+                            Popular Repos
+                          </span>
+                        </p>
+                        <Wrap mt={4}>
+                          {repos.map((repo: any, index) => (
+                            <WrapItem key={index} w="100%" mt={2}>
+                              <Box
+                                bg="white"
+                                style={{
+                                  padding: "0.5rem",
+                                  color: "#222",
+                                  borderRadius: "0.5rem",
+                                  width: "100%",
+                                  position: "relative",
+                                }}
+                              >
+                                <Flex position="absolute" right="10px">
+                                  <Flex mx={1} alignItems="center">
+                                    <FaStar size={18} />{" "}
+                                    <span>{repo.stargazers_count}</span>
+                                  </Flex>
+                                  <Flex mx={1} alignItems="center">
+                                    <FaCodeBranch size={18} />{" "}
+                                    <span>{repo.forks_count}</span>
+                                  </Flex>
+                                </Flex>
+                                <Link href={repo.html_url}>
+                                  <a
+                                    style={{
+                                      color: "var(--background-secondary)",
+                                      fontSize: "1.1rem",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {repo.name}
+                                  </a>
+                                </Link>
+                                <Text noOfLines={1}>{repo.description}</Text>
+                              </Box>
+                            </WrapItem>
+                          ))}
+                        </Wrap>
+                      </Fragment>
+                    )}
+                    <Flex mt={8} justifyContent="flex-end">
+                      <Button colorScheme="facebook">Logout</Button>
+                      <Button colorScheme="red">Delete Account</Button>
+                    </Flex>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>Feeds</p>
                   </TabPanel>
                   <TabPanel>
                     <p>Matches</p>
-                  </TabPanel>
-                  <TabPanel>
-                    <p>Messages</p>
                   </TabPanel>
                 </TabPanels>
               </Tabs>

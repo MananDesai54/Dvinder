@@ -10,6 +10,7 @@ import {
 import React, { Fragment, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
+import FeedDisplay from "../components/FeedDisplay";
 import Layout from "../components/Layout";
 import ProfileSideBar from "../components/ProfileSideBar";
 import UpdootSection from "../components/UpdootSection";
@@ -117,19 +118,7 @@ const Index = () => {
                   <UpdootSection feed={feed} />
                   <Box>
                     <Heading>{feed.title}</Heading> by {feed.creator.username}
-                    {feed.imageUrl && (
-                      <Image src={feed.imageUrl} alt={feed.title} />
-                    )}
-                    {feed.code && !isServer() && (
-                      <React.Suspense fallback={<Fragment></Fragment>}>
-                        <Editor
-                          language={(feed.language as string) || ""}
-                          theme={(feed.theme as string) || ""}
-                          value={feed.code || ""}
-                          readonly
-                        />
-                      </React.Suspense>
-                    )}
+                    <FeedDisplay feed={feed as any} />
                   </Box>
                 </Flex>
               )

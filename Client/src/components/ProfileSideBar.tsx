@@ -19,6 +19,7 @@ import {
   Tabs,
   Tbody,
   Td,
+  Tfoot,
   Th,
   Thead,
   Tr,
@@ -27,6 +28,8 @@ import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
 import { useMeQuery, useUserFeedsQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+import { getAge } from "../utils/getUserAge";
+import FeedDisplay from "./FeedDisplay";
 
 interface ProfileSideBarProps {
   open: boolean;
@@ -53,6 +56,18 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
     }
   }, [data?.me, open]);
 
+  const getUserAge = () => {
+    let array: any;
+    if (data?.me?.birthDate?.includes("/")) {
+      array = data?.me?.birthDate?.split("/");
+    } else if (data?.me?.birthDate?.includes("-")) {
+      array = data?.me?.birthDate?.split("-");
+    } else if (data?.me?.birthDate?.includes(".")) {
+      array = data?.me?.birthDate?.split(".");
+    }
+    return getAge(new Date(array[2], array[1], array[0]));
+  };
+
   useIsAuth();
 
   return (
@@ -69,24 +84,53 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
           </DrawerHeader>
           <DrawerBody>
             <Flex flexDirection="column" alignItems="center">
-              <Avatar
-                name={data?.me?.username}
-                src={data?.me?.profileUrl}
-                size="2xl"
-              />
+              <Box position="relative">
+                <Avatar
+                  name={data?.me?.username}
+                  src={data?.me?.profileUrl}
+                  size="2xl"
+                />
+                <Box
+                  position="absolute"
+                  bottom="2px"
+                  right="2px"
+                  borderRadius="50%"
+                  border="2px solid white"
+                  bg="#222"
+                  padding="3px"
+                >
+                  <Image
+                    src={`https://img.icons8.com/color/24/000000/${data?.me?.flair}`}
+                    alt={data?.me?.flair || "Image"}
+                  />
+                </Box>
+              </Box>
               <Flex
                 style={{
                   color: "var(--text-primary)",
                 }}
                 alignItems="center"
               >
-                <span>{data?.me?.username.toUpperCase()}, 20</span>
-                <Image
-                  src={`https://img.icons8.com/color/24/000000/${data?.me?.flair}`}
-                  alt={data?.me?.flair || "Image"}
-                />
+                <span>
+                  {data?.me?.username.toUpperCase()},{" "}
+                  {data?.me?.birthDate && getUserAge()}
+                </span>
               </Flex>
-              <Divider my={4} />
+              <p
+                style={{
+                  color: "var(--white-color)",
+                  fontSize: "1.2rem",
+                  margin: "1rem 0 0",
+                }}
+              >
+                {data?.me?.bio}
+              </p>
+              <Divider
+                my={4}
+                style={{
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                }}
+              />
               <Tabs
                 isFitted
                 variant="soft-rounded"
@@ -101,34 +145,71 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
 
                 <TabPanels>
                   <TabPanel>
-                    <Table
-                      variant="simple"
-                      colorScheme="linkedin"
-                      color="white"
-                    >
-                      <Thead></Thead>
-                      <Tbody>
-                        <Tr>
-                          <Td>Email</Td>
-                          <Td textAlign="right"> {data?.me?.email}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td>Bio</Td>
-                          <Td textAlign="right">{data?.me?.bio}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td>BirthDate</Td>
-                          <Td textAlign="right">{data?.me?.birthDate}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td>Gender</Td>
-                          <Td textAlign="right">{data?.me?.gender}</Td>
-                        </Tr>
-                      </Tbody>
-                    </Table>
+                    <Box>
+                      <Box mt="0.8rem" color="white">
+                        <p
+                          style={{
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            color: "rgba(255, 255, 255, 0.5)",
+                          }}
+                        >
+                          Email
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.1rem",
+                            borderBottom: "1px solid gray",
+                          }}
+                        >
+                          {data?.me?.email}
+                        </p>
+                      </Box>
+                      <Box mt="0.8rem" color="white">
+                        <p
+                          style={{
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            color: "rgba(255, 255, 255, 0.5)",
+                          }}
+                        >
+                          BirthDate
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.1rem",
+                            borderBottom: "1px solid gray",
+                          }}
+                        >
+                          {data?.me?.birthDate}
+                        </p>
+                      </Box>
+                      <Box mt="0.8rem" color="white">
+                        <p
+                          style={{
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            color: "rgba(255, 255, 255, 0.5)",
+                          }}
+                        >
+                          Gender
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.1rem",
+                            borderBottom: "1px solid gray",
+                          }}
+                        >
+                          {data?.me?.gender}
+                        </p>
+                      </Box>
+                    </Box>
                     {feeds &&
                       feeds.userFeeds.map(
-                        (feed) => feed && <p key={feed.id}>{feed.title}</p>
+                        (feed) =>
+                          feed && (
+                            <FeedDisplay feed={feed as any} key={feed.id} />
+                          )
                       )}
                     {repos.length > 0 &&
                       repos.map((repo: any, index) => (

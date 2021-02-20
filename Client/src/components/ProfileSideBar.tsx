@@ -23,10 +23,18 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, useEffect, useState } from "react";
-import { FaCodeBranch, FaEdit, FaGithub, FaStar } from "react-icons/fa";
-import { useMeQuery, useUserFeedsQuery } from "../generated/apollo-graphql";
+import { FaCodeBranch, FaGithub, FaStar } from "react-icons/fa";
+import {
+  useMeQuery,
+  useUserFeedsQuery,
+  useLogoutMutation,
+  MeQuery,
+  MeDocument,
+} from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
+import UserDetail from "./UserDetail";
+import UserProfile from "./UserProfile";
 
 interface ProfileSideBarProps {
   open: boolean;
@@ -37,6 +45,8 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
   const [repos, setRepos] = useState([]);
   const { data } = useMeQuery();
   const { data: feeds } = useUserFeedsQuery();
+  const [logout] = useLogoutMutation();
+
   const router = useRouter();
 
   useEffect(() => {
@@ -142,137 +152,7 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
 
                 <TabPanels>
                   <TabPanel>
-                    <Box position="relative">
-                      <Box mt="0.8rem" color="white">
-                        <p
-                          style={{
-                            fontSize: "0.8rem",
-                            fontWeight: "bold",
-                            color: "rgba(255, 255, 255, 0.5)",
-                          }}
-                        >
-                          Email
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.1rem",
-                            borderBottom: "1px solid gray",
-                          }}
-                        >
-                          {data?.me?.email}
-                        </p>
-                      </Box>
-                      <Box mt="0.8rem" color="white">
-                        <p
-                          style={{
-                            fontSize: "0.8rem",
-                            fontWeight: "bold",
-                            color: "rgba(255, 255, 255, 0.5)",
-                          }}
-                        >
-                          BirthDate
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.1rem",
-                            borderBottom: "1px solid gray",
-                          }}
-                        >
-                          {data?.me?.birthDate}
-                        </p>
-                      </Box>
-                      <Box mt="0.8rem" color="white">
-                        <p
-                          style={{
-                            fontSize: "0.8rem",
-                            fontWeight: "bold",
-                            color: "rgba(255, 255, 255, 0.5)",
-                          }}
-                        >
-                          Gender
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.1rem",
-                            borderBottom: "1px solid gray",
-                          }}
-                        >
-                          {data?.me?.gender}
-                        </p>
-                      </Box>
-                      <Button
-                        my={4}
-                        colorScheme="facebook"
-                        onClick={() => {
-                          router.push("/auth/user-data?edit=true");
-                        }}
-                      >
-                        Edit Profile
-                      </Button>
-                    </Box>
-
-                    {repos.length > 0 && (
-                      <Fragment>
-                        <p
-                          style={{
-                            color: "var(--white-color)",
-                            fontSize: "1.2rem",
-                            margin: "2rem 0 0",
-                            display: "flex",
-                          }}
-                        >
-                          <FaGithub size={30} />{" "}
-                          <span style={{ marginLeft: "0.5rem" }}>
-                            Popular Repos
-                          </span>
-                        </p>
-                        <Wrap mt={4}>
-                          {repos.map((repo: any, index) => (
-                            <WrapItem key={index} w="100%" mt={2}>
-                              <Box
-                                bg="white"
-                                style={{
-                                  padding: "0.5rem",
-                                  color: "#222",
-                                  borderRadius: "0.5rem",
-                                  width: "100%",
-                                  position: "relative",
-                                }}
-                              >
-                                <Flex position="absolute" right="10px">
-                                  <Flex mx={1} alignItems="center">
-                                    <FaStar size={18} />{" "}
-                                    <span>{repo.stargazers_count}</span>
-                                  </Flex>
-                                  <Flex mx={1} alignItems="center">
-                                    <FaCodeBranch size={18} />{" "}
-                                    <span>{repo.forks_count}</span>
-                                  </Flex>
-                                </Flex>
-                                <Link href={repo.html_url}>
-                                  <a
-                                    style={{
-                                      color: "var(--background-secondary)",
-                                      fontSize: "1.1rem",
-                                      fontWeight: 600,
-                                    }}
-                                  >
-                                    {repo.name}
-                                  </a>
-                                </Link>
-                                <Text noOfLines={1}>{repo.description}</Text>
-                              </Box>
-                            </WrapItem>
-                          ))}
-                        </Wrap>
-                      </Fragment>
-                    )}
-                    <Flex mt={8} justifyContent="flex-end">
-                      <Button mx={4} colorScheme="facebook">
-                        Logout
-                      </Button>
-                      <Button colorScheme="red">Delete Account</Button>
-                    </Flex>
+                    <UserProfile data={data} repos={repos} />
                   </TabPanel>
                   <TabPanel>
                     <p>Feeds</p>

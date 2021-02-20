@@ -9,7 +9,6 @@ import UpdootSection from "../components/UpdootSection";
 import { useFeedsQuery, useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { withApolloClient } from "../utils/withApollo";
-import SwipeCard from "react-tinder-card";
 
 /**
  * How SSR works
@@ -65,13 +64,6 @@ const Index = () => {
           setShowProfile(false);
         }}
       />
-      <SwipeCard
-        onSwipe={onSwipe}
-        onCardLeftScreen={() => onCardLeftScreen("fooBar")}
-        preventSwipe={["right", "left"]}
-      >
-        Hello World
-      </SwipeCard>
       <Button
         style={{
           background: "var(--background-secondary)",

@@ -20,7 +20,7 @@ export class Reaction {
   @Column()
   type!: "like" | "nope" | "superLike";
 
-  @ManyToOne(() => User, (user) => user.reactions)
+  @ManyToOne(() => User, (user) => user.reactions, { onDelete: "CASCADE" })
   user!: User;
 
   @Field(() => Int)

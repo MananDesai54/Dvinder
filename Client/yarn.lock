@@ -1127,12 +1127,24 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
+"@emotion/is-prop-valid@^0.8.2":
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-0.8.8.tgz#db28b1c4368a259b60a97311d6a952d4fd01ac1a"
+  integrity sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==
+  dependencies:
+    "@emotion/memoize" "0.7.4"
+
 "@emotion/is-prop-valid@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-1.0.0.tgz#1dbe82e52a12c065d416a702e2d106e552cde5be"
   integrity sha512-G5X0t7eR9pkhUvAY32QS3lToP9JyNF8It5CcmMvbWjmC9/Yq7IhevaKqxl+me2BKR93iTPiL/h3En1ZX/1G3PQ==
   dependencies:
     "@emotion/memoize" "^0.7.4"
+
+"@emotion/memoize@0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.4.tgz#19bf0f5af19149111c40d98bb0cf82119f5d9eeb"
+  integrity sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==
 
 "@emotion/memoize@^0.7.4", "@emotion/memoize@^0.7.5":
   version "0.7.5"
@@ -4084,6 +4096,24 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
+framer-motion@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-3.6.1.tgz#61daadd31f0b16d54e95c01ba87624c86c188de3"
+  integrity sha512-sq3p8pKRyX3yi97X+ihALE1D1En2FjgEdBGk1Ng8J8MdycYesNdBK06LN875amFZ38umcRFdqFG1GQ0BEJ8eFQ==
+  dependencies:
+    framesync "^5.0.0"
+    hey-listen "^1.0.8"
+    popmotion "^9.1.0"
+    style-value-types "^4.0.1"
+    tslib "^1.10.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framesync@5.0.0, framesync@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/framesync/-/framesync-5.0.0.tgz#7de8caedf53ac441118e79680f1beb7391c328b6"
+  integrity sha512-wd8t+JsQGisluSv1twiEeDv0aNGpavGb9q7xgIk9fGbcIWkNXF/KVtrjnOrCwBWJuiXxlJfNkcvGudsI32FxYA==
+
 from2@^2.1.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/from2/-/from2-2.3.0.tgz#8bfb5502bde4a4d36cfdeea007fcca21d7e382af"
@@ -4439,6 +4469,11 @@ he@1.2.0, he@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+hey-listen@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/hey-listen/-/hey-listen-1.0.8.tgz#8e59561ff724908de1aa924ed6ecc84a56a9aa68"
+  integrity sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -5973,11 +6008,6 @@ p-map@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-map/-/p-map-2.1.0.tgz#310928feef9c9ecc65b68b17693018a665cea175"
   integrity sha512-y3b8Kpd8OAN444hxfBbFfj1FY/RjtTd8tzYwhUqNYXx0fXx2iX4maP4Qr6qhIKbQXI02wTLAda4fYUbDagTUFw==
 
-p-sleep@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/p-sleep/-/p-sleep-1.1.0.tgz#a6c9333059b5103c3c0e46bcbba95a1f7969095b"
-  integrity sha512-bwP3GKZirBUYMtiUuBrheLUQdRXVeE/pmHOaLpNJzNfAD4b5AjDn6l823brXcQFade4G/g7GMNQ3KV86E8EaEw==
-
 p-try@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
@@ -6176,6 +6206,16 @@ pnp-webpack-plugin@1.6.4:
   integrity sha512-7Wjy+9E3WwLOEL30D+m8TSTF7qJJUJLONBnwQp0518siuMxUQUbgZwssaFX+QKlZkjHZcw/IpZCt/H0srrntSg==
   dependencies:
     ts-pnp "^1.1.6"
+
+popmotion@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/popmotion/-/popmotion-9.1.0.tgz#4360d06bd18ce8baa8f9284ecec7d55344af6325"
+  integrity sha512-+J7pzzBy5kk2qsP8ilowKs/CH+HoZa3kOGEBNCleCvsPXEF3nKHdfAR3SboMyPvdpIrofaT7ZIy/xWgz446Azw==
+  dependencies:
+    framesync "5.0.0"
+    hey-listen "^1.0.8"
+    style-value-types "^4.0.1"
+    tslib "^1.10.0"
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
@@ -6559,13 +6599,6 @@ react-style-singleton@^2.1.0:
     get-nonce "^1.0.0"
     invariant "^2.2.4"
     tslib "^1.0.0"
-
-react-tinder-card@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/react-tinder-card/-/react-tinder-card-1.3.1.tgz#6474c542d77481f296e6a8bc3f866b1d680aae6a"
-  integrity sha512-3W4ltSEz44KHqUbds38/dPPkPkSfYdyqVbB9SyV0Lg7juh/BjmIG+YGGrHgxTQhJ5t5RxXUDdIHQ9ewanV4iTg==
-  dependencies:
-    p-sleep "^1.1.0"
 
 react@^17.0.1:
   version "17.0.1"
@@ -7359,6 +7392,14 @@ style-loader@1.2.1:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^2.6.6"
+
+style-value-types@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/style-value-types/-/style-value-types-4.0.1.tgz#23f05dd03e8a850654defc22cf03ebac572aaa00"
+  integrity sha512-aOV/HHyynIyTmU27qfs0oAHhFde6BFIvV4+nMerE2MAPZMwYOeQk1/F3S6djxF2u4HdbiieCPs3ZzWsbNUoc9A==
+  dependencies:
+    hey-listen "^1.0.8"
+    tslib "^1.10.0"
 
 styled-jsx@3.3.2:
   version "3.3.2"

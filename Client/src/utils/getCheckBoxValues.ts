@@ -16,6 +16,9 @@ export const getCheckboxValue = (values: boolean[], type: string) => {
 };
 
 export const getCheckboxBoolean = (values: string, type: string) => {
+  if (!values) {
+    return [false, false, false, false];
+  }
   if (values === "all") {
     return [false, false, false, true];
   } else {

@@ -269,7 +269,7 @@ export class UserResolver {
           errors: [
             generateErrorResponse(
               "User",
-              "You have not registered with github yet"
+              "You have not registered with Github yet"
             ),
           ],
         };

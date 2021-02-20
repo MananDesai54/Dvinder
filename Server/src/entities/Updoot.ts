@@ -22,7 +22,7 @@ export class Updoot extends BaseEntity {
   userId!: number;
 
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.updoots)
+  @ManyToOne(() => User, (user) => user.updoots, { onDelete: "CASCADE" })
   user!: User;
 
   @Field(() => Int)
@@ -30,6 +30,6 @@ export class Updoot extends BaseEntity {
   feedId!: number;
 
   @Field(() => Feed)
-  @ManyToOne(() => Feed, (feed) => feed.updoots)
+  @ManyToOne(() => Feed, (feed) => feed.updoots, { onDelete: "CASCADE" })
   feed!: Feed;
 }

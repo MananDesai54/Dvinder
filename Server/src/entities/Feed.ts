@@ -20,7 +20,7 @@ export class Feed extends BaseEntity {
   id!: number;
 
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.feeds)
+  @ManyToOne(() => User, (user) => user.feeds, { onDelete: "CASCADE" })
   creator!: User;
 
   @OneToMany(() => Updoot, (updoot) => updoot.feed)

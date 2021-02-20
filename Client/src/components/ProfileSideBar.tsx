@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   Drawer,
   DrawerBody,
@@ -16,24 +15,12 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { FC, Fragment, useEffect, useState } from "react";
-import { FaCodeBranch, FaGithub, FaStar } from "react-icons/fa";
-import {
-  useMeQuery,
-  useUserFeedsQuery,
-  useLogoutMutation,
-  MeQuery,
-  MeDocument,
-} from "../generated/apollo-graphql";
+import React, { FC, useEffect, useState } from "react";
+import { useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
-import UserDetail from "./UserDetail";
+import FeedsDetail from "./FeedsDetail";
 import UserProfile from "./UserProfile";
 
 interface ProfileSideBarProps {
@@ -44,10 +31,6 @@ interface ProfileSideBarProps {
 const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
   const [repos, setRepos] = useState([]);
   const { data } = useMeQuery();
-  const { data: feeds } = useUserFeedsQuery();
-  const [logout] = useLogoutMutation();
-
-  const router = useRouter();
 
   useEffect(() => {
     if (open && data?.me && data.me.githubId) {
@@ -149,13 +132,12 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                   <Tab color="rgba(255, 255, 255, 0.5)">Feeds</Tab>
                   <Tab color="rgba(255, 255, 255, 0.5)">Matches</Tab>
                 </TabList>
-
                 <TabPanels>
                   <TabPanel>
                     <UserProfile data={data} repos={repos} />
                   </TabPanel>
                   <TabPanel>
-                    <p>Feeds</p>
+                    <FeedsDetail />
                   </TabPanel>
                   <TabPanel>
                     <p>Matches</p>

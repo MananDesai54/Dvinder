@@ -38,14 +38,6 @@ const Index = () => {
     skip: !isAuth,
   });
 
-  const onSwipe = (direction: any) => {
-    console.log("You swiped: " + direction);
-  };
-
-  const onCardLeftScreen = (myIdentifier: any) => {
-    console.log(myIdentifier + " left the screen");
-  };
-
   if (!loading && !data) {
     return <p>{error?.message}</p>;
   }

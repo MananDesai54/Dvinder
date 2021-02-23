@@ -1,5 +1,5 @@
 # Dvinder
-**_Make a better community_**.
+**_Make a better community._**.
 
 **Tinder** for **Developers**. Make **Friends**, find **love**, find **project** partner. Share **codes**, project ideas, **memes** and more.
 

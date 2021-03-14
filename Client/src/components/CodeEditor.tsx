@@ -127,7 +127,7 @@ const AceEditor: FC<EditorProps> = (props) => {
         lineNumbers: true,
         lineWrapping: true,
         spellCheck: true,
-        autofocus: true,
+        autofocus: !props.readonly,
         readonly: !!props.readonly,
       }}
       onChange={(editor, data, value) => {

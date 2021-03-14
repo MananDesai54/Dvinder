@@ -6,10 +6,7 @@ import FeedDisplay from "./FeedDisplay";
 interface FeedsDetailProps {}
 
 const FeedsDetail: FC<FeedsDetailProps> = ({}) => {
-  const { data } = useUserFeedsQuery({
-    notifyOnNetworkStatusChange: true,
-  });
-  console.log(data);
+  const { data } = useUserFeedsQuery();
 
   return (
     <Fragment>

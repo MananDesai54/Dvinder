@@ -30,19 +30,31 @@ interface ProfileSideBarProps {
 
 const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
   const [repos, setRepos] = useState([]);
+  const [fetchingRepos, setFetchingRepos] = useState(false);
   const { data } = useMeQuery();
 
   useEffect(() => {
     if (open && data?.me && data.me.githubId) {
+      setFetchingRepos(true);
       fetch(`https://api.github.com/users/${data.me.username}/repos`)
         .then((res) => res.json())
         .then((data) => {
           const sorted = data
-            .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
-            .slice(0, 6);
+            .sort(
+              (a: any, b: any) =>
+                b.stargazers_count +
+                b.forks_count -
+                (a.stargazers_count + a.forks_count)
+            )
+            .slice(0, 10);
           setRepos(sorted);
         })
-        .catch((error) => console.log(error.message));
+        .catch((error) => {
+          console.log(error.message);
+        })
+        .finally(() => {
+          setFetchingRepos(false);
+        });
     }
   }, [data?.me, open]);
 
@@ -134,7 +146,11 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                 </TabList>
                 <TabPanels>
                   <TabPanel>
-                    <UserProfile data={data} repos={repos} />
+                    <UserProfile
+                      data={data}
+                      repos={repos}
+                      fetchingRepos={fetchingRepos}
+                    />
                   </TabPanel>
                   <TabPanel>
                     <FeedsDetail />

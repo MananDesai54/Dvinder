@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, Spinner } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment } from "react";
@@ -14,9 +14,10 @@ import UserDetail from "./UserDetail";
 interface UserProfileProps {
   data: MeQuery | undefined;
   repos: any[];
+  fetchingRepos: boolean;
 }
 
-const UserProfile: FC<UserProfileProps> = ({ data, repos }) => {
+const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
   const router = useRouter();
   const [logout] = useLogoutMutation();
   const [deleteUser, { error }] = useDeleteUserMutation();
@@ -37,38 +38,49 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos }) => {
           Edit Profile
         </Button>
       </Box>
-      {repos.length > 0 && (
-        <Fragment>
-          <p
-            style={{
-              color: "var(--white-color)",
-              fontSize: "1.2rem",
-              margin: "2rem 0 0",
-              display: "flex",
-            }}
-          >
-            <FaGithub size={30} />{" "}
-            <span style={{ marginLeft: "0.5rem" }}>Popular Repos</span>
-          </p>
-          <Wrap mt={4}>
-            {repos.map((repo: any, index: number) => (
-              <WrapItem key={index} w="100%" mt={2}>
+      {fetchingRepos ? (
+        <Flex justifyContent="center">
+          <Spinner size="lg" color="white" mx="auto" />
+        </Flex>
+      ) : (
+        repos.length > 0 && (
+          <Fragment>
+            <p
+              style={{
+                color: "var(--white-color)",
+                fontSize: "1.2rem",
+                margin: "2rem 0 0",
+                display: "flex",
+              }}
+            >
+              <FaGithub size={30} />{" "}
+              <span style={{ marginLeft: "0.5rem" }}>Popular Repos</span>
+            </p>
+            <Flex mt={4} flexWrap="wrap">
+              {repos.map((repo: any, index: number) => (
                 <Box
                   bg="white"
+                  key={index}
+                  mb={2}
+                  mx="1%"
                   style={{
                     padding: "0.5rem",
                     color: "#222",
                     borderRadius: "0.5rem",
-                    width: "100%",
+                    width: "48%",
                     position: "relative",
                   }}
                 >
-                  <Flex position="absolute" right="10px">
-                    <Flex mx={1} alignItems="center">
-                      <FaStar size={18} /> <span>{repo.stargazers_count}</span>
+                  <Flex position="absolute" right="10px" top="10px">
+                    <Flex alignItems="center">
+                      <FaStar size={12} />{" "}
+                      <span style={{ fontSize: 12 }}>
+                        {repo.stargazers_count}
+                      </span>
                     </Flex>
-                    <Flex mx={1} alignItems="center">
-                      <FaCodeBranch size={18} /> <span>{repo.forks_count}</span>
+                    <Flex ml={0.5} alignItems="center">
+                      <FaCodeBranch size={12} />{" "}
+                      <span style={{ fontSize: 12 }}>{repo.forks_count}</span>
                     </Flex>
                   </Flex>
                   <Link href={repo.html_url}>
@@ -79,15 +91,17 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos }) => {
                         fontWeight: 600,
                       }}
                     >
-                      {repo.name}
+                      <Text w="80%" noOfLines={1}>
+                        {repo.name}
+                      </Text>
                     </a>
                   </Link>
-                  <Text noOfLines={1}>{repo.description}</Text>
+                  <Text noOfLines={1}>{repo.description || repo.name}</Text>
                 </Box>
-              </WrapItem>
-            ))}
-          </Wrap>
-        </Fragment>
+              ))}
+            </Flex>
+          </Fragment>
+        )
       )}
       <Flex mt={8} justifyContent="flex-end">
         <Button

@@ -20,7 +20,6 @@ import React, { FC, useEffect, useState } from "react";
 import { useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
-import FeedsDetail from "./FeedsDetail";
 import UserProfile from "./UserProfile";
 
 interface ProfileSideBarProps {
@@ -141,7 +140,6 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
               >
                 <TabList>
                   <Tab color="rgba(255, 255, 255, 0.5)">Profile</Tab>
-                  <Tab color="rgba(255, 255, 255, 0.5)">Feeds</Tab>
                   <Tab color="rgba(255, 255, 255, 0.5)">Matches</Tab>
                 </TabList>
                 <TabPanels>
@@ -151,9 +149,6 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                       repos={repos}
                       fetchingRepos={fetchingRepos}
                     />
-                  </TabPanel>
-                  <TabPanel>
-                    <FeedsDetail />
                   </TabPanel>
                   <TabPanel>
                     <p>Matches</p>

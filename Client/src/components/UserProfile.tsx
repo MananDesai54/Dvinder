@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Text, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  SkeletonText,
+  ButtonGroup,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment } from "react";
@@ -21,6 +29,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
   const router = useRouter();
   const [logout] = useLogoutMutation();
   const [deleteUser, { error }] = useDeleteUserMutation();
+  const [isLessThan700] = useMediaQuery("(max-width: 700px)");
 
   return (
     <Fragment>
@@ -28,20 +37,35 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
         <UserDetail value={data?.me?.email} title="Email" />
         <UserDetail value={data?.me?.birthDate} title="BirthDate" />
         <UserDetail value={data?.me?.gender} title="Gender" />
-        <Button
-          my={4}
-          colorScheme="facebook"
-          onClick={() => {
-            router.push("/auth/user-data?edit=true");
-          }}
-        >
-          Edit Profile
-        </Button>
+        <UserDetail value={data?.me?.showMe} title="Show Me" />
+        <UserDetail value={data?.me?.lookingFor} title="Looking For" />
+        <UserDetail
+          value={data?.me?.minAge + "-" + data?.me?.maxAge}
+          title="Age Range"
+        />
+        <ButtonGroup my={4}>
+          <Button
+            colorScheme="facebook"
+            onClick={() => {
+              router.push("/my-feeds");
+            }}
+          >
+            My Feeds
+          </Button>
+          <Button
+            colorScheme="facebook"
+            onClick={() => {
+              router.push("/auth/user-data?edit=true");
+            }}
+          >
+            Edit Profile
+          </Button>
+        </ButtonGroup>
       </Box>
       {fetchingRepos ? (
-        <Flex justifyContent="center">
-          <Spinner size="lg" color="white" mx="auto" />
-        </Flex>
+        <Box padding="6" boxShadow="lg" bg="white" borderRadius="0.5rem">
+          <SkeletonText noOfLines={2} spacing="4" />
+        </Box>
       ) : (
         repos.length > 0 && (
           <Fragment>
@@ -67,7 +91,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
                     padding: "0.5rem",
                     color: "#222",
                     borderRadius: "0.5rem",
-                    width: "48%",
+                    width: isLessThan700 ? "100%" : "48%",
                     position: "relative",
                   }}
                 >
@@ -78,7 +102,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
                         {repo.stargazers_count}
                       </span>
                     </Flex>
-                    <Flex ml={0.5} alignItems="center">
+                    <Flex ml={1} alignItems="center">
                       <FaCodeBranch size={12} />{" "}
                       <span style={{ fontSize: 12 }}>{repo.forks_count}</span>
                     </Flex>

@@ -60,5 +60,5 @@ $ git clone https://github.com/MananDesai54/Dvinder.git
 $ cd server
 $ yarn install
 $ yarn watch
-$ yarn start
+$ yarn dev
 ```

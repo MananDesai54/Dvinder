@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Drawer,
   DrawerBody,
@@ -126,6 +127,9 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
               >
                 {data?.me?.bio}
               </p>
+              {!data?.me?.githubId && (
+                <Button colorScheme="facebook">Connect with Github</Button>
+              )}
               <Divider
                 my={4}
                 style={{

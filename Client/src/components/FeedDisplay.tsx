@@ -56,12 +56,9 @@ const FeedDisplay: FC<FeedDisplayProps> = ({ feed, isFeedsPage }) => {
           justifyContent="center"
           alignItems="center"
           p={4}
-          height="100%"
-          width="100%"
           style={{
             background: color.current,
           }}
-          position="relative"
         >
           <Box
             w="100%"

@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType, Float } from "type-graphql";
 import {
   BaseEntity,
   Column,
@@ -86,6 +86,14 @@ export class User extends BaseEntity {
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   birthDate!: String;
+
+  @Field(() => Float, { nullable: false })
+  @Column({ type: "float" })
+  latitude!: number;
+
+  @Field(() => Float, { nullable: false })
+  @Column({ type: "float" })
+  longitude!: number;
 
   @Field(() => String)
   @CreateDateColumn()

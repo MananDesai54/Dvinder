@@ -43,7 +43,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
           value={data?.me?.minAge + "-" + data?.me?.maxAge}
           title="Age Range"
         />
-        <ButtonGroup my={4}>
+        <ButtonGroup my={4} flexWrap="wrap">
           <Button
             colorScheme="facebook"
             onClick={() => {

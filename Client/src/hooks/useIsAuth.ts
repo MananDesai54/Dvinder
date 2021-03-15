@@ -7,10 +7,12 @@ export const useIsAuth = () => {
   const { data, loading } = useMeQuery();
   const router = useRouter();
   useEffect(() => {
-    if (router.pathname.includes("register")) {
-      return;
-    }
-    if (!data?.me && !loading && !isServer()) {
+    if (
+      !data?.me &&
+      !loading &&
+      !isServer() &&
+      !router.pathname.includes("register")
+    ) {
       console.log("I 'm here");
       router.replace(`/auth/login?next=${router.pathname}`);
     }

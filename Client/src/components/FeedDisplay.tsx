@@ -6,7 +6,7 @@ import {
   SlideFade,
   Text,
 } from "@chakra-ui/react";
-import React, { FC, Fragment, useState } from "react";
+import React, { FC, Fragment, useRef, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { Feed } from "../generated/apollo-graphql";
 import { isServer } from "../utils";
@@ -14,10 +14,21 @@ const Editor = React.lazy(() => import("./CodeEditor"));
 
 interface FeedDisplayProps {
   feed: Feed;
+  isFeedsPage?: boolean;
 }
 
-const FeedDisplay: FC<FeedDisplayProps> = ({ feed }) => {
+const colors = [
+  "#17191A",
+  "#F8B600",
+  "#A5B2BC",
+  "#E3D8C1",
+  "#FF5F56",
+  "#27C93F",
+];
+
+const FeedDisplay: FC<FeedDisplayProps> = ({ feed, isFeedsPage }) => {
   const [show, setShow] = useState(false);
+  const color = useRef(colors[Math.floor(Math.random() * colors.length)]);
 
   return (
     <Box
@@ -48,40 +59,62 @@ const FeedDisplay: FC<FeedDisplayProps> = ({ feed }) => {
           height="100%"
           width="100%"
           style={{
-            background: "rgb(167,176,217)",
-            backgroundImage:
-              "linear-gradient(120deg, rgba(76,99,201,1) 0%, rgba(167,176,217,1) 100%)",
+            background: color.current,
           }}
           position="relative"
         >
           <Box
             w="100%"
+            minHeight="80%"
             style={{
-              backgroundImage:
-                "linear-gradient(120deg, rgba(255,255, 255, .5) 0%, rgba(255,255, 255, .3) 100%)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "1rem",
+              background: "#2A2734",
+              borderRadius: "5px",
               padding: "0.5rem",
-              boxShadow: "0 10px 10px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0 10px 10px rgba(0, 0, 0, 0.3)",
               overflow: "hidden",
             }}
           >
+            <Flex>
+              <Box
+                w="10px"
+                h="10px"
+                borderRadius="10px"
+                backgroundColor="#ff5f56"
+              />
+              <Box
+                w="10px"
+                h="10px"
+                mx={1}
+                borderRadius="10px"
+                backgroundColor="#F8B600"
+              />
+              <Box
+                w="10px"
+                h="10px"
+                borderRadius="10px"
+                backgroundColor="#27C93F"
+              />
+            </Flex>
             <Text
               fontSize="1.2rem"
               fontWeight="bold"
-              textAlign="center"
               textOverflow="ellipsis"
+              color="var(--white-color)"
+              borderBottom="1px solid var(--white-color)"
+              my={2}
+              noOfLines={1}
             >
-              Project Idea
+              Project Idea - {feed.title}
             </Text>
-            <Text textAlign="center" textOverflow="ellipsis">
+            <Text color="var(--white-color)" textOverflow="ellipsis">
+              {"   - "}
               {feed.projectIdea}
             </Text>
           </Box>
         </Flex>
       )}
       <SlideFade
-        in={show}
+        in={show && !isFeedsPage}
         style={{
           position: "absolute",
           top: 0,
@@ -89,7 +122,7 @@ const FeedDisplay: FC<FeedDisplayProps> = ({ feed }) => {
           height: "100%",
           width: "100%",
           background: "rgba(0, 0, 0, 0.8)",
-          zIndex: 10000000000,
+          zIndex: !isFeedsPage ? 100 : -1,
         }}
       >
         <Flex height="100%" justifyContent="space-evenly" alignItems="center">

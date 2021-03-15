@@ -2,8 +2,7 @@ import { Box, Button, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-// import Image from 'next/image';
-import { FC } from "react";
+import { FC, useState } from "react";
 import GitHubLogin from "react-github-login";
 import { FaGithub } from "react-icons/fa";
 import InputField from "../../components/InputField";
@@ -16,7 +15,6 @@ import {
 import { handleAuthAndError, isServer } from "../../utils";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
-import { useIsAuth } from "../../hooks/useIsAuth";
 
 interface LoginProps {}
 
@@ -24,6 +22,7 @@ const Login: FC<LoginProps> = ({}) => {
   const [login] = useLoginMutation();
   const [loginWithGithub] = useLoginWithGithubMutation();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data } = useMeQuery();
 
@@ -78,7 +77,7 @@ const Login: FC<LoginProps> = ({}) => {
               </NextLink>
             </Box>
             <Button
-              isLoading={isSubmitting}
+              isLoading={isSubmitting || isLoading}
               my={4}
               style={{
                 background: "var(--background-primary)",
@@ -128,14 +127,18 @@ const Login: FC<LoginProps> = ({}) => {
           <GitHubLogin
             clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
             onSuccess={async (response: any) => {
+              setIsLoading(true);
               const responseData = await loginWithGithub({
                 variables: { code: response.code },
                 update: (cache, { data }) =>
                   updateUserDataInCache(cache, data?.loginWithGithub),
               });
-              console.log(responseData);
+              setIsLoading(false);
             }}
-            onFailure={(response: any) => console.log(response)}
+            onFailure={(response: any) => {
+              console.log(response);
+              setIsLoading(false);
+            }}
             redirectUri=""
             scope="user:email"
           >

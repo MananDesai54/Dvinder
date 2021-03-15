@@ -133,7 +133,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
           colorScheme="facebook"
           onClick={async () => {
             await logout({
-              update: (cache, { data }) => {
+              update: (cache) => {
                 cache.writeQuery<MeQuery>({
                   query: MeDocument,
                   data: {
@@ -151,7 +151,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
           onClick={async () => {
             await deleteUser({
               variables: { id: data?.me?.id as number },
-              update: (cache, { data }) => {
+              update: (cache) => {
                 cache.writeQuery<MeQuery>({
                   query: MeDocument,
                   data: {

@@ -10,6 +10,7 @@ import {
   Fade,
   Flex,
   ScaleFade,
+  useToast,
 } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { useRouter } from "next/router";
@@ -42,8 +43,7 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
   const imageRef = useRef<HTMLImageElement>();
 
   const [createFeed, { loading }] = useCreateFeedMutation();
-  const router = useRouter();
-
+  const toast = useToast();
   useIsAuth();
 
   return (
@@ -81,7 +81,6 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                       }
                     },
                   });
-                  console.log(response);
                   if (response.data?.createFeed.feed) {
                     setFile(null);
                     setImageSrc(null);
@@ -89,6 +88,13 @@ const CreateFeed: FC<CreateFeedProps> = ({ open, onClose }) => {
                     setFieldValue("projectIdea", "");
                     setFieldValue("code", "");
                     onClose();
+                    toast({
+                      title: "Success",
+                      description: "Feed has been created successfully",
+                      status: "success",
+                      duration: 5000,
+                      isClosable: true,
+                    });
                     return;
                   }
                   if (response.data?.createFeed.errors) {

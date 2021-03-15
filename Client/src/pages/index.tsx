@@ -108,7 +108,7 @@ const Index = () => {
                   <UpdootSection feed={feed} />
                   <Box>
                     <Heading>{feed.title}</Heading> by {feed.creator.username}
-                    <FeedDisplay feed={feed as any} />
+                    <FeedDisplay feed={feed as any} isFeedsPage />
                   </Box>
                 </Flex>
               )

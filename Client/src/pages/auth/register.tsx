@@ -6,6 +6,7 @@ import {
   FormLabel,
   Input,
   Link,
+  useToast,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
@@ -21,7 +22,7 @@ import {
   useRegisterWithGithubMutation,
 } from "../../generated/apollo-graphql";
 import { useIsAuth } from "../../hooks/useIsAuth";
-import { handleAuthAndError } from "../../utils";
+import { arrayToObject } from "../../utils";
 import { updateUserDataInCache } from "../../utils/updateUserDataInCache";
 import { withApolloClient } from "../../utils/withApollo";
 
@@ -36,9 +37,12 @@ const Register: FC<registerProps> = ({}) => {
   const [password, setPassword] = useState("");
   const [reEnterPassword, setReEnterPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingPassword, setIsCreatingPassword] = useState(false);
 
   const router = useRouter();
   const isAuth = useIsAuth();
+  const toast = useToast();
 
   useEffect(() => {
     if (isAuth) {
@@ -56,13 +60,13 @@ const Register: FC<registerProps> = ({}) => {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            console.log(password, reEnterPassword);
             if (password !== reEnterPassword) {
               setError("Passwords need to be same");
               setTimeout(() => {
                 setError("");
               }, 3000);
             } else {
+              setIsCreatingPassword(true);
               const response = await addPassword({
                 variables: { password },
                 update: (cache, { data }) =>
@@ -73,6 +77,7 @@ const Register: FC<registerProps> = ({}) => {
               } else {
                 setError(response.data!.addOrUpdatePassword.message);
               }
+              setIsCreatingPassword(false);
             }
           }}
         >
@@ -130,6 +135,7 @@ const Register: FC<registerProps> = ({}) => {
           )}
 
           <Button
+            isLoading={isCreatingPassword}
             type="submit"
             my={4}
             style={{
@@ -146,14 +152,24 @@ const Register: FC<registerProps> = ({}) => {
         <Fragment>
           <Formik
             initialValues={{ username: "", password: "", email: "" }}
-            onSubmit={async (values, errors) => {
-              // const response = await register(values);
+            onSubmit={async (values, { setErrors }) => {
               const response = await register({
                 variables: values,
                 update: (cache, { data }) =>
                   updateUserDataInCache(cache, data?.registerUser),
               });
-              handleAuthAndError(errors, router, response.data?.registerUser);
+              if (response.data?.registerUser.errors) {
+                setErrors(arrayToObject(response.data.registerUser.errors));
+              } else if (response.data?.registerUser.user) {
+                toast({
+                  title: "Password created.",
+                  description: "Account password has been created.",
+                  status: "success",
+                  duration: 5000,
+                  isClosable: true,
+                });
+                setDoneAddPassword(true);
+              }
             }}
           >
             {({ isSubmitting }) => (
@@ -181,7 +197,7 @@ const Register: FC<registerProps> = ({}) => {
                     />
                   </Box>
                   <Button
-                    isLoading={isSubmitting}
+                    isLoading={isSubmitting || isLoading}
                     mt={10}
                     style={{
                       background: "var(--background-primary)",
@@ -231,6 +247,7 @@ const Register: FC<registerProps> = ({}) => {
                 <GitHubLogin
                   clientId={process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}
                   onSuccess={async (response: any) => {
+                    setIsLoading(true);
                     const responseData = await registerWithGithub({
                       variables: { code: response.code },
                       update: (cache, { data }) =>
@@ -244,9 +261,26 @@ const Register: FC<registerProps> = ({}) => {
                         setDoneRegistration(true);
                       }
                     }
-                    console.log(responseData);
+                    toast({
+                      title: "Account created.",
+                      description: "We've created your account for you.",
+                      status: "success",
+                      duration: 5000,
+                      isClosable: true,
+                    });
+                    setIsLoading(false);
                   }}
-                  onFailure={(response: any) => console.log(response)}
+                  onFailure={(response: any) => {
+                    console.log(response);
+                    toast({
+                      title: "Something went wrong",
+                      description: "Please try again with github",
+                      status: "error",
+                      duration: 5000,
+                      isClosable: true,
+                    });
+                    setIsLoading(false);
+                  }}
                   redirectUri=""
                   scope="user:email"
                 >

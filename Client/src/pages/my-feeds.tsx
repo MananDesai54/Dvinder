@@ -83,7 +83,7 @@ const MyFeeds: FC<MyFeedsProps> = ({}) => {
               key={feed.id}
               m={isLessThan700 ? 2 : 4}
               height={isLessThan700 ? "20vh" : "35vh"}
-              borderRadius={"1rem"}
+              borderRadius={"5px"}
               overflow="hidden"
             >
               <FeedDisplay feed={feed as Feed} />

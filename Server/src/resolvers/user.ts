@@ -13,6 +13,7 @@ import {
   ErrorSuccessResponse,
   MoreUserData,
   MyContext,
+  PlaceSearchResult,
   UserData,
   UserResponse,
   // ValidationField,
@@ -538,27 +539,37 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async deleteUser(@Arg("id") id: number): Promise<boolean> {
+  async deleteUser(
+    @Arg("id") id: number,
+    { res }: MyContext
+  ): Promise<boolean> {
     try {
       await User.delete(id);
+      res.clearCookie(process.env.COOKIE_NAME);
       return true;
     } catch (error) {
       return false;
     }
   }
 
-  @Query(() => String)
+  @Mutation(() => PlaceSearchResult)
   async placeSearchAutoCorrect(
     @Arg("keyword") keyword: string
-  ): Promise<string> {
+  ): Promise<PlaceSearchResult> {
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=${process.env.GOOGLE_API_KEY}&input=${keyword}`
       );
       const data = await response.json();
-      return JSON.stringify(data);
+      return {
+        status: data.status,
+        predictions: data.predictions,
+      };
     } catch (error) {
-      return error.message;
+      return {
+        status: "error",
+        predictions: [],
+      };
     }
   }
 }

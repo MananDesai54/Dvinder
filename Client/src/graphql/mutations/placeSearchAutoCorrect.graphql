@@ -1,0 +1,3 @@
+mutation PlaceSearchAutoCorrect($keyword: String!){
+  placeSearchAutoCorrect(keyword: $keyword)
+}

@@ -22,6 +22,7 @@ import Wrapper from "../../components/Wrapper";
 import {
   useAddMoreDetailMutation,
   useMeQuery,
+  usePlaceSearchAutoCorrectMutation,
 } from "../../generated/apollo-graphql";
 import { arrayToObject } from "../../utils";
 import {
@@ -46,10 +47,11 @@ const UserData: FC<UserDataProps> = ({}) => {
   const [genderError, setGenderError] = useState("");
   const [flairError, setFlairError] = useState("");
   const [ageError, setAgeError] = useState("");
-  const [location, setLocation] = useState("");
-  const locationRef = useRef<HTMLInputElement | undefined>();
-
+  const [address, setAddress] = useState("");
+  const addressRef = useRef<HTMLInputElement | undefined>();
   const { data } = useMeQuery();
+  const [placeSearch] = usePlaceSearchAutoCorrectMutation();
+
   useEffect(() => {
     if (data?.me) {
       setShowMeArray(getCheckboxBoolean(data.me.showMe as string, "showMe"));
@@ -61,19 +63,15 @@ const UserData: FC<UserDataProps> = ({}) => {
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
-      if (location === locationRef.current?.value && location !== "") {
-        console.log(location);
+      if (address === addressRef.current?.value && address !== "") {
         try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&input=${location}`,
-            {
-              headers: {
-                "Access-Control-Allow-Origin": "*",
-              },
-            }
-          );
-          const data = await response.json();
-          console.log(data);
+          console.log(address);
+          const response = await placeSearch({
+            variables: {
+              keyword: address,
+            },
+          });
+          console.log(JSON.parse(response));
         } catch (error) {
           console.log(error.message);
         }
@@ -82,7 +80,7 @@ const UserData: FC<UserDataProps> = ({}) => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [location]);
+  }, [address]);
 
   return (
     <Formik
@@ -111,6 +109,7 @@ const UserData: FC<UserDataProps> = ({}) => {
             ...values,
             showMe: showMeValue,
             lookingFor: lookingForValue,
+            address,
           },
           update: (cache, { data }) =>
             updateUserDataInCache(cache, data?.addMoreDetail),
@@ -161,16 +160,16 @@ const UserData: FC<UserDataProps> = ({}) => {
           <Form>
             <InputField name="bio" type="text" label="Bio" isTextArea />
             <FormControl mt={4}>
-              <FormLabel fontSize="1.2rem" color="white" htmlFor="location">
-                {"Location"}
+              <FormLabel fontSize="1.2rem" color="white" htmlFor="address">
+                {"Address"}
               </FormLabel>
               <Input
-                ref={locationRef as any}
-                name="location"
-                type="location"
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                ref={addressRef as any}
+                name="address"
+                type="text"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 style={{
                   background: "white",
                 }}

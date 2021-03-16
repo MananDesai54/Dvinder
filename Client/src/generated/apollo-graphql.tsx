@@ -44,7 +44,7 @@ export type User = {
   feeds: Array<Feed>;
   reactions: Array<Reaction>;
   profileUrl: Scalars['String'];
-  githubId: Scalars['String'];
+  githubId?: Maybe<Scalars['String']>;
   bio?: Maybe<Scalars['String']>;
   flair?: Maybe<Scalars['String']>;
   gender?: Maybe<Scalars['String']>;
@@ -54,6 +54,9 @@ export type User = {
   maxAge?: Maybe<Scalars['Int']>;
   notificationSubscription?: Maybe<Scalars['String']>;
   birthDate?: Maybe<Scalars['String']>;
+  latitude?: Maybe<Scalars['Float']>;
+  longitude?: Maybe<Scalars['Float']>;
+  address?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -105,6 +108,7 @@ export type Mutation = {
   changePassword?: Maybe<UserResponse>;
   updateUser?: Maybe<User>;
   deleteUser: Scalars['Boolean'];
+  placeSearchAutoCorrect: Scalars['String'];
   createFeed: FeedResponse;
   updateFeed: FeedResponse;
   deleteFeed: Scalars['Boolean'];
@@ -167,6 +171,11 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationPlaceSearchAutoCorrectArgs = {
+  keyword: Scalars['String'];
+};
+
+
 export type MutationCreateFeedArgs = {
   file?: Maybe<Scalars['Upload']>;
   feedData: FeedData;
@@ -205,7 +214,7 @@ export type ErrorResponse = {
 export type UserData = {
   email: Scalars['String'];
   password: Scalars['String'];
-  username?: Maybe<Scalars['String']>;
+  username: Scalars['String'];
 };
 
 export type MoreUserData = {
@@ -217,6 +226,7 @@ export type MoreUserData = {
   maxAge?: Maybe<Scalars['Int']>;
   birthDate?: Maybe<Scalars['String']>;
   lookingFor?: Maybe<Scalars['String']>;
+  address?: Maybe<Scalars['String']>;
 };
 
 export type ErrorSuccessResponse = {
@@ -301,6 +311,7 @@ export type AddMoreDetailMutationVariables = Exact<{
   showMe?: Maybe<Scalars['String']>;
   birthDate?: Maybe<Scalars['String']>;
   lookingFor?: Maybe<Scalars['String']>;
+  address?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -419,6 +430,7 @@ export type LoginWithGithubMutation = (
   { __typename?: 'Mutation' }
   & { loginWithGithub: (
     { __typename?: 'UserResponse' }
+    & Pick<UserResponse, 'success'>
     & RegularUserResponseFragment
   ) }
 );
@@ -429,6 +441,16 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'logout'>
+);
+
+export type PlaceSearchAutoCorrectMutationVariables = Exact<{
+  keyword: Scalars['String'];
+}>;
+
+
+export type PlaceSearchAutoCorrectMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'placeSearchAutoCorrect'>
 );
 
 export type RegisterMutationVariables = Exact<{
@@ -590,9 +612,9 @@ export const RegularUserResponseFragmentDoc = gql`
     ${RegularUserFragmentDoc}
 ${RegularErrorFragmentDoc}`;
 export const AddMoreDetailDocument = gql`
-    mutation AddMoreDetail($bio: String, $flair: String, $gender: String, $maxAge: Int, $minAge: Int, $showMe: String, $birthDate: String, $lookingFor: String) {
+    mutation AddMoreDetail($bio: String, $flair: String, $gender: String, $maxAge: Int, $minAge: Int, $showMe: String, $birthDate: String, $lookingFor: String, $address: String) {
   addMoreDetail(
-    moreData: {bio: $bio, flair: $flair, gender: $gender, maxAge: $maxAge, minAge: $minAge, showMe: $showMe, birthDate: $birthDate, lookingFor: $lookingFor}
+    moreData: {bio: $bio, flair: $flair, gender: $gender, maxAge: $maxAge, minAge: $minAge, showMe: $showMe, birthDate: $birthDate, lookingFor: $lookingFor, address: $address}
   ) {
     success
     message
@@ -629,6 +651,7 @@ export type AddMoreDetailMutationFn = Apollo.MutationFunction<AddMoreDetailMutat
  *      showMe: // value for 'showMe'
  *      birthDate: // value for 'birthDate'
  *      lookingFor: // value for 'lookingFor'
+ *      address: // value for 'address'
  *   },
  * });
  */
@@ -862,6 +885,7 @@ export const LoginWithGithubDocument = gql`
     mutation LoginWithGithub($code: String!) {
   loginWithGithub(code: $code) {
     ...RegularUserResponse
+    success
   }
 }
     ${RegularUserResponseFragmentDoc}`;
@@ -919,6 +943,36 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const PlaceSearchAutoCorrectDocument = gql`
+    mutation PlaceSearchAutoCorrect($keyword: String!) {
+  placeSearchAutoCorrect(keyword: $keyword)
+}
+    `;
+export type PlaceSearchAutoCorrectMutationFn = Apollo.MutationFunction<PlaceSearchAutoCorrectMutation, PlaceSearchAutoCorrectMutationVariables>;
+
+/**
+ * __usePlaceSearchAutoCorrectMutation__
+ *
+ * To run a mutation, you first call `usePlaceSearchAutoCorrectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePlaceSearchAutoCorrectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [placeSearchAutoCorrectMutation, { data, loading, error }] = usePlaceSearchAutoCorrectMutation({
+ *   variables: {
+ *      keyword: // value for 'keyword'
+ *   },
+ * });
+ */
+export function usePlaceSearchAutoCorrectMutation(baseOptions?: Apollo.MutationHookOptions<PlaceSearchAutoCorrectMutation, PlaceSearchAutoCorrectMutationVariables>) {
+        return Apollo.useMutation<PlaceSearchAutoCorrectMutation, PlaceSearchAutoCorrectMutationVariables>(PlaceSearchAutoCorrectDocument, baseOptions);
+      }
+export type PlaceSearchAutoCorrectMutationHookResult = ReturnType<typeof usePlaceSearchAutoCorrectMutation>;
+export type PlaceSearchAutoCorrectMutationResult = Apollo.MutationResult<PlaceSearchAutoCorrectMutation>;
+export type PlaceSearchAutoCorrectMutationOptions = Apollo.BaseMutationOptions<PlaceSearchAutoCorrectMutation, PlaceSearchAutoCorrectMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($email: String!, $password: String!, $username: String!) {
   registerUser(

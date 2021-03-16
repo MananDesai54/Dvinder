@@ -187,3 +187,12 @@ export class FeedPagination {
   @Field(() => Boolean)
   hasMore!: boolean;
 }
+
+@ObjectType()
+export class PlaceSearchResult {
+  @Field()
+  status!: string;
+
+  @Field(() => Array)
+  predictions!: any[];
+}

@@ -1,4 +1,4 @@
-import { Box, Button, Link } from "@chakra-ui/react";
+import { Box, Button, Link, useToast } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -23,6 +23,7 @@ const Login: FC<LoginProps> = ({}) => {
   const [loginWithGithub] = useLoginWithGithubMutation();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
   const { data } = useMeQuery();
 
@@ -133,6 +134,17 @@ const Login: FC<LoginProps> = ({}) => {
                 update: (cache, { data }) =>
                   updateUserDataInCache(cache, data?.loginWithGithub),
               });
+              if (!responseData.data?.loginWithGithub.success) {
+                toast({
+                  title: "Login error",
+                  description: responseData.data?.loginWithGithub.errors
+                    ? responseData.data?.loginWithGithub.errors[0].message
+                    : "Try re-login with github",
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+                });
+              }
               setIsLoading(false);
             }}
             onFailure={(response: any) => {

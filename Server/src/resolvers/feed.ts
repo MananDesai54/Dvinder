@@ -118,6 +118,20 @@ export class FeedResolver {
     }
   }
 
+  @Query(() => [Feed])
+  @UseMiddleware(isAuth)
+  async otherUserFeeds(@Arg("userId") userId: number): Promise<Feed[]> {
+    try {
+      const feeds = await Feed.find({
+        where: { creatorId: userId },
+      });
+      return feeds;
+    } catch (error) {
+      console.log(error.message);
+      return [];
+    }
+  }
+
   @Query(() => Feed, { nullable: true })
   @UseMiddleware(isAuth)
   async feed(@Arg("id") id: number): Promise<Feed | null> {
@@ -352,6 +366,4 @@ export class FeedResolver {
       return false;
     }
   }
-
-  //update and delete vote
 }

@@ -1,3 +1,6 @@
 mutation PlaceSearchAutoCorrect($keyword: String!){
-  placeSearchAutoCorrect(keyword: $keyword)
+  placeSearchAutoCorrect(keyword: $keyword) {
+    status,
+    predictions
+  }
 }

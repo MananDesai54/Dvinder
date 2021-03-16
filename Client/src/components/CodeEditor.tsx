@@ -130,9 +130,7 @@ const AceEditor: FC<EditorProps> = (props) => {
         autofocus: !props.readonly,
         readonly: !!props.readonly,
       }}
-      onChange={(editor, data, value) => {
-        console.log("Hello");
-      }}
+      onChange={(editor, data, value) => {}}
       onBeforeChange={
         props.onChange
           ? (editor, data, value) => {

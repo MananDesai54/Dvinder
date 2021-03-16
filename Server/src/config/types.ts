@@ -196,3 +196,21 @@ export class PlaceSearchResult {
   @Field(() => [String])
   predictions!: string[];
 }
+
+@ObjectType()
+export class DvinderProfile {
+  @Field()
+  username!: string;
+
+  @Field()
+  profileUrl!: string;
+
+  @Field()
+  bio!: string;
+
+  @Field()
+  githubUsername?: string;
+
+  @Field(() => Feed)
+  feeds!: Feed[];
+}

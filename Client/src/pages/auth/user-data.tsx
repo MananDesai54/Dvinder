@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import React, { FC, useEffect, useRef, useState } from "react";
 import Flairs from "../../components/Flairs";
 import InputField from "../../components/InputField";
+import PlaceSuggestion from "../../components/PlaceSuggestion";
 import Wrapper from "../../components/Wrapper";
 import {
   useAddMoreDetailMutation,
@@ -47,10 +48,12 @@ const UserData: FC<UserDataProps> = ({}) => {
   const [genderError, setGenderError] = useState("");
   const [flairError, setFlairError] = useState("");
   const [ageError, setAgeError] = useState("");
+  const [addressError, setAddressError] = useState("");
   const [address, setAddress] = useState("");
   const addressRef = useRef<HTMLInputElement | undefined>();
   const { data } = useMeQuery();
   const [placeSearch] = usePlaceSearchAutoCorrectMutation();
+  const [places, setPlaces] = useState<string[]>([]);
 
   useEffect(() => {
     if (data?.me) {
@@ -63,6 +66,9 @@ const UserData: FC<UserDataProps> = ({}) => {
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
+      if (!address) {
+        setPlaces([]);
+      }
       if (address === addressRef.current?.value && address !== "") {
         try {
           console.log(address);
@@ -71,12 +77,14 @@ const UserData: FC<UserDataProps> = ({}) => {
               keyword: address,
             },
           });
-          console.log(JSON.parse(response));
+          if (!(response.data?.placeSearchAutoCorrect.status === "error")) {
+            setPlaces(response.data?.placeSearchAutoCorrect.predictions || []);
+          }
         } catch (error) {
           console.log(error.message);
         }
       }
-    }, 1000);
+    }, 500);
     return () => {
       clearTimeout(timeout);
     };
@@ -132,6 +140,13 @@ const UserData: FC<UserDataProps> = ({}) => {
           if (flair) {
             setFlairError(flair.message);
           }
+
+          const addressErr = response.data.addMoreDetail.errors.find(
+            (error) => error.field === "address"
+          );
+          if (flair) {
+            setAddressError(addressErr!.message);
+          }
         }
       }}
     >
@@ -159,7 +174,7 @@ const UserData: FC<UserDataProps> = ({}) => {
           </h1>
           <Form>
             <InputField name="bio" type="text" label="Bio" isTextArea />
-            <FormControl mt={4}>
+            { !router.query.edit && <FormControl mt={4} position="relative">
               <FormLabel fontSize="1.2rem" color="white" htmlFor="address">
                 {"Address"}
               </FormLabel>
@@ -175,8 +190,35 @@ const UserData: FC<UserDataProps> = ({}) => {
                 }}
                 _placeholder={{ fontWeight: 500 }}
               />
-              {/* {error && <FormErrorMessage>{error}</FormErrorMessage>} */}
-            </FormControl>
+              {places.length > 0 && (
+                <Box
+                  style={{
+                    position: "absolute",
+                    background: "white",
+                    zIndex: 100,
+                    width: "100%",
+                    borderRadius: "0 0 10px 10px",
+                  }}
+                >
+                  <PlaceSuggestion
+                    places={places}
+                    onClick={(address) => {
+                      setAddress(address);
+                      setPlaces([]);
+                    }}
+                  />
+                </Box>
+              )}
+              {addressError && (
+                <p
+                  style={{
+                    color: "#FC8181",
+                  }}
+                >
+                  {addressError}
+                </p>
+              )}{" "}
+            </FormControl>}
             <Box mt={6}>
               <Flairs
                 value={values.flair as string}

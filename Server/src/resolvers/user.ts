@@ -9,6 +9,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import {
+  DvinderProfile,
   ErrorResponse,
   ErrorSuccessResponse,
   MoreUserData,
@@ -147,7 +148,6 @@ export class UserResolver {
     @Arg("code") code: string
   ): Promise<UserResponse | undefined> {
     try {
-      console.log("Hello");
       const userData = await getUserGithubData(code);
       const userExist = await User.findOne({
         where: { githubId: userData.id },
@@ -332,7 +332,7 @@ export class UserResolver {
       const latLong = await getLatLongFromAddress(moreData.address as string);
       if (latLong) {
         user.latitude = latLong.results[0].geometry.location.lat;
-        user.latitude = latLong.results[0].geometry.location.lng;
+        user.longitude = latLong.results[0].geometry.location.lng;
       }
 
       await user.save();
@@ -574,4 +574,11 @@ export class UserResolver {
       };
     }
   }
+
+  @Mutation(() => DvinderProfile)
+  @UseMiddleware(isAuth)
+  async dvinderProfile(
+    @Arg("limit") limit: number,
+    @Arg("cursor") cursor?: number
+  ) {}
 }

@@ -14,4 +14,7 @@ fragment RegularUser on User {
   githubId
   birthDate
   lookingFor
+  address
+  latitude
+  longitude
 }

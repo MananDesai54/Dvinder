@@ -6,7 +6,9 @@ import {
   Button,
   Checkbox,
   Flex,
+  FormControl,
   FormLabel,
+  Input,
   Radio,
   RadioGroup,
   Stack,
@@ -44,6 +46,8 @@ const UserData: FC<UserDataProps> = ({}) => {
   const [genderError, setGenderError] = useState("");
   const [flairError, setFlairError] = useState("");
   const [ageError, setAgeError] = useState("");
+  const [location, setLocation] = useState("");
+  const locationRef = useRef<HTMLInputElement | undefined>();
 
   const { data } = useMeQuery();
   useEffect(() => {
@@ -54,6 +58,31 @@ const UserData: FC<UserDataProps> = ({}) => {
       );
     }
   }, [data?.me]);
+
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      if (location === locationRef.current?.value && location !== "") {
+        console.log(location);
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&input=${location}`,
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [location]);
 
   return (
     <Formik
@@ -131,6 +160,24 @@ const UserData: FC<UserDataProps> = ({}) => {
           </h1>
           <Form>
             <InputField name="bio" type="text" label="Bio" isTextArea />
+            <FormControl mt={4}>
+              <FormLabel fontSize="1.2rem" color="white" htmlFor="location">
+                {"Location"}
+              </FormLabel>
+              <Input
+                ref={locationRef as any}
+                name="location"
+                type="location"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                style={{
+                  background: "white",
+                }}
+                _placeholder={{ fontWeight: 500 }}
+              />
+              {/* {error && <FormErrorMessage>{error}</FormErrorMessage>} */}
+            </FormControl>
             <Box mt={6}>
               <Flairs
                 value={values.flair as string}
@@ -295,6 +342,7 @@ const UserData: FC<UserDataProps> = ({}) => {
                 </Checkbox>
               </Flex>
             </Box>
+            <Box></Box>
             <Box mt={6} position="relative">
               <FormLabel fontSize="1.2rem" color="var(--white-color)">
                 Age Range

@@ -87,13 +87,17 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   birthDate!: String;
 
-  @Field(() => Float, { nullable: false })
-  @Column({ type: "float" })
+  @Field(() => Float, { nullable: true })
+  @Column({ type: "float", nullable: true })
   latitude!: number;
 
-  @Field(() => Float, { nullable: false })
-  @Column({ type: "float" })
+  @Field(() => Float, { nullable: true })
+  @Column({ type: "float", nullable: true })
   longitude!: number;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  address!: String;
 
   @Field(() => String)
   @CreateDateColumn()

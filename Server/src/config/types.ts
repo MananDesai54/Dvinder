@@ -55,8 +55,8 @@ export class UserData {
   @Field()
   password!: string;
 
-  @Field(() => String, { nullable: true })
-  username?: string;
+  @Field()
+  username!: string;
 }
 
 @InputType()
@@ -123,6 +123,9 @@ export class MoreUserData {
 
   @Field(() => String, { nullable: true })
   lookingFor?: string;
+
+  @Field(() => String, { nullable: true })
+  address?: string;
 }
 
 /**

@@ -28,7 +28,8 @@ import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { getUserGithubData } from "../utils/getUserGithubData";
 import { isAuth } from "../middleware/isAuth";
 import { validateAddDetail } from "../utils/validationAddDetail";
-// import { getConnection } from "typeorm";
+import fetch from "node-fetch";
+import { getLatLongFromAddress } from "../utils/geoCodingAPI";
 
 @Resolver(User)
 export class UserResolver {
@@ -76,7 +77,7 @@ export class UserResolver {
       });
       const isUsernameExists = await User.findOne({
         where: {
-          username: userData.username?.toLowerCase(),
+          username: userData.username.toLowerCase(),
         },
       });
 
@@ -325,6 +326,13 @@ export class UserResolver {
       if (moreData.showMe) user.showMe = moreData.showMe;
       if (moreData.birthDate) user.birthDate = moreData.birthDate;
       if (moreData.lookingFor) user.lookingFor = moreData.lookingFor;
+      if (moreData.address) user.address = moreData.address;
+
+      const latLong = await getLatLongFromAddress(moreData.address as string);
+      if (latLong) {
+        user.latitude = latLong.results[0].geometry.location.lat;
+        user.latitude = latLong.results[0].geometry.location.lng;
+      }
 
       await user.save();
 
@@ -536,6 +544,21 @@ export class UserResolver {
       return true;
     } catch (error) {
       return false;
+    }
+  }
+
+  @Query(() => String)
+  async placeSearchAutoCorrect(
+    @Arg("keyword") keyword: string
+  ): Promise<string> {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=${process.env.GOOGLE_API_KEY}&input=${keyword}`
+      );
+      const data = await response.json();
+      return JSON.stringify(data);
+    } catch (error) {
+      return error.message;
     }
   }
 }

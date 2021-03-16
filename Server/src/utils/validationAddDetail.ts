@@ -31,6 +31,11 @@ export const validateAddDetail = (addData: MoreUserData) => {
       "Please select a option",
       "lookingFor"
     ),
+    new ValidationField(
+      !validator.isEmpty(addData.address as string),
+      "Please select a option",
+      "address"
+    ),
   ];
 
   for (const validation of validations) {

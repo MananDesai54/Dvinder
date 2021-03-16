@@ -563,7 +563,9 @@ export class UserResolver {
       const data = await response.json();
       return {
         status: data.status,
-        predictions: data.predictions,
+        predictions: data.predictions.map(
+          (prediction: { description: string }) => prediction.description
+        ),
       };
     } catch (error) {
       return {

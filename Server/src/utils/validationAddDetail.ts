@@ -7,33 +7,33 @@ export const validateAddDetail = (addData: MoreUserData) => {
   const errors: ErrorResponse[] = [];
   const validations: ValidationField[] = [
     new ValidationField(
-      !validator.isEmpty(addData.flair as string),
+      !validator.isEmpty(addData.flair || ""),
       "Please select a flair",
       "flair"
     ),
     new ValidationField(
-      !validator.isEmpty(addData.gender as string),
+      !validator.isEmpty(addData.gender || ""),
       "Please select a option",
       "gender"
     ),
     new ValidationField(
-      !validator.isEmpty(addData.showMe as string),
+      !validator.isEmpty(addData.showMe || ""),
       "Please select a option",
       "showMe"
     ),
     new ValidationField(
-      re.test(addData.birthDate as string),
+      re.test(addData.birthDate || ""),
       "Please provide valid date",
       "birthDate"
     ),
     new ValidationField(
-      !validator.isEmpty(addData.lookingFor as string),
+      !validator.isEmpty(addData.lookingFor || ""),
       "Please select a option",
       "lookingFor"
     ),
     new ValidationField(
-      !validator.isEmpty(addData.address as string),
-      "Please select a option",
+      !validator.isEmpty(addData.address || ""),
+      "Please provide address",
       "address"
     ),
   ];

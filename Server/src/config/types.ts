@@ -193,6 +193,6 @@ export class PlaceSearchResult {
   @Field()
   status!: string;
 
-  @Field(() => Array)
-  predictions!: any[];
+  @Field(() => [String])
+  predictions!: string[];
 }

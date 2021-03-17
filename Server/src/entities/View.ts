@@ -1,4 +1,4 @@
-import { Field, Int } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
+@ObjectType()
 @Entity()
 export class View extends BaseEntity {
   @Field(() => Int)
@@ -26,17 +27,17 @@ export class View extends BaseEntity {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "viewerId" })
-  viewer!: User;
+  viewer!: Promise<User>;
 
   @ManyToOne(() => User, (u) => u.targets, {
     primary: true,
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "targetId" })
-  target!: User;
+  target!: Promise<User>;
 
   @Field(() => Boolean)
-  @Column("boolean")
+  @Column({ type: "boolean" })
   liked!: boolean;
 
   @Field(() => String)

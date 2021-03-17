@@ -28,6 +28,7 @@ import {
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { Feed } from "../entities/Feed";
 import { User } from "../entities/User";
+import { View } from "../entities/View";
 import { isAuth } from "../middleware/isAuth";
 import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { getLatLongFromAddress } from "../utils/geoCodingAPI";
@@ -575,6 +576,27 @@ export class UserResolver {
         status: "error",
         predictions: [],
       };
+    }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async viewProfile(
+    @Ctx() { req }: MyContext,
+    @Arg("targetUserId") targetUserId: number,
+    @Arg("liked") liked: boolean
+  ): Promise<Boolean> {
+    const { userId } = req.session;
+    try {
+      await View.create({
+        liked,
+        targetId: userId,
+        viewerId: targetUserId,
+      }).save();
+      return true;
+    } catch (error) {
+      console.log(error.message);
+      return false;
     }
   }
 

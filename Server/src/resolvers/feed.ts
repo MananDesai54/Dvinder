@@ -174,7 +174,7 @@ export class FeedResolver {
         };
       }
 
-      const feed = await Feed.create({
+      const feed = Feed.create({
         creatorId: req.session.userId,
         title: feedData.title,
         type: feedData.type,

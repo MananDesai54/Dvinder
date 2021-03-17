@@ -541,7 +541,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async deleteUser(
     @Arg("id") id: number,
-    { res }: MyContext
+    @Ctx() { res }: MyContext
   ): Promise<boolean> {
     try {
       await User.delete(id);
@@ -575,10 +575,10 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => DvinderProfile)
+  @Mutation(() => DvinderProfile, { nullable: true })
   @UseMiddleware(isAuth)
   async dvinderProfile(
     @Arg("limit") limit: number,
     @Arg("cursor") cursor?: number
-  ) {}
+  ): Promise<DvinderProfile | null> {}
 }

@@ -79,9 +79,8 @@ export class User extends BaseEntity {
   @Column({ nullable: true, default: 29 })
   maxAge!: number;
 
-  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
-  notificationSubscription!: string;
+  pushToken!: string;
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
@@ -98,6 +97,18 @@ export class User extends BaseEntity {
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   address!: String;
+
+  @Field(() => Int)
+  @Column("int", { default: 0 })
+  numSwipes!: number;
+
+  @Field(() => Int)
+  @Column("int", { default: 0 })
+  numSwipesToday!: number;
+
+  @Field(() => Int)
+  @Column("int", { default: 0 })
+  numLikes!: number;
 
   @Field(() => String)
   @CreateDateColumn()

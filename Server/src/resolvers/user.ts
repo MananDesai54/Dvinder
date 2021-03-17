@@ -1,15 +1,22 @@
+import argon2 from "argon2";
+import fetch from "node-fetch";
 import {
   Arg,
   Ctx,
   FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
   Root,
   UseMiddleware,
 } from "type-graphql";
+import { getConnection } from "typeorm";
+import { v4 as generateId } from "uuid";
+import validator from "validator";
 import {
   DvinderProfile,
+  DvinderProfileArray,
   ErrorResponse,
   ErrorSuccessResponse,
   MoreUserData,
@@ -17,21 +24,17 @@ import {
   PlaceSearchResult,
   UserData,
   UserResponse,
-  // ValidationField,
 } from "../config/types";
-import { User } from "../entities/User";
-import argon2 from "argon2";
-import validator from "validator";
-import { sendMail } from "../utils/sendMail";
-import { validateRegister } from "../utils/validationRegister";
-import { v4 as generateId } from "uuid";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
-import { generateErrorResponse } from "../utils/generateErrorResponse";
-import { getUserGithubData } from "../utils/getUserGithubData";
+import { Feed } from "../entities/Feed";
+import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
-import { validateAddDetail } from "../utils/validationAddDetail";
-import fetch from "node-fetch";
+import { generateErrorResponse } from "../utils/generateErrorResponse";
 import { getLatLongFromAddress } from "../utils/geoCodingAPI";
+import { getUserGithubData } from "../utils/getUserGithubData";
+import { sendMail } from "../utils/sendMail";
+import { validateAddDetail } from "../utils/validationAddDetail";
+import { validateRegister } from "../utils/validationRegister";
 
 @Resolver(User)
 export class UserResolver {
@@ -575,10 +578,60 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => DvinderProfile, { nullable: true })
+  @Mutation(() => DvinderProfileArray, { nullable: true })
   @UseMiddleware(isAuth)
   async dvinderProfile(
     @Arg("limit") limit: number,
-    @Arg("cursor") cursor?: number
-  ): Promise<DvinderProfile | null> {}
+    @Arg("cursor", () => Int, { nullable: true }) cursor?: number | null
+  ): Promise<DvinderProfileArray | null> {
+    const realLimit = Math.min(50, limit);
+    const realLimitPlusOne = realLimit + 1;
+    try {
+      const replacements: any[] = [realLimitPlusOne];
+      if (cursor) {
+        replacements.push(cursor);
+      } else {
+        replacements.push(50);
+      }
+      const users: User[] = await getConnection().query(
+        `
+        select *
+        from "user"
+        where id < $2
+        order by "createdAt" DESC
+        limit $1
+      `,
+        replacements
+      );
+      let responseArray: DvinderProfile[] = [];
+
+      await Promise.all(
+        users.slice(0, realLimit).map(async (user) => {
+          const feeds = await Feed.find({ where: { creatorId: user.id } });
+          responseArray.push({
+            bio: user.bio,
+            profileUrl: user.profileUrl,
+            username: user.username,
+            githubUsername: user.githubId ? user.username : "",
+            feeds: feeds.map((feed) => {
+              return {
+                title: feed.title,
+                code: feed.code,
+                imageUrl: feed.imageUrl,
+                projectIdea: feed.projectIdea,
+              };
+            }),
+          });
+        })
+      );
+
+      return {
+        profiles: responseArray,
+        hasMore: users.length === realLimitPlusOne,
+      };
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
 }

@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { View } from "./View";
 import { Feed } from "./Feed";
 import { Reaction } from "./Reaction";
 import { Updoot } from "./Updoot";
@@ -109,6 +110,12 @@ export class User extends BaseEntity {
   @Field(() => Int)
   @Column("int", { default: 0 })
   numLikes!: number;
+
+  @OneToMany(() => View, (m) => m.viewer)
+  views!: View[];
+
+  @OneToMany(() => View, (m) => m.target)
+  targets!: View[];
 
   @Field(() => String)
   @CreateDateColumn()

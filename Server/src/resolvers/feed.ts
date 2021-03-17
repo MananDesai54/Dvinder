@@ -76,6 +76,10 @@ export class FeedResolver {
         replacements
       );
 
+      return {
+        feeds: feeds.slice(0, realLimit),
+        hasMore: feeds.length === realLimitPlusOne,
+      };
       // const feeds = await getConnection().query(
       //   `
       //   select f.*, json_build_object(
@@ -93,11 +97,6 @@ export class FeedResolver {
       //   `,
       //   replacements
       //   );
-
-      return {
-        feeds: feeds.slice(0, realLimit),
-        hasMore: feeds.length === realLimitPlusOne,
-      };
     } catch (error) {
       console.log(error.message);
       return null;

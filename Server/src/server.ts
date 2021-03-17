@@ -22,6 +22,7 @@ import { Updoot } from "./entities/Updoot";
 import { createUserLoader } from "./utils/createUserLoader";
 import { createUpdootLoader } from "./utils/createUpdootLoader";
 import { graphqlUploadExpress } from "graphql-upload";
+import { View } from "./entities/View";
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ const main = async () => {
     password: process.env.PG_PASSWORD,
     logging: true,
     synchronize: true,
-    entities: [User, Feed, Reaction, Updoot],
+    entities: [User, Feed, Reaction, Updoot, View],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
   await conn.runMigrations();

@@ -198,6 +198,21 @@ export class PlaceSearchResult {
 }
 
 @ObjectType()
+export class FeedDataForProfile {
+  @Field(() => String)
+  title!: string;
+
+  @Field(() => String, { nullable: true })
+  imageUrl?: string;
+
+  @Field(() => String, { nullable: true })
+  code?: String;
+
+  @Field(() => String, { nullable: true })
+  projectIdea?: string;
+}
+
+@ObjectType()
 export class DvinderProfile {
   @Field()
   username!: string;
@@ -211,6 +226,15 @@ export class DvinderProfile {
   @Field()
   githubUsername?: string;
 
-  @Field(() => Feed)
-  feeds!: Feed[];
+  @Field(() => [FeedDataForProfile])
+  feeds!: FeedDataForProfile[];
+}
+
+@ObjectType()
+export class DvinderProfileArray {
+  @Field(() => [DvinderProfile])
+  profiles!: DvinderProfile[];
+
+  @Field(() => Boolean)
+  hasMore!: boolean;
 }

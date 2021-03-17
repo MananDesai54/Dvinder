@@ -18,6 +18,7 @@ import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
 import {
   useAddOrUpdatePasswordMutation,
+  useMeQuery,
   useRegisterMutation,
   useRegisterWithGithubMutation,
 } from "../../generated/apollo-graphql";
@@ -43,16 +44,19 @@ const Register: FC<registerProps> = ({}) => {
   const router = useRouter();
   const isAuth = useIsAuth();
   const toast = useToast();
+  const { data } = useMeQuery();
 
   useEffect(() => {
-    if (isAuth) {
+    if (isAuth || data?.me) {
       router.replace("/");
     }
   }, []);
 
-  if (isAuth && doneAddPassword) {
-    router.replace("/auth/user-data");
-  }
+  useEffect(() => {
+    if (isAuth && doneAddPassword) {
+      router.replace("/auth/user-data");
+    }
+  }, [doneAddPassword]);
 
   return (
     <Wrapper variant="small">
@@ -253,21 +257,27 @@ const Register: FC<registerProps> = ({}) => {
                       update: (cache, { data }) =>
                         updateUserDataInCache(cache, data?.registerWithGithub),
                     });
+                    if (responseData.data?.registerWithGithub.errors) {
+                      toast({
+                        title: "Account creation error.",
+                        description:
+                          "try again with github or with username & password",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                      });
+                    }
                     if (responseData.data?.registerWithGithub.user) {
                       setDoneRegistration(true);
-                      if (
-                        responseData.data.registerWithGithub.message === "Done"
-                      ) {
-                        setDoneRegistration(true);
-                      }
+                      toast({
+                        title: "Account created.",
+                        description: "We've created your account for you.",
+                        status: "success",
+                        duration: 5000,
+                        isClosable: true,
+                      });
                     }
-                    toast({
-                      title: "Account created.",
-                      description: "We've created your account for you.",
-                      status: "success",
-                      duration: 5000,
-                      isClosable: true,
-                    });
+
                     setIsLoading(false);
                   }}
                   onFailure={(response: any) => {

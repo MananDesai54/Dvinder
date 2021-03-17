@@ -14,6 +14,7 @@
 - Chakra UI
 - Apollo + Express.js
 - PostGreSQL + Redis
+- SQL Queries
 - Docker
 
 ## Concepts Used for backend
@@ -25,19 +26,23 @@
 - TypeGraphQL
 - Redis
 - DataLoader for better queries to database
+- For better performance for some cases SQL Queries are used
 ```
 
 ## Concepts used for frontend
 
 ```md
-- Next.js + React + ChakraUI
-- URQL as GraphQL client to query to the server
-- URQL caches( updating, invalidation, read write fragments )
+- Next.js + React + ChakraUI + Some CSS
 - GraphQL type generator for generation types for queries from server
-- next-urql for SSR
 - formik for forms
-- Apollo CLient
-- next-apollo for ssr
+- Previously
+  - URQL as GraphQL client to query to the server
+  - URQL caches( updating, invalidation, read write fragments )
+  - next-urql for SSR
+- Currently
+  - Apollo Client as GraphQL client to query to the server
+  - Apollo caches much easier
+  - next-apollo for ssr currently
 ```
 
 ## How to Run Front-end

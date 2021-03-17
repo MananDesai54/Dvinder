@@ -588,40 +588,68 @@ export class UserResolver {
   ): Promise<Boolean> {
     const { userId } = req.session;
     try {
-      await View.create({
-        liked,
-        targetId: userId,
-        viewerId: targetUserId,
-      }).save();
-      return true;
+      const targetUser = await User.findOne(targetUserId);
+      if (targetUser) {
+        await View.create({
+          liked,
+          targetId: userId,
+          viewerId: targetUserId,
+        }).save();
+        targetUser.numSwipes = targetUser.numSwipes || 0 + 1;
+        if (liked) {
+          targetUser.numLikes = targetUser.numLikes || 0 + 1;
+        }
+        await targetUser.save();
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       console.log(error.message);
       return false;
     }
   }
 
-  @Mutation(() => DvinderProfileArray, { nullable: true })
+  @Query(() => DvinderProfileArray, { nullable: true })
   @UseMiddleware(isAuth)
   async dvinderProfile(
-    @Arg("limit") limit: number,
-    @Arg("cursor", () => Int, { nullable: true }) cursor?: number | null
+    @Ctx() { req }: MyContext,
+    @Arg("limit", () => Int) limit: number,
+    @Arg("distance", () => Int, { nullable: true }) distance?: number | null
   ): Promise<DvinderProfileArray | null> {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
     try {
-      const replacements: any[] = [realLimitPlusOne];
-      if (cursor) {
-        replacements.push(cursor);
+      const user = await User.findOne(req.session.userId);
+      const replacements: any[] = [
+        user?.latitude,
+        user?.longitude,
+        req.session.userId,
+        realLimitPlusOne,
+      ];
+      if (distance) {
+        replacements.push(distance);
       } else {
         replacements.push(50);
       }
       const users: User[] = await getConnection().query(
         `
-        select *
-        from "user"
-        where id < $2
-        order by "createdAt" DESC
-        limit $1
+        select * from (
+          SELECT  *,(
+            3959 * acos(
+              cos(radians($1)) * cos( radians(latitude)) * 
+              cos(radians(longitude) - radians($2)) + 
+              sin(radians($1)) * sin(radians(latitude)) 
+            )
+          ) AS distance
+          FROM "user"
+        ) "user"
+        where distance < $5 and id != $3 and
+        id not in (
+          select "viewerId" from "view" 
+          where "viewerId" = $3
+        ) ORDER BY distance
+        limit $4;
       `,
         replacements
       );

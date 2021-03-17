@@ -20,15 +20,28 @@ export type Query = {
   hello: Scalars['String'];
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
+  dvinderProfile?: Maybe<DvinderProfileArray>;
   feeds?: Maybe<FeedPagination>;
   userFeeds: Array<Feed>;
+  otherUserFeeds: Array<Feed>;
   feed?: Maybe<Feed>;
+};
+
+
+export type QueryDvinderProfileArgs = {
+  distance?: Maybe<Scalars['Int']>;
+  limit: Scalars['Int'];
 };
 
 
 export type QueryFeedsArgs = {
   cursor?: Maybe<Scalars['String']>;
   limit: Scalars['Int'];
+};
+
+
+export type QueryOtherUserFeedsArgs = {
+  userId: Scalars['Float'];
 };
 
 
@@ -52,11 +65,13 @@ export type User = {
   lookingFor?: Maybe<Scalars['String']>;
   minAge?: Maybe<Scalars['Int']>;
   maxAge?: Maybe<Scalars['Int']>;
-  notificationSubscription?: Maybe<Scalars['String']>;
   birthDate?: Maybe<Scalars['String']>;
   latitude?: Maybe<Scalars['Float']>;
   longitude?: Maybe<Scalars['Float']>;
   address?: Maybe<Scalars['String']>;
+  numSwipes: Scalars['Int'];
+  numSwipesToday: Scalars['Int'];
+  numLikes: Scalars['Int'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -89,6 +104,29 @@ export type Reaction = {
   updatedAt: Scalars['String'];
 };
 
+export type DvinderProfileArray = {
+  __typename?: 'DvinderProfileArray';
+  profiles: Array<DvinderProfile>;
+  hasMore: Scalars['Boolean'];
+};
+
+export type DvinderProfile = {
+  __typename?: 'DvinderProfile';
+  username: Scalars['String'];
+  profileUrl: Scalars['String'];
+  bio: Scalars['String'];
+  githubUsername: Scalars['String'];
+  feeds: Array<FeedDataForProfile>;
+};
+
+export type FeedDataForProfile = {
+  __typename?: 'FeedDataForProfile';
+  title: Scalars['String'];
+  imageUrl?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+  projectIdea?: Maybe<Scalars['String']>;
+};
+
 export type FeedPagination = {
   __typename?: 'FeedPagination';
   feeds: Array<Feed>;
@@ -109,6 +147,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   deleteUser: Scalars['Boolean'];
   placeSearchAutoCorrect: PlaceSearchResult;
+  viewProfile: Scalars['Boolean'];
   createFeed: FeedResponse;
   updateFeed: FeedResponse;
   deleteFeed: Scalars['Boolean'];
@@ -173,6 +212,12 @@ export type MutationDeleteUserArgs = {
 
 export type MutationPlaceSearchAutoCorrectArgs = {
   keyword: Scalars['String'];
+};
+
+
+export type MutationViewProfileArgs = {
+  liked: Scalars['Boolean'];
+  targetUserId: Scalars['Float'];
 };
 
 
@@ -500,6 +545,28 @@ export type VoteMutationVariables = Exact<{
 export type VoteMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'vote'>
+);
+
+export type DvinderProfileQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  distance?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type DvinderProfileQuery = (
+  { __typename?: 'Query' }
+  & { dvinderProfile?: Maybe<(
+    { __typename?: 'DvinderProfileArray' }
+    & Pick<DvinderProfileArray, 'hasMore'>
+    & { profiles: Array<(
+      { __typename?: 'DvinderProfile' }
+      & Pick<DvinderProfile, 'username' | 'profileUrl' | 'bio' | 'githubUsername'>
+      & { feeds: Array<(
+        { __typename?: 'FeedDataForProfile' }
+        & Pick<FeedDataForProfile, 'title' | 'imageUrl' | 'code' | 'projectIdea'>
+      )> }
+    )> }
+  )> }
 );
 
 export type FeedsQueryVariables = Exact<{
@@ -1088,6 +1155,52 @@ export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMut
 export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
 export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
 export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
+export const DvinderProfileDocument = gql`
+    query DvinderProfile($limit: Int!, $distance: Int) {
+  dvinderProfile(limit: $limit, distance: $distance) {
+    hasMore
+    profiles {
+      username
+      profileUrl
+      bio
+      githubUsername
+      feeds {
+        title
+        imageUrl
+        code
+        projectIdea
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useDvinderProfileQuery__
+ *
+ * To run a query within a React component, call `useDvinderProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDvinderProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDvinderProfileQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      distance: // value for 'distance'
+ *   },
+ * });
+ */
+export function useDvinderProfileQuery(baseOptions: Apollo.QueryHookOptions<DvinderProfileQuery, DvinderProfileQueryVariables>) {
+        return Apollo.useQuery<DvinderProfileQuery, DvinderProfileQueryVariables>(DvinderProfileDocument, baseOptions);
+      }
+export function useDvinderProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DvinderProfileQuery, DvinderProfileQueryVariables>) {
+          return Apollo.useLazyQuery<DvinderProfileQuery, DvinderProfileQueryVariables>(DvinderProfileDocument, baseOptions);
+        }
+export type DvinderProfileQueryHookResult = ReturnType<typeof useDvinderProfileQuery>;
+export type DvinderProfileLazyQueryHookResult = ReturnType<typeof useDvinderProfileLazyQuery>;
+export type DvinderProfileQueryResult = Apollo.QueryResult<DvinderProfileQuery, DvinderProfileQueryVariables>;
 export const FeedsDocument = gql`
     query Feeds($limit: Int!, $cursor: String) {
   feeds(limit: $limit, cursor: $cursor) {

@@ -6,7 +6,11 @@ import FeedDisplay from "../components/FeedDisplay";
 import Layout from "../components/Layout";
 import ProfileSideBar from "../components/ProfileSideBar";
 import UpdootSection from "../components/UpdootSection";
-import { useFeedsQuery, useMeQuery } from "../generated/apollo-graphql";
+import {
+  useDvinderProfileQuery,
+  useFeedsQuery,
+  useMeQuery,
+} from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { withApolloClient } from "../utils/withApollo";
 
@@ -37,6 +41,13 @@ const Index = () => {
     notifyOnNetworkStatusChange: true,
     skip: !isAuth,
   });
+  const { data: profiles } = useDvinderProfileQuery({
+    variables: {
+      limit: 10,
+      distance: 600,
+    },
+  });
+  console.log(profiles);
 
   if (!loading && !data) {
     return <p>{error?.message}</p>;

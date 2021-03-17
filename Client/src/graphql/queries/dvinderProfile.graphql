@@ -1,0 +1,17 @@
+query DvinderProfile($limit: Int!, $distance: Int) {
+  dvinderProfile(limit: $limit, distance: $distance) {
+    hasMore
+    profiles {
+      username
+      profileUrl
+      bio
+      githubUsername
+      feeds {
+        title
+        imageUrl
+        code
+        projectIdea
+      }
+    }
+  }
+}

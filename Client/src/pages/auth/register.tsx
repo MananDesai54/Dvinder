@@ -78,6 +78,13 @@ const Register: FC<registerProps> = ({}) => {
               });
               if (response.data?.addOrUpdatePassword.success) {
                 setDoneAddPassword(true);
+                toast({
+                  title: "Password created.",
+                  description: "Account password has been created.",
+                  status: "success",
+                  duration: 5000,
+                  isClosable: true,
+                });
               } else {
                 setError(response.data!.addOrUpdatePassword.message);
               }
@@ -163,16 +170,23 @@ const Register: FC<registerProps> = ({}) => {
                   updateUserDataInCache(cache, data?.registerUser),
               });
               if (response.data?.registerUser.errors) {
+                toast({
+                  title: "Account creation error.",
+                  description: "Try again creating account.",
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+                });
                 setErrors(arrayToObject(response.data.registerUser.errors));
               } else if (response.data?.registerUser.user) {
+                setDoneAddPassword(true);
                 toast({
-                  title: "Password created.",
-                  description: "Account password has been created.",
+                  title: "Account created.",
+                  description: "Account been created successfully.",
                   status: "success",
                   duration: 5000,
                   isClosable: true,
                 });
-                setDoneAddPassword(true);
               }
             }}
           >

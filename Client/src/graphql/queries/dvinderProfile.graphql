@@ -6,6 +6,8 @@ query DvinderProfile($limit: Int!, $distance: Int) {
       profileUrl
       bio
       githubUsername
+      birthDate
+      flair
       feeds {
         title
         imageUrl

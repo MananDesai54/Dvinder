@@ -116,6 +116,8 @@ export type DvinderProfile = {
   profileUrl: Scalars['String'];
   bio: Scalars['String'];
   githubUsername: Scalars['String'];
+  birthDate: Scalars['String'];
+  flair: Scalars['String'];
   feeds: Array<FeedDataForProfile>;
 };
 
@@ -560,7 +562,7 @@ export type DvinderProfileQuery = (
     & Pick<DvinderProfileArray, 'hasMore'>
     & { profiles: Array<(
       { __typename?: 'DvinderProfile' }
-      & Pick<DvinderProfile, 'username' | 'profileUrl' | 'bio' | 'githubUsername'>
+      & Pick<DvinderProfile, 'username' | 'profileUrl' | 'bio' | 'githubUsername' | 'birthDate' | 'flair'>
       & { feeds: Array<(
         { __typename?: 'FeedDataForProfile' }
         & Pick<FeedDataForProfile, 'title' | 'imageUrl' | 'code' | 'projectIdea'>
@@ -1164,6 +1166,8 @@ export const DvinderProfileDocument = gql`
       profileUrl
       bio
       githubUsername
+      birthDate
+      flair
       feeds {
         title
         imageUrl

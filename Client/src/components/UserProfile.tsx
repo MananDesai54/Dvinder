@@ -141,6 +141,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
                     me: null,
                   },
                 });
+                cache.evict({ fieldName: "dvinderProfile" });
               },
             });
           }}
@@ -159,6 +160,7 @@ const UserProfile: FC<UserProfileProps> = ({ data, repos, fetchingRepos }) => {
                     me: null,
                   },
                 });
+                cache.evict({ fieldName: "dvinderProfile" });
               },
             });
           }}

@@ -1,14 +1,20 @@
-import { Avatar, Box, Button, Flex, Heading, Stack } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
-import FeedDisplay from "../components/FeedDisplay";
 import Layout from "../components/Layout";
 import ProfileSideBar from "../components/ProfileSideBar";
-import UpdootSection from "../components/UpdootSection";
 import {
+  DvinderProfileDocument,
   useDvinderProfileQuery,
-  useFeedsQuery,
   useMeQuery,
 } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
@@ -33,21 +39,17 @@ const Index = () => {
   const [showProfile, setShowProfile] = useState(false);
   const { data: user } = useMeQuery();
   const isAuth = useIsAuth();
-  const { data, error, loading, fetchMore, variables } = useFeedsQuery({
-    variables: {
-      limit: 15,
-      cursor: null as null | string,
-    },
-    notifyOnNetworkStatusChange: true,
-    skip: !isAuth,
-  });
-  const { data: profiles } = useDvinderProfileQuery({
-    variables: {
-      limit: 10,
-      distance: 600,
-    },
-  });
-  console.log(profiles);
+  // => fetch feeds code in comments.txt
+  const { data, error, loading, fetchMore, variables } = useDvinderProfileQuery(
+    {
+      variables: {
+        limit: 10,
+        distance: 600,
+      },
+      notifyOnNetworkStatusChange: true,
+      skip: !isAuth,
+    }
+  );
 
   if (!loading && !data) {
     return <p>{error?.message}</p>;
@@ -103,50 +105,26 @@ const Index = () => {
         </Flex>
       )}
       {!data && loading ? (
-        "Loading..."
+        <Spinner color="white" size="md" />
       ) : (
-        <Stack spacing={8} m={16}>
-          {data!.feeds?.feeds?.map(
-            (feed) =>
-              feed && (
-                <Flex
-                  key={feed.id}
-                  shadow="md"
-                  borderWidth="1px"
-                  p={4}
-                  color="white"
-                >
-                  <UpdootSection feed={feed} />
-                  <Box>
-                    <Heading>{feed.title}</Heading> by {feed.creator.username}
-                    <FeedDisplay feed={feed as any} isFeedsPage />
-                  </Box>
-                </Flex>
+        <Box>
+          {data?.dvinderProfile?.profiles.map(
+            (profile, index) =>
+              profile && (
+                <Box color="white" key={index}>
+                  <Heading>{profile.username}</Heading>
+                  <Text>{profile.bio}</Text>
+                  <Text>{profile.birthDate}</Text>
+                  <Text>{profile.profileUrl}</Text>
+                  <Text>{profile.flair}</Text>
+                  <Text>
+                    {profile.githubUsername || "Not connected with Github"}
+                  </Text>
+                  <Text>{profile.feeds.length}</Text>
+                </Box>
               )
           )}
-        </Stack>
-      )}
-      {data && data.feeds?.hasMore ? (
-        <Button
-          onClick={() =>
-            fetchMore({
-              variables: {
-                limit: variables?.limit,
-                cursor: data.feeds
-                  ? data.feeds.feeds[data.feeds.feeds.length - 1].createdAt
-                  : null,
-              },
-            })
-          }
-          isLoading={loading}
-          colorScheme="teal"
-          my={4}
-          mx={16}
-        >
-          Load More
-        </Button>
-      ) : (
-        ""
+        </Box>
       )}
     </Layout>
   );

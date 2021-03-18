@@ -592,8 +592,8 @@ export class UserResolver {
       if (targetUser) {
         await View.create({
           liked,
-          targetId: userId,
-          viewerId: targetUserId,
+          targetId: targetUserId,
+          viewerId: userId,
         }).save();
         targetUser.numSwipes = targetUser.numSwipes || 0 + 1;
         if (liked) {
@@ -646,8 +646,9 @@ export class UserResolver {
         ) "user"
         where distance < $5 and id != $3 and
         id not in (
-          select "viewerId" from "view" 
-          where "viewerId" = $3
+          select "targetId" from 
+          "view" v inner join "user" u on u.id = v."targetId"
+          where "targetId" = u.id and "viewerId" = $3
         ) ORDER BY distance
         limit $4;
       `,
@@ -663,6 +664,8 @@ export class UserResolver {
             profileUrl: user.profileUrl,
             username: user.username,
             githubUsername: user.githubId ? user.username : "",
+            birthDate: user.birthDate as string,
+            flair: user.flair,
             feeds: feeds.map((feed) => {
               return {
                 title: feed.title,

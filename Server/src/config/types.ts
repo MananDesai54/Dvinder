@@ -226,6 +226,12 @@ export class DvinderProfile {
   @Field()
   githubUsername?: string;
 
+  @Field()
+  birthDate?: string;
+
+  @Field()
+  flair?: string;
+
   @Field(() => [FeedDataForProfile])
   feeds!: FeedDataForProfile[];
 }

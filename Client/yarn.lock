@@ -1225,7 +1225,7 @@
     "@graphql-codegen/plugin-helpers" "^1.18.2"
     "@graphql-tools/apollo-engine-loader" "^6"
     "@graphql-tools/code-file-loader" "^6"
-    "@graphql-tools/git-loader" "^6"
+    "@graphql-tools/git-loader" "^6.2.6"
     "@graphql-tools/github-loader" "^6"
     "@graphql-tools/graphql-file-loader" "^6"
     "@graphql-tools/json-file-loader" "^6"
@@ -1394,9 +1394,9 @@
     is-promise "4.0.0"
     tslib "~2.0.1"
 
-"@graphql-tools/git-loader@^6":
+"@graphql-tools/git-loader@^6.2.6":
   version "6.2.5"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/git-loader/-/git-loader-6.2.5.tgz#a4b3e8826964e1752a3d3a5a33a44b70b9694353"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/git-loader/-/git-loader-6.2.6.tgz#a4b3e8826964e1752a3d3a5a33a44b70b9694353"
   integrity sha512-WOQDSzazyPZMZUvymHBv5oZ80/mS7tc8XUNy2GmU5My8YRny5zu4fEgP4vQeFcD1trG3uoHUaJPGF7Mmvp6Yhg==
   dependencies:
     "@graphql-tools/graphql-tag-pluck" "^6.2.6"

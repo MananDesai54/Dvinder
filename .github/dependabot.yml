@@ -5,13 +5,13 @@
 
 version: 2
 updates:
-  - package-ecosystem: "javascript"
+  - package-ecosystem: "yarn"
     directory: "/Server"
     schedule:
       interval: "weekly"
       day: "sunday"
 
-  - package-ecosystem: "javascript"
+  - package-ecosystem: "yarn"
     directory: "/client"
     schedule:
       interval: "weekly"

@@ -46,7 +46,7 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({ feeds, profileUrl }) => {
       stories={feedsToShow}
       defaultInterval={5000}
       keyboardNavigation
-      height={"100%"}
+      height={"100%" as any}
     />
   );
 };

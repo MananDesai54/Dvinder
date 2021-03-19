@@ -632,7 +632,9 @@ export class UserResolver {
       } else {
         replacements.push(50);
       }
-      const users: User[] = await getConnection().query(
+      const users: (User & {
+        distance: number;
+      })[] = await getConnection().query(
         `
         select * from (
           SELECT  *,(
@@ -666,12 +668,15 @@ export class UserResolver {
             githubUsername: user.githubId ? user.username : "",
             birthDate: user.birthDate as string,
             flair: user.flair,
+            distance: +user.distance.toFixed(2),
             feeds: feeds.map((feed) => {
               return {
                 title: feed.title,
                 code: feed.code,
                 imageUrl: feed.imageUrl,
                 projectIdea: feed.projectIdea,
+                language: feed.language,
+                theme: feed.theme,
               };
             }),
           });

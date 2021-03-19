@@ -209,6 +209,12 @@ export class FeedDataForProfile {
   code?: String;
 
   @Field(() => String, { nullable: true })
+  theme?: String;
+
+  @Field(() => String, { nullable: true })
+  language?: String;
+
+  @Field(() => String, { nullable: true })
   projectIdea?: string;
 }
 
@@ -227,10 +233,13 @@ export class DvinderProfile {
   githubUsername?: string;
 
   @Field()
-  birthDate?: string;
+  birthDate!: string;
 
   @Field()
-  flair?: string;
+  flair!: string;
+
+  @Field()
+  distance!: number;
 
   @Field(() => [FeedDataForProfile])
   feeds!: FeedDataForProfile[];

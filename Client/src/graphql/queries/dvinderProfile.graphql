@@ -8,11 +8,14 @@ query DvinderProfile($limit: Int!, $distance: Int) {
       githubUsername
       birthDate
       flair
+      distance
       feeds {
         title
         imageUrl
         code
         projectIdea
+        theme
+        language
       }
     }
   }

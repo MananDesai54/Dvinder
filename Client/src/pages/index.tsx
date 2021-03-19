@@ -13,7 +13,6 @@ import CreateFeed from "../components/CreateFeed";
 import Layout from "../components/Layout";
 import ProfileSideBar from "../components/ProfileSideBar";
 import {
-  DvinderProfileDocument,
   useDvinderProfileQuery,
   useMeQuery,
 } from "../generated/apollo-graphql";
@@ -78,6 +77,7 @@ const Index = () => {
         top="1rem"
         right="4rem"
         onClick={() => setCreateFeed(true)}
+        zIndex={10000}
       >
         <FaPlus
           size={14}
@@ -107,16 +107,27 @@ const Index = () => {
       {!data && loading ? (
         <Spinner color="white" size="md" />
       ) : (
-        <Box>
+        <Box position="relative" h="100vh">
           {data?.dvinderProfile?.profiles.map(
             (profile, index) =>
               profile && (
-                <Box color="white" key={index}>
+                <Box
+                  color="white"
+                  key={index}
+                  bg="var(--background-extra2)"
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                  p="1rem"
+                  borderRadius="5px"
+                >
                   <Heading>{profile.username}</Heading>
                   <Text>{profile.bio}</Text>
                   <Text>{profile.birthDate}</Text>
                   <Text>{profile.profileUrl}</Text>
                   <Text>{profile.flair}</Text>
+                  <Text>{profile.distance}</Text>
                   <Text>
                     {profile.githubUsername || "Not connected with Github"}
                   </Text>

@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
 import Layout from "../components/Layout";
+import ProfileFeeds from "../components/ProfileFeeds";
 import ProfileSideBar from "../components/ProfileSideBar";
 import {
   useDvinderProfileQuery,
@@ -131,7 +132,10 @@ const Index = () => {
                   <Text>
                     {profile.githubUsername || "Not connected with Github"}
                   </Text>
-                  <Text>{profile.feeds.length}</Text>
+                  <ProfileFeeds
+                    feeds={profile.feeds}
+                    profileUrl={profile.profileUrl}
+                  />
                 </Box>
               )
           )}

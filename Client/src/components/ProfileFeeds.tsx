@@ -1,12 +1,17 @@
-import { FC, useEffect, useState } from "react";
-import { FeedDataForProfile } from "../../../Server/src/config/types";
-import Editor from "./CodeEditor";
+import React, { FC, Fragment, useEffect, useState } from "react";
 import ProjectIdeaDisplay from "./ProjectIdeaDisplay";
-import Stories from "react-insta-stories";
 import { Story } from "react-insta-stories/dist/interfaces";
+import { FeedDataForProfile } from "../generated/apollo-graphql";
+import { isServer } from "../utils";
+const Editor = React.lazy(() => import("./CodeEditor"));
 
 interface ProfileFeedsProps {
-  feeds: FeedDataForProfile[];
+  feeds: ({
+    __typename?: "FeedDataForProfile" | undefined;
+  } & Pick<
+    FeedDataForProfile,
+    "code" | "title" | "imageUrl" | "projectIdea" | "theme" | "language"
+  >)[];
   profileUrl: string;
 }
 
@@ -15,40 +20,40 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({ feeds, profileUrl }) => {
     { url: profileUrl, type: "image" },
   ]);
   useEffect(() => {
-    const userFeeds = feeds.map((feed) => {
-      if (feed.code)
-        return {
-          content: () => (
-            <Editor
-              language={(feed.language as string) || ""}
-              theme={(feed.theme as string) || ""}
-              value={(feed.code as string) || ""}
-              readonly
-            />
-          ),
-        };
-      if (feed.projectIdea)
-        return {
-          content: () => (
-            <ProjectIdeaDisplay
-              title={feed.title}
-              projectIdea={(feed.projectIdea as string) || ""}
-            />
-          ),
-        };
-      if (feed.imageUrl) return { url: feed.imageUrl, type: "image" };
-    });
-    setFeedsToShow(userFeeds as Story[]);
+    if (feeds) {
+      const userFeeds: Story[] = feeds.map((feed) => {
+        if (feed.code)
+          return {
+            content: () =>
+              !isServer() ? (
+                <React.Suspense fallback={<Fragment></Fragment>}>
+                  <Editor
+                    language={(feed.language as string) || ""}
+                    theme={(feed.theme as string) || ""}
+                    value={feed.code || ""}
+                    readonly
+                  />
+                </React.Suspense>
+              ) : (
+                <p>Loading</p>
+              ),
+          };
+        else if (feed.projectIdea)
+          return {
+            content: () => (
+              <ProjectIdeaDisplay
+                title={feed.title}
+                projectIdea={(feed.projectIdea as string) || ""}
+              />
+            ),
+          };
+        else return { url: feed.imageUrl as string, type: "image" };
+      });
+      setFeedsToShow(userFeeds);
+    }
   }, []);
 
-  return (
-    <Stories
-      stories={feedsToShow}
-      defaultInterval={5000}
-      keyboardNavigation
-      height={"100%" as any}
-    />
-  );
+  return <p>Hello</p>;
 };
 
 export default ProfileFeeds;

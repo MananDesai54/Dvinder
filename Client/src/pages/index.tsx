@@ -3,7 +3,7 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
+  Image,
   Spinner,
   Text,
 } from "@chakra-ui/react";
@@ -18,7 +18,9 @@ import {
   useMeQuery,
 } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
+import { getAge } from "../utils/getUserAge";
 import { withApolloClient } from "../utils/withApollo";
+import Draggable from "react-draggable";
 
 /**
  * How SSR works
@@ -44,7 +46,7 @@ const Index = () => {
     {
       variables: {
         limit: 10,
-        distance: 600,
+        distance: 100,
       },
       notifyOnNetworkStatusChange: true,
       skip: !isAuth,
@@ -112,31 +114,71 @@ const Index = () => {
           {data?.dvinderProfile?.profiles.map(
             (profile, index) =>
               profile && (
-                <Box
-                  color="white"
-                  key={index}
-                  bg="var(--background-extra2)"
-                  position="absolute"
-                  top="50%"
-                  left="50%"
-                  transform="translate(-50%, -50%)"
-                  p="1rem"
-                  borderRadius="5px"
-                >
-                  <Heading>{profile.username}</Heading>
-                  <Text>{profile.bio}</Text>
-                  <Text>{profile.birthDate}</Text>
-                  <Text>{profile.profileUrl}</Text>
-                  <Text>{profile.flair}</Text>
-                  <Text>{profile.distance}</Text>
-                  <Text>
-                    {profile.githubUsername || "Not connected with Github"}
-                  </Text>
-                  <ProfileFeeds
-                    feeds={profile.feeds}
-                    profileUrl={profile.profileUrl}
-                  />
-                </Box>
+                <Draggable key={index} axis="x" handle="">
+                  <Flex
+                    color="white"
+                    bg="var(--background-secondary)"
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%)"
+                    borderRadius="5px"
+                    style={{
+                      width: "95%",
+                      maxWidth: "400px",
+                      height: "90vh",
+                      maxHeight: "600px",
+                    }}
+                    flexDirection="column"
+                    draggable
+                    cursor="grab"
+                  >
+                    <Box
+                      flex="1"
+                      borderTopLeftRadius="5px"
+                      borderTopRightRadius="5px"
+                      overflow="hidden"
+                    >
+                      <ProfileFeeds
+                        feeds={profile.feeds}
+                        profileUrl={profile.profileUrl}
+                      />
+                    </Box>
+                    <Flex
+                      bg="#000"
+                      borderBottomLeftRadius="5px"
+                      borderBottomRightRadius="5px"
+                      p="1rem"
+                    >
+                      <Image
+                        src={profile.profileUrl}
+                        alt={profile.username}
+                        h="50px"
+                        w="50px"
+                        borderRadius="50px"
+                      />
+                      <Box
+                        flex={1}
+                        noOfLines={1}
+                        color="var(--text-primary)"
+                        ml="0.5rem"
+                      >
+                        <Flex alignItems="center">
+                          <Text fontSize="1.2rem" fontWeight="bold">
+                            {profile.username}
+                          </Text>
+                          {","}
+                          <Text mx="0.3rem">{getAge(profile.birthDate)}</Text>
+                          <Image
+                            src={`https://img.icons8.com/color/24/000000/${profile.flair}`}
+                            alt={profile.flair || "Image"}
+                          />
+                        </Flex>
+                        <Text fontSize="0.9rem">{profile.bio}</Text>
+                      </Box>
+                    </Flex>
+                  </Flex>
+                </Draggable>
               )
           )}
         </Box>

@@ -26,6 +26,7 @@
     "react": "^17.0.1",
     "react-codemirror2": "^7.2.1",
     "react-dom": "^17.0.1",
+    "react-draggable": "^4.4.3",
     "react-dropzone": "^11.3.1",
     "react-github-login": "^1.0.3",
     "react-icons": "^4.2.0",

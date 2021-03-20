@@ -29,6 +29,8 @@ const ProjectIdeaDisplay: FC<ProjectIdeaDisplayProps> = ({
       style={{
         background: color.current,
       }}
+      h="100%"
+      w="100%"
     >
       <Box
         w="100%"

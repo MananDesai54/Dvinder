@@ -58,18 +58,6 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
     }
   }, [data?.me, open]);
 
-  const getUserAge = () => {
-    let array: any;
-    if (data?.me?.birthDate?.includes("/")) {
-      array = data?.me?.birthDate?.split("/");
-    } else if (data?.me?.birthDate?.includes("-")) {
-      array = data?.me?.birthDate?.split("-");
-    } else if (data?.me?.birthDate?.includes(".")) {
-      array = data?.me?.birthDate?.split(".");
-    }
-    return getAge(new Date(array[2], array[1], array[0]));
-  };
-
   useIsAuth();
 
   return (
@@ -115,7 +103,7 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
               >
                 <span>
                   {data?.me?.username.toUpperCase()},{" "}
-                  {data?.me?.birthDate && getUserAge()}
+                  {data?.me?.birthDate && getAge(data.me.birthDate)}
                 </span>
               </Flex>
               <p

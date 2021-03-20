@@ -46,11 +46,18 @@ const Index = () => {
     {
       variables: {
         limit: 10,
-        distance: 100,
+        distance: 1500,
       },
       notifyOnNetworkStatusChange: true,
       skip: !isAuth,
     }
+  );
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState<{ x: number; y: number }[]>(
+    Array(data?.dvinderProfile?.profiles.length).fill({ x: 0, y: 0 })
+  );
+  const [profiles, setProfiles] = useState(
+    data?.dvinderProfile?.profiles || []
   );
 
   if (!loading && !data) {
@@ -110,18 +117,67 @@ const Index = () => {
       {!data && loading ? (
         <Spinner color="white" size="md" />
       ) : (
-        <Box position="relative" h="100vh">
-          {data?.dvinderProfile?.profiles.map(
+        <Flex
+          position="relative"
+          h="100vh"
+          justifyContent="center"
+          alignItems="center"
+          w="100%"
+          overflow="hidden"
+        >
+          {profiles.map(
             (profile, index) =>
               profile && (
-                <Draggable key={index} axis="x" handle="">
+                <Draggable
+                  key={index}
+                  position={position[index]}
+                  onStop={(e: any) => {
+                    const diffX = e.clientX - dragStart.x;
+                    const diffY = e.clientY - dragStart.y;
+                    if (diffX < -100) {
+                      setPosition((prev) =>
+                        prev.map((item, _index) => {
+                          if (_index === index) {
+                            return {
+                              x: item.x + diffX,
+                              y: item.y + diffY,
+                            };
+                          }
+                          return item;
+                        })
+                      );
+                      console.log("Nope");
+                      setProfiles(
+                        profiles.filter((_, _index) => index !== _index)
+                      );
+                    } else if (diffX > 100) {
+                      setPosition((prev) =>
+                        prev.map((item, _index) => {
+                          if (_index === index) {
+                            return {
+                              x: item.x + diffX,
+                              y: item.y + diffY,
+                            };
+                          }
+                          return item;
+                        })
+                      );
+                      console.log("Like");
+                      setProfiles(
+                        profiles.filter((_, _index) => index !== _index)
+                      );
+                    } else {
+                      console.log("Don't react");
+                    }
+                  }}
+                  onStart={(e: any) =>
+                    setDragStart({ x: e.clientX, y: e.clientY })
+                  }
+                >
                   <Flex
                     color="white"
                     bg="var(--background-secondary)"
                     position="absolute"
-                    top="50%"
-                    left="50%"
-                    transform="translate(-50%, -50%)"
                     borderRadius="5px"
                     style={{
                       width: "95%",
@@ -130,7 +186,6 @@ const Index = () => {
                       maxHeight: "600px",
                     }}
                     flexDirection="column"
-                    draggable
                     cursor="grab"
                   >
                     <Box
@@ -181,7 +236,7 @@ const Index = () => {
                 </Draggable>
               )
           )}
-        </Box>
+        </Flex>
       )}
     </Layout>
   );

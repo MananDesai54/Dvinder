@@ -12,7 +12,7 @@ updates:
       day: "sunday"
 
   - package-ecosystem: "npm"
-    directory: "/client"
+    directory: "/Client"
     schedule:
       interval: "weekly"
       day: "sunday"

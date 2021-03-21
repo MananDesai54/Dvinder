@@ -22,9 +22,9 @@ export class Match extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field()
-  @Column()
-  userId1!: string;
+  @Field(() => Int)
+  @Column({ type: "int" })
+  userId1!: number;
 
   @ManyToOne(() => User, (u) => u.matches1, {
     onDelete: "CASCADE",
@@ -32,9 +32,9 @@ export class Match extends BaseEntity {
   @JoinColumn({ name: "userId1" })
   user1!: Promise<User>;
 
-  @Field()
-  @Column()
-  userId2!: string;
+  @Field(() => Int)
+  @Column({ type: "int" })
+  userId2!: number;
 
   @ManyToOne(() => User, (u) => u.matches2, {
     onDelete: "CASCADE",

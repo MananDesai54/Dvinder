@@ -112,6 +112,7 @@ export type DvinderProfileArray = {
 
 export type DvinderProfile = {
   __typename?: 'DvinderProfile';
+  userId: Scalars['Int'];
   username: Scalars['String'];
   profileUrl: Scalars['String'];
   bio: Scalars['String'];
@@ -152,7 +153,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   deleteUser: Scalars['Boolean'];
   placeSearchAutoCorrect: PlaceSearchResult;
-  viewProfile: Scalars['Boolean'];
+  viewProfile: ViewResult;
   createFeed: FeedResponse;
   updateFeed: FeedResponse;
   deleteFeed: Scalars['Boolean'];
@@ -222,7 +223,7 @@ export type MutationPlaceSearchAutoCorrectArgs = {
 
 export type MutationViewProfileArgs = {
   liked: Scalars['Boolean'];
-  targetUserId: Scalars['Float'];
+  targetUserId: Scalars['Int'];
 };
 
 
@@ -290,6 +291,13 @@ export type PlaceSearchResult = {
   __typename?: 'PlaceSearchResult';
   status: Scalars['String'];
   predictions: Array<Scalars['String']>;
+};
+
+export type ViewResult = {
+  __typename?: 'ViewResult';
+  success: Scalars['Boolean'];
+  isMatch?: Maybe<Scalars['Boolean']>;
+  matchedUser?: Maybe<User>;
 };
 
 export type FeedResponse = {
@@ -541,6 +549,24 @@ export type RegisterWithGithubMutation = (
   ) }
 );
 
+export type ViewProfileMutationVariables = Exact<{
+  liked: Scalars['Boolean'];
+  targetUserId: Scalars['Int'];
+}>;
+
+
+export type ViewProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { viewProfile: (
+    { __typename?: 'ViewResult' }
+    & Pick<ViewResult, 'success' | 'isMatch'>
+    & { matchedUser?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    )> }
+  ) }
+);
+
 export type VoteMutationVariables = Exact<{
   value: Scalars['Int'];
   feedId: Scalars['Int'];
@@ -565,7 +591,7 @@ export type DvinderProfileQuery = (
     & Pick<DvinderProfileArray, 'hasMore'>
     & { profiles: Array<(
       { __typename?: 'DvinderProfile' }
-      & Pick<DvinderProfile, 'username' | 'profileUrl' | 'bio' | 'githubUsername' | 'birthDate' | 'flair' | 'distance'>
+      & Pick<DvinderProfile, 'userId' | 'username' | 'profileUrl' | 'bio' | 'githubUsername' | 'birthDate' | 'flair' | 'distance'>
       & { feeds: Array<(
         { __typename?: 'FeedDataForProfile' }
         & Pick<FeedDataForProfile, 'title' | 'imageUrl' | 'code' | 'projectIdea' | 'theme' | 'language'>
@@ -1129,6 +1155,43 @@ export function useRegisterWithGithubMutation(baseOptions?: Apollo.MutationHookO
 export type RegisterWithGithubMutationHookResult = ReturnType<typeof useRegisterWithGithubMutation>;
 export type RegisterWithGithubMutationResult = Apollo.MutationResult<RegisterWithGithubMutation>;
 export type RegisterWithGithubMutationOptions = Apollo.BaseMutationOptions<RegisterWithGithubMutation, RegisterWithGithubMutationVariables>;
+export const ViewProfileDocument = gql`
+    mutation ViewProfile($liked: Boolean!, $targetUserId: Int!) {
+  viewProfile(liked: $liked, targetUserId: $targetUserId) {
+    success
+    isMatch
+    matchedUser {
+      username
+    }
+  }
+}
+    `;
+export type ViewProfileMutationFn = Apollo.MutationFunction<ViewProfileMutation, ViewProfileMutationVariables>;
+
+/**
+ * __useViewProfileMutation__
+ *
+ * To run a mutation, you first call `useViewProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useViewProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [viewProfileMutation, { data, loading, error }] = useViewProfileMutation({
+ *   variables: {
+ *      liked: // value for 'liked'
+ *      targetUserId: // value for 'targetUserId'
+ *   },
+ * });
+ */
+export function useViewProfileMutation(baseOptions?: Apollo.MutationHookOptions<ViewProfileMutation, ViewProfileMutationVariables>) {
+        return Apollo.useMutation<ViewProfileMutation, ViewProfileMutationVariables>(ViewProfileDocument, baseOptions);
+      }
+export type ViewProfileMutationHookResult = ReturnType<typeof useViewProfileMutation>;
+export type ViewProfileMutationResult = Apollo.MutationResult<ViewProfileMutation>;
+export type ViewProfileMutationOptions = Apollo.BaseMutationOptions<ViewProfileMutation, ViewProfileMutationVariables>;
 export const VoteDocument = gql`
     mutation Vote($value: Int!, $feedId: Int!) {
   vote(value: $value, feedId: $feedId)
@@ -1165,6 +1228,7 @@ export const DvinderProfileDocument = gql`
   dvinderProfile(limit: $limit, distance: $distance) {
     hasMore
     profiles {
+      userId
       username
       profileUrl
       bio

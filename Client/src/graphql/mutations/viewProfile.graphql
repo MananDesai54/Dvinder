@@ -1,0 +1,9 @@
+mutation ViewProfile($liked: Boolean!, $targetUserId: Int!) {
+  viewProfile(liked: $liked, targetUserId: $targetUserId) {
+    success
+    isMatch
+    matchedUser {
+      username
+    }
+  }
+}

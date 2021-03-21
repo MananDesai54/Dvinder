@@ -7,14 +7,17 @@ import { FaHeart, FaTimes } from "react-icons/fa";
 import {
   DvinderProfile,
   FeedDataForProfile,
+  useViewProfileMutation,
 } from "../generated/apollo-graphql";
 import { getAge } from "../utils/getUserAge";
+import { reactToProfile } from "../utils/reactToProfile";
 import ProfileFeeds from "./ProfileFeeds";
 
 interface DraggableCardProps {
   userProfiles: Array<
     { __typename?: "DvinderProfile" } & Pick<
       DvinderProfile,
+      | "userId"
       | "username"
       | "profileUrl"
       | "bio"
@@ -45,6 +48,9 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
   const [isTouched, setIsTouched] = useState<boolean[]>(
     Array(profiles.length).fill(false)
   );
+
+  const [viewProfile, { loading }] = useViewProfileMutation();
+
   return (
     <Fragment>
       {profiles &&
@@ -208,7 +214,6 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
               </Draggable>
             )
         )}
-      ;
       <Flex
         position="absolute"
         bottom="1rem"
@@ -223,6 +228,7 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
           icon={<FaTimes />}
           fontSize="1.5rem"
           borderRadius="100vw"
+          onClick={() => reactToProfile(viewProfile, profiles[0].userId, false)}
         />
         <IconButton
           style={{
@@ -232,6 +238,7 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
           icon={<FaHeart />}
           fontSize="1.5rem"
           borderRadius="100vw"
+          onClick={() => reactToProfile(viewProfile, profiles[0].userId, false)}
         />
       </Flex>
     </Fragment>

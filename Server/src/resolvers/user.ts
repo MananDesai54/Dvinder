@@ -24,6 +24,7 @@ import {
   PlaceSearchResult,
   UserData,
   UserResponse,
+  ViewResult,
 } from "../config/types";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { Feed } from "../entities/Feed";
@@ -580,18 +581,28 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => ViewResult)
   @UseMiddleware(isAuth)
   async viewProfile(
     @Ctx() { req }: MyContext,
-    @Arg("targetUserId") targetUserId: number,
+    @Arg("targetUserId", () => Int) targetUserId: number,
     @Arg("liked") liked: boolean
-  ): Promise<Boolean> {
+  ): Promise<ViewResult> {
     const { userId } = req.session;
     if (userId === targetUserId) {
-      return false;
+      return {
+        success: false,
+      };
     }
     try {
+      const isExist = await View.findOne({
+        where: { targetId: targetUserId, viewerId: userId },
+      });
+      if (isExist) {
+        return {
+          success: false,
+        };
+      }
       const targetUser = await User.findOne(targetUserId);
       if (targetUser) {
         await View.create({
@@ -605,20 +616,34 @@ export class UserResolver {
           const user = await View.findOne({
             where: { targetId: userId, viewerId: targetUserId },
           });
-          if (user) {
-            if (user.liked) {
-              await Match.create({});
-            }
+          if (user && user.liked) {
+            await targetUser.save();
+            await Match.create({
+              userId1: userId,
+              userId2: targetUserId,
+            }).save();
+            return {
+              success: true,
+              isMatch: true,
+              matchedUser: targetUser,
+            };
           }
         }
         await targetUser.save();
-        return true;
+        return {
+          success: true,
+          isMatch: false,
+        };
       } else {
-        return false;
+        return {
+          success: false,
+        };
       }
     } catch (error) {
       console.log(error.message);
-      return false;
+      return {
+        success: false,
+      };
     }
   }
 
@@ -674,6 +699,7 @@ export class UserResolver {
         users.slice(0, realLimit).map(async (user) => {
           const feeds = await Feed.find({ where: { creatorId: user.id } });
           responseArray.push({
+            userId: user.id,
             bio: user.bio,
             profileUrl: user.profileUrl,
             username: user.username,

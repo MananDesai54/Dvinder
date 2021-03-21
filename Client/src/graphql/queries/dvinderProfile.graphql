@@ -2,6 +2,7 @@ query DvinderProfile($limit: Int!, $distance: Int) {
   dvinderProfile(limit: $limit, distance: $distance) {
     hasMore
     profiles {
+      userId
       username
       profileUrl
       bio

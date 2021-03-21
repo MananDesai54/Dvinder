@@ -220,6 +220,9 @@ export class FeedDataForProfile {
 
 @ObjectType()
 export class DvinderProfile {
+  @Field(() => Int)
+  userId!: number;
+
   @Field()
   username!: string;
 
@@ -252,4 +255,16 @@ export class DvinderProfileArray {
 
   @Field(() => Boolean)
   hasMore!: boolean;
+}
+
+@ObjectType()
+export class ViewResult {
+  @Field(() => Boolean)
+  success!: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  isMatch?: boolean;
+
+  @Field(() => User, { nullable: true })
+  matchedUser?: User;
 }

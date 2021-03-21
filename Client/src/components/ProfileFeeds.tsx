@@ -75,7 +75,6 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
             isLiked ? "var(--color-success)" : "var(--color-danger)"
           }`}
           transform="rotate(-20deg)"
-          w="100%"
         >
           <Text
             style={{

@@ -8,6 +8,7 @@ User.sql
 test-images
 createUrqlClientUsed.ts
 createUrqlClientNotUsed.ts
+techStack.md
 
 # Logs
 logs

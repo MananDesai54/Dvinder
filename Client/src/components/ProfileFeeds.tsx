@@ -2,7 +2,7 @@ import React, { FC, Fragment } from "react";
 import ProjectIdeaDisplay from "./ProjectIdeaDisplay";
 import { FeedDataForProfile } from "../generated/apollo-graphql";
 import { isServer } from "../utils";
-import { Box, Text } from "@chakra-ui/layout";
+import { Box, Flex, Text } from "@chakra-ui/layout";
 import { Image } from "@chakra-ui/image";
 const Editor = React.lazy(() => import("./CodeEditor"));
 
@@ -26,25 +26,64 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
 }) => {
   return (
     <Box w="100%" h="100%" position="relative">
-      <Box
-        px={2}
-        py={1}
-        borderRadius="10px"
-        fontSize="1.5rem"
-        fontWeight="bold"
+      {feeds.length === 0 && (
+        <Image
+          src={profileUrl}
+          alt="profilePhoto"
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          draggable={false}
+        />
+      )}
+      <Flex
         position="absolute"
         top="1rem"
         left="1rem"
-        border="2px solid red"
+        right="1rem"
+        zIndex={10000}
       >
-        <Text
-          style={{
-            color: "red",
-          }}
+        {feeds.length === 0 ? (
+          <Box height="5px" flex={1} borderRadius="10px" bg="white" />
+        ) : (
+          Array(feeds.length)
+            .fill(0)
+            .map((_, index: number) => (
+              <Box
+                key={index}
+                height="5px"
+                flex={1}
+                borderRadius="10px"
+                bg="white"
+              />
+            ))
+        )}
+      </Flex>
+      {isTouched && (
+        <Box
+          px={2}
+          py={1}
+          borderRadius="10px"
+          fontSize="1.5rem"
+          fontWeight="bold"
+          position="absolute"
+          top="2rem"
+          left="2rem"
+          border={`2px solid ${
+            isLiked ? "var(--color-success)" : "var(--color-danger)"
+          }`}
+          transform="rotate(-20deg)"
         >
-          {isLiked ? "Like" : "Nope"}
-        </Text>
-      </Box>
+          <Text
+            style={{
+              color: isLiked ? "var(--color-success)" : "var(--color-danger)",
+            }}
+          >
+            {isLiked ? "Like" : "Nope"}
+          </Text>
+        </Box>
+      )}
       {feeds.map((feed, index) => {
         if (feed.code) {
           return isServer() ? (

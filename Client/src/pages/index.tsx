@@ -21,6 +21,7 @@ import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
 import { withApolloClient } from "../utils/withApollo";
 import Draggable from "react-draggable";
+import DraggableCard from "../components/DraggableCard";
 
 /**
  * How SSR works
@@ -46,18 +47,11 @@ const Index = () => {
     {
       variables: {
         limit: 10,
-        distance: 1500,
+        distance: 600,
       },
       notifyOnNetworkStatusChange: true,
       skip: !isAuth,
     }
-  );
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [position, setPosition] = useState<{ x: number; y: number }[]>(
-    Array(data?.dvinderProfile?.profiles.length).fill({ x: 0, y: 0 })
-  );
-  const [profiles, setProfiles] = useState(
-    data?.dvinderProfile?.profiles || []
   );
 
   if (!loading && !data) {
@@ -125,117 +119,7 @@ const Index = () => {
           w="100%"
           overflow="hidden"
         >
-          {profiles.map(
-            (profile, index) =>
-              profile && (
-                <Draggable
-                  key={index}
-                  position={position[index]}
-                  onStop={(e: any) => {
-                    const diffX = e.clientX - dragStart.x;
-                    const diffY = e.clientY - dragStart.y;
-                    if (diffX < -100) {
-                      setPosition((prev) =>
-                        prev.map((item, _index) => {
-                          if (_index === index) {
-                            return {
-                              x: item.x + diffX,
-                              y: item.y + diffY,
-                            };
-                          }
-                          return item;
-                        })
-                      );
-                      console.log("Nope");
-                      setProfiles(
-                        profiles.filter((_, _index) => index !== _index)
-                      );
-                    } else if (diffX > 100) {
-                      setPosition((prev) =>
-                        prev.map((item, _index) => {
-                          if (_index === index) {
-                            return {
-                              x: item.x + diffX,
-                              y: item.y + diffY,
-                            };
-                          }
-                          return item;
-                        })
-                      );
-                      console.log("Like");
-                      setProfiles(
-                        profiles.filter((_, _index) => index !== _index)
-                      );
-                    } else {
-                      console.log("Don't react");
-                    }
-                  }}
-                  onStart={(e: any) =>
-                    setDragStart({ x: e.clientX, y: e.clientY })
-                  }
-                >
-                  <Flex
-                    color="white"
-                    bg="var(--background-secondary)"
-                    position="absolute"
-                    borderRadius="5px"
-                    style={{
-                      width: "95%",
-                      maxWidth: "400px",
-                      height: "90vh",
-                      maxHeight: "600px",
-                    }}
-                    flexDirection="column"
-                    cursor="grab"
-                  >
-                    <Box
-                      flex="1"
-                      borderTopLeftRadius="5px"
-                      borderTopRightRadius="5px"
-                      overflow="hidden"
-                    >
-                      <ProfileFeeds
-                        feeds={profile.feeds}
-                        profileUrl={profile.profileUrl}
-                      />
-                    </Box>
-                    <Flex
-                      bg="#000"
-                      borderBottomLeftRadius="5px"
-                      borderBottomRightRadius="5px"
-                      p="1rem"
-                    >
-                      <Image
-                        src={profile.profileUrl}
-                        alt={profile.username}
-                        h="50px"
-                        w="50px"
-                        borderRadius="50px"
-                      />
-                      <Box
-                        flex={1}
-                        noOfLines={1}
-                        color="var(--text-primary)"
-                        ml="0.5rem"
-                      >
-                        <Flex alignItems="center">
-                          <Text fontSize="1.2rem" fontWeight="bold">
-                            {profile.username}
-                          </Text>
-                          {","}
-                          <Text mx="0.3rem">{getAge(profile.birthDate)}</Text>
-                          <Image
-                            src={`https://img.icons8.com/color/24/000000/${profile.flair}`}
-                            alt={profile.flair || "Image"}
-                          />
-                        </Flex>
-                        <Text fontSize="0.9rem">{profile.bio}</Text>
-                      </Box>
-                    </Flex>
-                  </Flex>
-                </Draggable>
-              )
-          )}
+          <DraggableCard userProfiles={data?.dvinderProfile?.profiles || []} />
         </Flex>
       )}
     </Layout>

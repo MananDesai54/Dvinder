@@ -12,6 +12,7 @@ import { View } from "./View";
 import { Feed } from "./Feed";
 import { Reaction } from "./Reaction";
 import { Updoot } from "./Updoot";
+import { Match } from "./Match";
 
 @ObjectType()
 @Entity()
@@ -111,11 +112,17 @@ export class User extends BaseEntity {
   @Column("int", { default: 0 })
   numLikes!: number;
 
-  @OneToMany(() => View, (m) => m.viewer)
+  @OneToMany(() => View, (v) => v.viewer)
   views!: View[];
 
-  @OneToMany(() => View, (m) => m.target)
+  @OneToMany(() => View, (v) => v.target)
   targets!: View[];
+
+  @OneToMany(() => Match, (m) => m.user1)
+  matches1!: Match[];
+
+  @OneToMany(() => Match, (m) => m.user2)
+  matches2!: Match[];
 
   @Field(() => String)
   @CreateDateColumn()

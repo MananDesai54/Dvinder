@@ -1,57 +1,67 @@
-// import {
-//   BaseEntity,
-//   Column,
-//   CreateDateColumn,
-//   Entity,
-//   JoinColumn,
-//   ManyToOne,
-//   OneToMany,
-//   PrimaryGeneratedColumn,
-//   Unique,
-//   UpdateDateColumn,
-// } from "typeorm";
-// // import { Message } from "./Message";
-// import { User } from "./User";
+import { Field, Int, ObjectType } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  // OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from "typeorm";
+// import { Message } from "./Message";
+import { User } from "./User";
 
-// @Unique(["userId1", "userId2"])
-// @Entity()
-// export class Match extends BaseEntity {
-//   @PrimaryGeneratedColumn("uuid")
-//   id!: string;
+@ObjectType()
+@Unique(["userId1", "userId2"])
+@Entity()
+export class Match extends BaseEntity {
+  @Field(() => Int)
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-//   @Column()
-//   userId1!: string;
+  @Field()
+  @Column()
+  userId1!: string;
 
-//   // @ManyToOne(() => User, (u) => u.matches1, {
-//   //   onDelete: "CASCADE",
-//   // })
-//   // @JoinColumn({ name: "userId1" })
-//   user1!: Promise<User>;
+  @ManyToOne(() => User, (u) => u.matches1, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "userId1" })
+  user1!: Promise<User>;
 
-//   @Column()
-//   userId2!: string;
+  @Field()
+  @Column()
+  userId2!: string;
 
-//   // @ManyToOne(() => User, (u) => u.matches2, {
-//   //   onDelete: "CASCADE",
-//   // })
-//   // @JoinColumn({ name: "userId2" })
-//   // user2!: Promise<User>;
+  @ManyToOne(() => User, (u) => u.matches2, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "userId2" })
+  user2!: Promise<User>;
 
-//   @Column("boolean", { default: false })
-//   read1!: boolean;
+  @Field(() => Boolean)
+  @Column("boolean", { default: false })
+  read1!: boolean;
 
-//   @Column("boolean", { default: false })
-//   read2!: boolean;
+  @Field(() => Boolean)
+  @Column("boolean", { default: false })
+  read2!: boolean;
 
-//   @Column("boolean", { default: false })
-//   unmatched!: boolean;
+  @Field(() => Boolean)
+  @Column("boolean", { default: false })
+  unmatched!: boolean;
 
-//   // @OneToMany(() => Message, (m) => m.match)
-//   // messages!: Promise<Message[]>;
+  // @OneToMany(() => Message, (m) => m.match)
+  // messages!: Promise<Message[]>;
 
-//   @CreateDateColumn()
-//   createdAt!: Date;
+  @Field(() => String)
+  @CreateDateColumn()
+  createdAt!: Date;
 
-//   @UpdateDateColumn()
-//   updatedAt!: Date;
-// }
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}

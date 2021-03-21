@@ -1,27 +1,16 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Image,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, Spinner } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import CreateFeed from "../components/CreateFeed";
+import DraggableCard from "../components/DraggableCard";
 import Layout from "../components/Layout";
-import ProfileFeeds from "../components/ProfileFeeds";
 import ProfileSideBar from "../components/ProfileSideBar";
 import {
   useDvinderProfileQuery,
   useMeQuery,
 } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
-import { getAge } from "../utils/getUserAge";
 import { withApolloClient } from "../utils/withApollo";
-import Draggable from "react-draggable";
-import DraggableCard from "../components/DraggableCard";
 
 /**
  * How SSR works
@@ -47,7 +36,7 @@ const Index = () => {
     {
       variables: {
         limit: 10,
-        distance: 500,
+        distance: 600,
       },
       notifyOnNetworkStatusChange: true,
       skip: !isAuth,

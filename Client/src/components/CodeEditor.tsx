@@ -115,6 +115,8 @@ interface EditorProps {
   language: string;
   theme: string;
   readonly?: boolean;
+  notLineNumbers?: boolean;
+  autoFocus?: boolean;
 }
 
 const AceEditor: FC<EditorProps> = (props) => {
@@ -124,10 +126,10 @@ const AceEditor: FC<EditorProps> = (props) => {
       options={{
         mode: props.language,
         theme: props.theme,
-        lineNumbers: true,
+        lineNumbers: !props.notLineNumbers,
         lineWrapping: true,
         spellCheck: true,
-        autofocus: !props.readonly,
+        autofocus: !props.readonly || props.autoFocus,
         readonly: !!props.readonly,
       }}
       onChange={(editor, data, value) => {}}

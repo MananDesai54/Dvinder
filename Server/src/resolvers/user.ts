@@ -27,6 +27,7 @@ import {
 } from "../config/types";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { Feed } from "../entities/Feed";
+import { Match } from "../entities/Match";
 import { User } from "../entities/User";
 import { View } from "../entities/View";
 import { isAuth } from "../middleware/isAuth";
@@ -587,6 +588,9 @@ export class UserResolver {
     @Arg("liked") liked: boolean
   ): Promise<Boolean> {
     const { userId } = req.session;
+    if (userId === targetUserId) {
+      return false;
+    }
     try {
       const targetUser = await User.findOne(targetUserId);
       if (targetUser) {
@@ -598,6 +602,14 @@ export class UserResolver {
         targetUser.numSwipes = targetUser.numSwipes || 0 + 1;
         if (liked) {
           targetUser.numLikes = targetUser.numLikes || 0 + 1;
+          const user = await View.findOne({
+            where: { targetId: userId, viewerId: targetUserId },
+          });
+          if (user) {
+            if (user.liked) {
+              await Match.create({});
+            }
+          }
         }
         await targetUser.save();
         return true;

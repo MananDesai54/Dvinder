@@ -33,8 +33,11 @@ input[type="range"]::-moz-range-track {
   background: none;
 }
 
-.code-editor {
-  border-radius: 10px;
+.CodeMirror {
+  width: 100% !important;
+}
+.react-codemirror2 {
+  width: 100% !important;
 }
 
 canvas {

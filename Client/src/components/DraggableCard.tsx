@@ -1,7 +1,9 @@
+import { IconButton } from "@chakra-ui/button";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { FC, Fragment, useState } from "react";
 import Draggable from "react-draggable";
+import { FaHeart, FaTimes } from "react-icons/fa";
 import {
   DvinderProfile,
   FeedDataForProfile,
@@ -150,7 +152,7 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
                   style={{
                     width: "95%",
                     maxWidth: "400px",
-                    height: "90vh",
+                    height: "75vh",
                     maxHeight: "600px",
                   }}
                   flexDirection="column"
@@ -207,6 +209,31 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
             )
         )}
       ;
+      <Flex
+        position="absolute"
+        bottom="1rem"
+        w="200px"
+        justifyContent="space-between"
+      >
+        <IconButton
+          style={{
+            background: "var(--color-danger)",
+          }}
+          aria-label="nope"
+          icon={<FaTimes />}
+          fontSize="1.5rem"
+          borderRadius="100vw"
+        />
+        <IconButton
+          style={{
+            background: "var(--color-success)",
+          }}
+          aria-label="like"
+          icon={<FaHeart />}
+          fontSize="1.5rem"
+          borderRadius="100vw"
+        />
+      </Flex>
     </Fragment>
   );
 };

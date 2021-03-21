@@ -25,7 +25,7 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
   isTouched,
 }) => {
   return (
-    <Box w="100%" h="100%" position="relative">
+    <Flex w="100%" h="100%" position="relative">
       {feeds.length === 0 && (
         <Image
           src={profileUrl}
@@ -51,6 +51,7 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
             .fill(0)
             .map((_, index: number) => (
               <Box
+                ml={1}
                 key={index}
                 height="5px"
                 flex={1}
@@ -74,6 +75,7 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
             isLiked ? "var(--color-success)" : "var(--color-danger)"
           }`}
           transform="rotate(-20deg)"
+          w="100%"
         >
           <Text
             style={{
@@ -110,7 +112,7 @@ const ProfileFeeds: FC<ProfileFeedsProps> = ({
           );
         }
       })}
-    </Box>
+    </Flex>
   );
 };
 

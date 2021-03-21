@@ -47,7 +47,7 @@ const Index = () => {
     {
       variables: {
         limit: 10,
-        distance: 600,
+        distance: 500,
       },
       notifyOnNetworkStatusChange: true,
       skip: !isAuth,

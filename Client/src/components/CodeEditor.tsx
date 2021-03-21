@@ -134,7 +134,6 @@ const AceEditor: FC<EditorProps> = (props) => {
       onBeforeChange={
         props.onChange
           ? (editor, data, value) => {
-              console.log("Hello");
               props.onChange(value);
             }
           : () => {}

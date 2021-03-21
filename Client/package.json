@@ -22,7 +22,7 @@
     "isomorphic-fetch": "^3.0.0",
     "next": "latest",
     "next-apollo": "^5.0.4",
-    "next-urql": "^2.1.1",
+    "next-urql": "^2.2.0",
     "react": "^17.0.1",
     "react-codemirror2": "^7.2.1",
     "react-dom": "^17.0.1",

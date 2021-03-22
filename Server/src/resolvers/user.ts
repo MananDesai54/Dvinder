@@ -730,4 +730,26 @@ export class UserResolver {
       return null;
     }
   }
+
+  @Query(() => [User], { nullable: true })
+  @UseMiddleware(isAuth)
+  async matches(@Ctx() { req }: MyContext): Promise<User[] | null> {
+    const { userId } = req.session;
+    try {
+      const matches: Match[] = await getConnection().query(
+        `
+        select * from match where "userId1" = $1 or "userId2" = $1
+      `,
+        [userId]
+      );
+      const matchIds = matches.map((match) =>
+        match.userId1 === userId ? match.userId2 : match.userId1
+      );
+      const users = await User.findByIds(matchIds);
+      return users;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
 }

@@ -18,9 +18,10 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
-import { useMeQuery } from "../generated/apollo-graphql";
+import { useMatchesQuery, useMeQuery } from "../generated/apollo-graphql";
 import { useIsAuth } from "../hooks/useIsAuth";
 import { getAge } from "../utils/getUserAge";
+import Matches from "./Matches";
 import UserProfile from "./UserProfile";
 
 interface ProfileSideBarProps {
@@ -32,6 +33,7 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
   const [repos, setRepos] = useState([]);
   const [fetchingRepos, setFetchingRepos] = useState(false);
   const { data } = useMeQuery();
+  const { data: matches } = useMatchesQuery();
 
   useEffect(() => {
     if (open && data?.me && data.me.githubId) {
@@ -143,7 +145,7 @@ const ProfileSideBar: FC<ProfileSideBarProps> = ({ open, onClose }) => {
                     />
                   </TabPanel>
                   <TabPanel>
-                    <p>Matches</p>
+                    <Matches matches={matches?.matches || []} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>

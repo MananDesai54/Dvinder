@@ -1,0 +1,5 @@
+query Matches {
+  matches {
+    ...RegularUser
+  }
+}

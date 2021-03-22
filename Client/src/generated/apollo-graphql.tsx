@@ -21,6 +21,7 @@ export type Query = {
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
   dvinderProfile?: Maybe<DvinderProfileArray>;
+  matches?: Maybe<Array<User>>;
   feeds?: Maybe<FeedPagination>;
   userFeeds: Array<Feed>;
   otherUserFeeds: Array<Feed>;
@@ -616,6 +617,17 @@ export type FeedsQuery = (
       & RegularFeedFragment
     )> }
   )> }
+);
+
+export type MatchesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MatchesQuery = (
+  { __typename?: 'Query' }
+  & { matches?: Maybe<Array<(
+    { __typename?: 'User' }
+    & RegularUserFragment
+  )>> }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1312,6 +1324,38 @@ export function useFeedsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Feed
 export type FeedsQueryHookResult = ReturnType<typeof useFeedsQuery>;
 export type FeedsLazyQueryHookResult = ReturnType<typeof useFeedsLazyQuery>;
 export type FeedsQueryResult = Apollo.QueryResult<FeedsQuery, FeedsQueryVariables>;
+export const MatchesDocument = gql`
+    query Matches {
+  matches {
+    ...RegularUser
+  }
+}
+    ${RegularUserFragmentDoc}`;
+
+/**
+ * __useMatchesQuery__
+ *
+ * To run a query within a React component, call `useMatchesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMatchesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMatchesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMatchesQuery(baseOptions?: Apollo.QueryHookOptions<MatchesQuery, MatchesQueryVariables>) {
+        return Apollo.useQuery<MatchesQuery, MatchesQueryVariables>(MatchesDocument, baseOptions);
+      }
+export function useMatchesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MatchesQuery, MatchesQueryVariables>) {
+          return Apollo.useLazyQuery<MatchesQuery, MatchesQueryVariables>(MatchesDocument, baseOptions);
+        }
+export type MatchesQueryHookResult = ReturnType<typeof useMatchesQuery>;
+export type MatchesLazyQueryHookResult = ReturnType<typeof useMatchesLazyQuery>;
+export type MatchesQueryResult = Apollo.QueryResult<MatchesQuery, MatchesQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

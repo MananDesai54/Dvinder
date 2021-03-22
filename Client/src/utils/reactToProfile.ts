@@ -29,6 +29,7 @@ export const reactToProfile = async (
       console.log("Not able to react to profile");
     } else {
       console.log("reacted to profile", targetUserId, liked);
+      console.log(response.data?.viewProfile);
     }
   } catch (error) {
     console.log(error.message);

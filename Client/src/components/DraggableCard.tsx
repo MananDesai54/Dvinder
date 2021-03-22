@@ -76,9 +76,31 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
                       })
                     );
                     console.log("Nope");
-                    setProfiles(
-                      profiles.filter((_, _index) => index !== _index)
-                    );
+                    console.log(profiles[profiles.length - 1].username);
+                    reactToProfile(
+                      viewProfile,
+                      profiles[profiles.length - 1].userId,
+                      true
+                    )
+                      .then(() => {
+                        setProfiles(
+                          profiles.filter((_, _index) => index !== _index)
+                        );
+                      })
+                      .catch((error) => {
+                        console.log(error.message);
+                        setPosition((prev) =>
+                          prev.map((item, _index) => {
+                            if (_index === index) {
+                              return {
+                                x: 0,
+                                y: 0,
+                              };
+                            }
+                            return item;
+                          })
+                        );
+                      });
                   } else if (diffX > 100) {
                     setPosition((prev) =>
                       prev.map((item, _index) => {
@@ -92,9 +114,31 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
                       })
                     );
                     console.log("Like");
-                    setProfiles(
-                      profiles.filter((_, _index) => index !== _index)
-                    );
+                    console.log(profiles[profiles.length - 1].username);
+                    reactToProfile(
+                      viewProfile,
+                      profiles[profiles.length - 1].userId,
+                      true
+                    )
+                      .then(() => {
+                        setProfiles(
+                          profiles.filter((_, _index) => index !== _index)
+                        );
+                      })
+                      .catch((error) => {
+                        console.log(error.message);
+                        setPosition((prev) =>
+                          prev.map((item, _index) => {
+                            if (_index === index) {
+                              return {
+                                x: 0,
+                                y: 0,
+                              };
+                            }
+                            return item;
+                          })
+                        );
+                      });
                   } else {
                     console.log("Don't react");
                   }
@@ -125,7 +169,7 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
                       );
                     }
                   } else if (diffX > 100) {
-                    if (!isLiked[index]) {
+                    if (!isLiked[index] || !isTouched[index]) {
                       setIsTouched((prev) =>
                         prev.map((item, _index) => {
                           if (index === _index) {
@@ -151,6 +195,7 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
                 }}
               >
                 <Flex
+                  boxShadow="0 0 20px 5px rgba(0, 0, 0, 0.2)"
                   color="white"
                   bg="var(--background-extra)"
                   position="absolute"
@@ -214,33 +259,59 @@ const DraggableCard: FC<DraggableCardProps> = ({ userProfiles }) => {
               </Draggable>
             )
         )}
-      <Flex
-        position="absolute"
-        bottom="1rem"
-        w="200px"
-        justifyContent="space-between"
-      >
-        <IconButton
-          style={{
-            background: "var(--color-danger)",
-          }}
-          aria-label="nope"
-          icon={<FaTimes />}
-          fontSize="1.5rem"
-          borderRadius="100vw"
-          onClick={() => reactToProfile(viewProfile, profiles[0].userId, false)}
-        />
-        <IconButton
-          style={{
-            background: "var(--color-success)",
-          }}
-          aria-label="like"
-          icon={<FaHeart />}
-          fontSize="1.5rem"
-          borderRadius="100vw"
-          onClick={() => reactToProfile(viewProfile, profiles[0].userId, false)}
-        />
-      </Flex>
+      {profiles.length > 0 && (
+        <Flex
+          position="absolute"
+          bottom="1rem"
+          w="200px"
+          justifyContent="space-between"
+        >
+          <IconButton
+            style={{
+              background: "var(--color-danger)",
+            }}
+            aria-label="nope"
+            icon={<FaTimes />}
+            fontSize="1.5rem"
+            borderRadius="100vw"
+            onClick={() =>
+              reactToProfile(
+                viewProfile,
+                profiles[profiles.length - 1].userId,
+                false
+              )
+                .then(() => {
+                  setProfiles((prev) => prev.slice(0, profiles.length - 1));
+                })
+                .catch((error) => {
+                  console.log(error.message);
+                })
+            }
+          />
+          <IconButton
+            style={{
+              background: "var(--color-success)",
+            }}
+            aria-label="like"
+            icon={<FaHeart />}
+            fontSize="1.5rem"
+            borderRadius="100vw"
+            onClick={() =>
+              reactToProfile(
+                viewProfile,
+                profiles[profiles.length - 1].userId,
+                true
+              )
+                .then(() => {
+                  setProfiles((prev) => prev.slice(0, profiles.length - 1));
+                })
+                .catch((error) => {
+                  console.log(error.message);
+                })
+            }
+          />
+        </Flex>
+      )}
     </Fragment>
   );
 };

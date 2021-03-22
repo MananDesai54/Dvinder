@@ -17,8 +17,8 @@ interface ProfileFeedsProps {
     "code" | "title" | "imageUrl" | "projectIdea" | "theme" | "language"
   >)[];
   profileUrl: string;
-  isLiked: boolean;
-  isTouched: boolean;
+  isLiked?: boolean;
+  isTouched?: boolean;
 }
 
 const ProfileFeeds: FC<ProfileFeedsProps> = ({

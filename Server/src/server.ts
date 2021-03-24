@@ -24,6 +24,8 @@ import { createUpdootLoader } from "./utils/createUpdootLoader";
 import { graphqlUploadExpress } from "graphql-upload";
 import { View } from "./entities/View";
 import { Match } from "./entities/Match";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 dotenv.config();
 
@@ -50,6 +52,7 @@ const main = async () => {
    * Preparing express server
    */
   const app = express();
+  const httpServer = createServer(app);
 
   app.use(
     cors({
@@ -109,6 +112,26 @@ const main = async () => {
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 
   /**
+   * Socket.io configuration
+   */
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "http://127.0.0.1:3000",
+    },
+  });
+  io.on("connection", (socket) => {
+    console.log("Connected");
+    socket.on("disconnecting", (reason) => {
+      console.log(reason, "Disconnected");
+      for (const room of socket.rooms) {
+        if (room !== socket.id) {
+          socket.to(room).emit("user has left", socket.id);
+        }
+      }
+    });
+  });
+
+  /**
    * Setup Apollo server for graphQL
    */
   const apolloServer = new ApolloServer({
@@ -125,10 +148,9 @@ const main = async () => {
     }),
     uploads: false,
   });
-
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(PORT, () =>
+  httpServer.listen(PORT, () =>
     console.log(`Server stated on http://127.0.0.1:${PORT}/`)
   );
 };

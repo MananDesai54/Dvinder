@@ -42,6 +42,7 @@ const Matches: FC<MatchesProps> = ({ matches }) => {
             match.user && (
               <Flex
                 key={match.user.id}
+                my={2}
                 style={{
                   padding: "0.5rem",
                   background: "var(--text-primary)",

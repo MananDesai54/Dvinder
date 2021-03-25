@@ -21,6 +21,13 @@ export type MyContext = {
   updootLoader: ReturnType<typeof createUpdootLoader>;
 };
 
+export type NewMessage = {
+  matchId: number;
+  senderId: number;
+  recipientId: number;
+  text: string;
+};
+
 export class ValidationField {
   constructor(
     public success: boolean,

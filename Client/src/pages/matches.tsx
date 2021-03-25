@@ -1,17 +1,50 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
+import { Input } from "@chakra-ui/input";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { useRouter } from "next/router";
-import { FC, useState } from "react";
-import { useMatchesQuery } from "../generated/apollo-graphql";
+import { FC, useEffect, useState } from "react";
+import { FaLaugh } from "react-icons/fa";
+import { MdSend } from "react-icons/md";
+import { useMatchesQuery, useMeQuery } from "../generated/apollo-graphql";
 import { withApolloClient } from "../utils/withApollo";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
+import { isServer } from "../utils";
+import { socket } from "../utils/socket";
 
 interface MatchesProps {}
 
 const Matches: FC<MatchesProps> = ({}) => {
   const router = useRouter();
   const { data } = useMatchesQuery();
+  const { data: user, loading } = useMeQuery();
   const [selectedMatch, setSelectedMatch] = useState(0);
+  const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!user?.me && !loading && !isServer()) {
+      router.replace("/auth/login");
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(data);
+    if (data && data.matches) {
+      socket.on("connect", () => {
+        socket.emit("startChat", data.matches![selectedMatch].match.id);
+      });
+      socket.on("new-message", (message) => {
+        console.log(message);
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    socket.emit("startChat", data!.matches![selectedMatch].match.id);
+  }, [selectedMatch]);
+
   return data?.matches ? (
     <Flex>
       <Box
@@ -32,17 +65,20 @@ const Matches: FC<MatchesProps> = ({}) => {
         </Text>
         {data &&
           data.matches?.map(
-            (match) =>
+            (match, index) =>
               match.user && (
                 <Flex
+                  cursor="pointer"
+                  onClick={() => setSelectedMatch(index)}
                   color="white"
                   key={match.user.id}
                   style={{
                     padding: "0.5rem",
                     background:
-                      match.match.id.toString() === router.query.mid
+                      selectedMatch === index
                         ? "rgb(76, 99, 201)"
                         : "transparent",
+                    transition: "all 400ms ease",
                   }}
                 >
                   <Avatar
@@ -105,7 +141,57 @@ const Matches: FC<MatchesProps> = ({}) => {
             background: "rgb(76, 99, 201, 0.2)",
           }}
           p="0.5rem"
-        ></Flex>
+          alignItems="center"
+        >
+          {!isServer() && openEmojiPicker && (
+            <Picker
+              set="apple"
+              theme="dark"
+              onSelect={(value: any) =>
+                setMessage((prev) => prev + value.native)
+              }
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          )}
+          <FaLaugh
+            size={30}
+            onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
+            style={{
+              cursor: "pointer",
+            }}
+          />
+          <Input
+            mx={2}
+            value={message}
+            placeholder="Your message.."
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <MdSend
+            size={30}
+            style={{
+              cursor: message.length === 0 ? "not-allowed" : "pointer",
+              color:
+                message.length === 0 ? "rgba(255, 255, 255, 0.2)" : "white",
+            }}
+            onClick={
+              message.length !== 0
+                ? () => {
+                    socket.emit("message", {
+                      matchId: data!.matches![selectedMatch].match.id,
+                      senderId: user?.me?.id,
+                      recipientId: data!.matches![selectedMatch].user.id,
+                      text: message,
+                    });
+                  }
+                : () => {}
+            }
+          />
+        </Flex>
       </Flex>
     </Flex>
   ) : (

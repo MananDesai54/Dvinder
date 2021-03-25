@@ -6,7 +6,6 @@ import { PROD } from "./constants";
 import morgan from "morgan";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { HelloResolver } from "./resolvers/hello";
 import { UserResolver } from "./resolvers/user";
 import Redis from "ioredis";
 import session from "express-session";
@@ -27,6 +26,7 @@ import { Match } from "./entities/Match";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { Message } from "./entities/Message";
+import { chatSocket } from "./resolvers/chat";
 
 dotenv.config();
 
@@ -121,15 +121,7 @@ const main = async () => {
     },
   });
   io.on("connection", (socket) => {
-    console.log("Connected");
-    socket.on("disconnecting", (reason) => {
-      console.log(reason, "Disconnected");
-      for (const room of socket.rooms) {
-        if (room !== socket.id) {
-          socket.to(room).emit("user has left", socket.id);
-        }
-      }
-    });
+    chatSocket(socket);
   });
 
   /**
@@ -137,7 +129,7 @@ const main = async () => {
    */
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver, FeedResolver],
+      resolvers: [UserResolver, FeedResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({

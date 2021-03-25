@@ -1,5 +1,33 @@
 query Matches {
   matches {
-    ...RegularUser
+    user {
+      id
+      username
+      email
+      createdAt
+      updatedAt
+      profileUrl
+      bio
+      flair
+      gender
+      showMe
+      minAge
+      maxAge
+      githubId
+      birthDate
+      lookingFor
+      address
+      latitude
+      longitude
+    }
+    match {
+      id
+      userId1
+      userId2
+      read1
+      read2
+      unmatched
+      createdAt
+    }
   }
 }

@@ -21,7 +21,7 @@ export type Query = {
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
   dvinderProfile?: Maybe<DvinderProfileArray>;
-  matches?: Maybe<Array<User>>;
+  matches?: Maybe<Array<MatchesResult>>;
   feeds?: Maybe<FeedPagination>;
   userFeeds: Array<Feed>;
   otherUserFeeds: Array<Feed>;
@@ -132,6 +132,24 @@ export type FeedDataForProfile = {
   theme?: Maybe<Scalars['String']>;
   language?: Maybe<Scalars['String']>;
   projectIdea?: Maybe<Scalars['String']>;
+};
+
+export type MatchesResult = {
+  __typename?: 'MatchesResult';
+  user: User;
+  match: Match;
+};
+
+export type Match = {
+  __typename?: 'Match';
+  id: Scalars['Int'];
+  userId1: Scalars['Int'];
+  userId2: Scalars['Int'];
+  read1: Scalars['Boolean'];
+  read2: Scalars['Boolean'];
+  unmatched: Scalars['Boolean'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type FeedPagination = {
@@ -625,8 +643,14 @@ export type MatchesQueryVariables = Exact<{ [key: string]: never; }>;
 export type MatchesQuery = (
   { __typename?: 'Query' }
   & { matches?: Maybe<Array<(
-    { __typename?: 'User' }
-    & RegularUserFragment
+    { __typename?: 'MatchesResult' }
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt' | 'profileUrl' | 'bio' | 'flair' | 'gender' | 'showMe' | 'minAge' | 'maxAge' | 'githubId' | 'birthDate' | 'lookingFor' | 'address' | 'latitude' | 'longitude'>
+    ), match: (
+      { __typename?: 'Match' }
+      & Pick<Match, 'id' | 'userId1' | 'userId2' | 'read1' | 'read2' | 'unmatched' | 'createdAt'>
+    ) }
   )>> }
 );
 
@@ -1327,10 +1351,38 @@ export type FeedsQueryResult = Apollo.QueryResult<FeedsQuery, FeedsQueryVariable
 export const MatchesDocument = gql`
     query Matches {
   matches {
-    ...RegularUser
+    user {
+      id
+      username
+      email
+      createdAt
+      updatedAt
+      profileUrl
+      bio
+      flair
+      gender
+      showMe
+      minAge
+      maxAge
+      githubId
+      birthDate
+      lookingFor
+      address
+      latitude
+      longitude
+    }
+    match {
+      id
+      userId1
+      userId2
+      read1
+      read2
+      unmatched
+      createdAt
+    }
   }
 }
-    ${RegularUserFragmentDoc}`;
+    `;
 
 /**
  * __useMatchesQuery__

@@ -26,6 +26,7 @@ import { View } from "./entities/View";
 import { Match } from "./entities/Match";
 import { Server } from "socket.io";
 import { createServer } from "http";
+import { Message } from "./entities/Message";
 
 dotenv.config();
 
@@ -43,7 +44,7 @@ const main = async () => {
     password: process.env.PG_PASSWORD,
     logging: true,
     synchronize: true,
-    entities: [User, Feed, Reaction, Updoot, View, Match],
+    entities: [User, Feed, Reaction, Updoot, View, Match, Message],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
   await conn.runMigrations();

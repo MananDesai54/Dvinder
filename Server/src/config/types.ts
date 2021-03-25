@@ -3,6 +3,7 @@ import { Session, SessionData } from "express-session";
 import { Redis } from "ioredis";
 import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { Feed } from "../entities/Feed";
+import { Match } from "../entities/Match";
 import { User } from "../entities/User";
 import { createUpdootLoader } from "../utils/createUpdootLoader";
 import { createUserLoader } from "../utils/createUserLoader";
@@ -267,4 +268,13 @@ export class ViewResult {
 
   @Field(() => User, { nullable: true })
   matchedUser?: User;
+}
+
+@ObjectType()
+export class MatchesResult {
+  @Field(() => User)
+  user!: User;
+
+  @Field(() => Match)
+  match!: Match;
 }

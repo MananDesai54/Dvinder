@@ -6,12 +6,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  // OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from "typeorm";
-// import { Message } from "./Message";
+import { Message } from "./Message";
 import { User } from "./User";
 
 @ObjectType()
@@ -54,8 +54,8 @@ export class Match extends BaseEntity {
   @Column("boolean", { default: false })
   unmatched!: boolean;
 
-  // @OneToMany(() => Message, (m) => m.match)
-  // messages!: Promise<Message[]>;
+  @OneToMany(() => Message, (m) => m.match)
+  messages!: Promise<Message[]>;
 
   @Field(() => String)
   @CreateDateColumn()

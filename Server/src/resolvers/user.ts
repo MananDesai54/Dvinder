@@ -19,6 +19,7 @@ import {
   DvinderProfileArray,
   ErrorResponse,
   ErrorSuccessResponse,
+  MatchesResult,
   MoreUserData,
   MyContext,
   PlaceSearchResult,
@@ -731,9 +732,9 @@ export class UserResolver {
     }
   }
 
-  @Query(() => [User], { nullable: true })
+  @Query(() => [MatchesResult], { nullable: true })
   @UseMiddleware(isAuth)
-  async matches(@Ctx() { req }: MyContext): Promise<User[] | null> {
+  async matches(@Ctx() { req }: MyContext): Promise<MatchesResult[] | null> {
     const { userId } = req.session;
     try {
       const matches: Match[] = await getConnection().query(
@@ -746,7 +747,10 @@ export class UserResolver {
         match.userId1 === userId ? match.userId2 : match.userId1
       );
       const users = await User.findByIds(matchIds);
-      return users;
+      return matches.map((match, index) => ({
+        user: users[index],
+        match,
+      }));
     } catch (error) {
       console.log(error.message);
       return null;

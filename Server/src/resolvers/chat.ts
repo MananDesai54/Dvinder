@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { Arg, Int, Query, Resolver } from "type-graphql";
+import { Arg, Int, Mutation, Resolver } from "type-graphql";
 import { NewMessage } from "../config/types";
 import { Message } from "../entities/Message";
 
@@ -23,7 +23,9 @@ export const chatSocket = (
         text,
       }).save();
       console.log(newMessage);
-      socket.broadcast.to(matchId.toString()).emit("new-message", newMessage);
+      socket.broadcast
+        .to(matchId.toString())
+        .emit("new-message", { ...newMessage, createdAt: Date.now() });
     }
   );
 
@@ -39,7 +41,7 @@ export const chatSocket = (
 
 @Resolver(Message)
 export class ChatResolver {
-  @Query(() => [Message], { nullable: true })
+  @Mutation(() => [Message], { nullable: true })
   async messages(
     @Arg("matchId", () => Int) matchId: number
   ): Promise<Message[] | null> {

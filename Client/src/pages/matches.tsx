@@ -6,21 +6,24 @@ import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import { FaLaugh } from "react-icons/fa";
 import { MdSend } from "react-icons/md";
-import { useMatchesQuery, useMeQuery } from "../generated/apollo-graphql";
+import {
+  Message,
+  useMatchesQuery,
+  useMeQuery,
+  useMessagesMutation,
+} from "../generated/apollo-graphql";
 import { withApolloClient } from "../utils/withApollo";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import { isServer } from "../utils";
 import { socket } from "../utils/socket";
+import { Maybe } from "graphql/jsutils/Maybe";
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+dayjs.extend(localizedFormat);
 
 interface MatchesProps {}
-
-export type NewMessage = {
-  matchId: number;
-  senderId: number;
-  recipientId: number;
-  text: string;
-};
 
 const Matches: FC<MatchesProps> = ({}) => {
   const router = useRouter();
@@ -29,11 +32,28 @@ const Matches: FC<MatchesProps> = ({}) => {
   const [selectedMatch, setSelectedMatch] = useState(0);
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<NewMessage[]>([]);
+  const [getMessages, { loading: fetchingMessages }] = useMessagesMutation();
+
+  const [messages, setMessages] = useState<
+    Maybe<
+      Array<
+        { __typename?: "Message" } & Pick<
+          Message,
+          "text" | "matchId" | "senderId" | "recipientId" | "createdAt"
+        >
+      >
+    >
+  >([]);
 
   useEffect(() => {
     if (!user?.me && !loading && !isServer()) {
       router.replace("/auth/login");
+    } else {
+      getMessages({ variables: { matchId: +(router.query.mid as any) } }).then(
+        (data) => {
+          setMessages(data.data?.messages);
+        }
+      );
     }
   }, []);
 
@@ -44,15 +64,22 @@ const Matches: FC<MatchesProps> = ({}) => {
       });
       socket.on("new-message", (message) => {
         console.log(message);
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => [...(prev || []), message]);
       });
     }
   }, [data]);
 
   useEffect(() => {
-    setMessages([]);
-    socket.emit("startChat", data!.matches![selectedMatch].match.id);
-  }, [selectedMatch]);
+    socket.emit(
+      "startChat",
+      router.query.id || data!.matches![selectedMatch].match.id
+    );
+    getMessages({ variables: { matchId: +(router.query.mid as any) } }).then(
+      (data) => {
+        setMessages(data.data?.messages);
+      }
+    );
+  }, [router.query]);
 
   const sendMessage = () => {
     const newMessage = {
@@ -62,7 +89,10 @@ const Matches: FC<MatchesProps> = ({}) => {
       text: message,
     };
     socket.emit("message", newMessage);
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages((prev) => [
+      ...(prev || []),
+      { ...newMessage, createdAt: Date.now() } as any,
+    ]);
     setMessage("");
   };
 
@@ -90,7 +120,10 @@ const Matches: FC<MatchesProps> = ({}) => {
               match.user && (
                 <Flex
                   cursor="pointer"
-                  onClick={() => setSelectedMatch(index)}
+                  onClick={() => {
+                    router.push(`/matches?mid=${match.match.id}`);
+                    setSelectedMatch(index);
+                  }}
                   color="white"
                   key={match.user.id}
                   style={{
@@ -155,35 +188,39 @@ const Matches: FC<MatchesProps> = ({}) => {
           </Box>
         </Flex>
         <Flex flexDirection="column" flex="1">
-          {messages.map((message, index) => (
-            <Box
-              bg={
-                message.senderId === user!.me!.id
-                  ? "var(--background-secondary)"
-                  : "var(--background-tertiary)"
-              }
-              color={
-                message.senderId === user!.me!.id
-                  ? "var(--text-primary)"
-                  : "var(--background-extra2)"
-              }
-              maxWidth="60%"
-              alignSelf={
-                message.senderId === user!.me!.id ? "flex-end" : "flex-start"
-              }
-              key={index}
-              p={2}
-              borderRadius={
-                message.senderId === user!.me!.id
-                  ? "5px 0 5px 5px"
-                  : "0 5px 5px 5px"
-              }
-              my={1}
-              mx={4}
-            >
-              {message.text}
-            </Box>
-          ))}
+          {messages &&
+            messages.map((message, index) => (
+              <Box
+                bg={
+                  message.senderId === user!.me!.id
+                    ? "var(--background-secondary)"
+                    : "var(--background-tertiary)"
+                }
+                color={
+                  message.senderId === user!.me!.id
+                    ? "var(--text-primary)"
+                    : "var(--background-extra2)"
+                }
+                maxWidth="60%"
+                alignSelf={
+                  message.senderId === user!.me!.id ? "flex-end" : "flex-start"
+                }
+                key={index}
+                p={2}
+                borderRadius={
+                  message.senderId === user!.me!.id
+                    ? "5px 0 5px 5px"
+                    : "0 5px 5px 5px"
+                }
+                my={1}
+                mx={4}
+              >
+                <Text>{message.text}</Text>
+                <Text w="100%" fontSize="0.7rem" textAlign="right">
+                  {dayjs(message.createdAt).format("h:mm A")}
+                </Text>
+              </Box>
+            ))}
         </Flex>
         <Flex
           h="60px"

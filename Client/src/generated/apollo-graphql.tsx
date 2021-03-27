@@ -17,7 +17,6 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String'];
   me?: Maybe<User>;
   users?: Maybe<Array<User>>;
   dvinderProfile?: Maybe<DvinderProfileArray>;
@@ -177,6 +176,7 @@ export type Mutation = {
   updateFeed: FeedResponse;
   deleteFeed: Scalars['Boolean'];
   vote: Scalars['Boolean'];
+  messages?: Maybe<Array<Message>>;
 };
 
 
@@ -267,6 +267,11 @@ export type MutationVoteArgs = {
   feedId: Scalars['Int'];
 };
 
+
+export type MutationMessagesArgs = {
+  matchId: Scalars['Int'];
+};
+
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<ErrorResponse>>;
@@ -342,6 +347,16 @@ export type FeedUpdateData = {
   code?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
   projectIdea?: Maybe<Scalars['String']>;
+};
+
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['Int'];
+  matchId: Scalars['Int'];
+  senderId: Scalars['Int'];
+  recipientId: Scalars['Int'];
+  text: Scalars['String'];
+  createdAt: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -524,6 +539,19 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'logout'>
+);
+
+export type MessagesMutationVariables = Exact<{
+  matchId: Scalars['Int'];
+}>;
+
+
+export type MessagesMutation = (
+  { __typename?: 'Mutation' }
+  & { messages?: Maybe<Array<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'text' | 'matchId' | 'senderId' | 'recipientId' | 'createdAt'>
+  )>> }
 );
 
 export type PlaceSearchAutoCorrectMutationVariables = Exact<{
@@ -1089,6 +1117,42 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const MessagesDocument = gql`
+    mutation Messages($matchId: Int!) {
+  messages(matchId: $matchId) {
+    text
+    matchId
+    senderId
+    recipientId
+    createdAt
+  }
+}
+    `;
+export type MessagesMutationFn = Apollo.MutationFunction<MessagesMutation, MessagesMutationVariables>;
+
+/**
+ * __useMessagesMutation__
+ *
+ * To run a mutation, you first call `useMessagesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMessagesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [messagesMutation, { data, loading, error }] = useMessagesMutation({
+ *   variables: {
+ *      matchId: // value for 'matchId'
+ *   },
+ * });
+ */
+export function useMessagesMutation(baseOptions?: Apollo.MutationHookOptions<MessagesMutation, MessagesMutationVariables>) {
+        return Apollo.useMutation<MessagesMutation, MessagesMutationVariables>(MessagesDocument, baseOptions);
+      }
+export type MessagesMutationHookResult = ReturnType<typeof useMessagesMutation>;
+export type MessagesMutationResult = Apollo.MutationResult<MessagesMutation>;
+export type MessagesMutationOptions = Apollo.BaseMutationOptions<MessagesMutation, MessagesMutationVariables>;
 export const PlaceSearchAutoCorrectDocument = gql`
     mutation PlaceSearchAutoCorrect($keyword: String!) {
   placeSearchAutoCorrect(keyword: $keyword) {

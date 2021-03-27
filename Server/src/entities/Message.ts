@@ -4,11 +4,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Match } from "./Match";
 
 @ObjectType()
 @Entity()
@@ -20,12 +17,6 @@ export class Message extends BaseEntity {
   @Field(() => Int)
   @Column({ nullable: true })
   matchId!: number;
-
-  @ManyToOne(() => Match, (m) => m.messages, {
-    onDelete: "SET NULL",
-  })
-  @JoinColumn({ name: "senderId" })
-  match!: Promise<Match>;
 
   @Field(() => Int)
   @Column()

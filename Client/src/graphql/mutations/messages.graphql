@@ -1,0 +1,9 @@
+mutation Messages($matchId: Int!) {
+  messages(matchId: $matchId) {
+    text
+    matchId
+    senderId
+    recipientId
+    createdAt
+  }
+}

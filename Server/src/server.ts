@@ -26,7 +26,7 @@ import { Match } from "./entities/Match";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { Message } from "./entities/Message";
-import { chatSocket } from "./resolvers/chat";
+import { ChatResolver, chatSocket } from "./resolvers/chat";
 
 dotenv.config();
 
@@ -129,7 +129,7 @@ const main = async () => {
    */
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, FeedResolver],
+      resolvers: [UserResolver, FeedResolver, ChatResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({

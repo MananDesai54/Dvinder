@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Arg, Int, Query, Resolver } from "type-graphql";
 import { NewMessage } from "../config/types";
 import { Message } from "../entities/Message";
 
@@ -15,18 +16,12 @@ export const chatSocket = (
   socket.on(
     "message",
     async ({ matchId, senderId, recipientId, text }: NewMessage) => {
-      const newMessage = Message.create({
+      const newMessage = await Message.create({
         matchId,
         senderId,
         recipientId,
         text,
-      });
-      // const newMessage = await Message.create({
-      //   matchId,
-      //   senderId,
-      //   recipientId,
-      //   text,
-      // }).save();
+      }).save();
       console.log(newMessage);
       socket.broadcast.to(matchId.toString()).emit("new-message", newMessage);
     }
@@ -41,3 +36,19 @@ export const chatSocket = (
     }
   });
 };
+
+@Resolver(Message)
+export class ChatResolver {
+  @Query(() => [Message], { nullable: true })
+  async messages(
+    @Arg("matchId", () => Int) matchId: number
+  ): Promise<Message[] | null> {
+    try {
+      const messages = await Message.find({ where: { matchId } });
+      return messages;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
+}

@@ -15,6 +15,13 @@ import { socket } from "../utils/socket";
 
 interface MatchesProps {}
 
+export type NewMessage = {
+  matchId: number;
+  senderId: number;
+  recipientId: number;
+  text: string;
+};
+
 const Matches: FC<MatchesProps> = ({}) => {
   const router = useRouter();
   const { data } = useMatchesQuery();
@@ -22,6 +29,7 @@ const Matches: FC<MatchesProps> = ({}) => {
   const [selectedMatch, setSelectedMatch] = useState(0);
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<NewMessage[]>([]);
 
   useEffect(() => {
     if (!user?.me && !loading && !isServer()) {
@@ -30,20 +38,33 @@ const Matches: FC<MatchesProps> = ({}) => {
   }, []);
 
   useEffect(() => {
-    console.log(data);
     if (data && data.matches) {
       socket.on("connect", () => {
         socket.emit("startChat", data.matches![selectedMatch].match.id);
       });
       socket.on("new-message", (message) => {
         console.log(message);
+        setMessages((prev) => [...prev, message]);
       });
     }
   }, [data]);
 
   useEffect(() => {
+    setMessages([]);
     socket.emit("startChat", data!.matches![selectedMatch].match.id);
   }, [selectedMatch]);
+
+  const sendMessage = () => {
+    const newMessage = {
+      matchId: data!.matches![selectedMatch].match.id,
+      senderId: user!.me!.id,
+      recipientId: data!.matches![selectedMatch].user.id,
+      text: message,
+    };
+    socket.emit("message", newMessage);
+    setMessages((prev) => [...prev, newMessage]);
+    setMessage("");
+  };
 
   return data?.matches ? (
     <Flex>
@@ -133,7 +154,37 @@ const Matches: FC<MatchesProps> = ({}) => {
             <Text noOfLines={1}>{data?.matches[selectedMatch].user.bio}</Text>
           </Box>
         </Flex>
-        <Box flex="1"></Box>
+        <Flex flexDirection="column" flex="1">
+          {messages.map((message, index) => (
+            <Box
+              bg={
+                message.senderId === user!.me!.id
+                  ? "var(--background-secondary)"
+                  : "var(--background-tertiary)"
+              }
+              color={
+                message.senderId === user!.me!.id
+                  ? "var(--text-primary)"
+                  : "var(--background-extra2)"
+              }
+              maxWidth="60%"
+              alignSelf={
+                message.senderId === user!.me!.id ? "flex-end" : "flex-start"
+              }
+              key={index}
+              p={2}
+              borderRadius={
+                message.senderId === user!.me!.id
+                  ? "5px 0 5px 5px"
+                  : "0 5px 5px 5px"
+              }
+              my={1}
+              mx={4}
+            >
+              {message.text}
+            </Box>
+          ))}
+        </Flex>
         <Flex
           h="60px"
           color="white"
@@ -169,7 +220,14 @@ const Matches: FC<MatchesProps> = ({}) => {
             mx={2}
             value={message}
             placeholder="Your message.."
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => {
+              setMessage(e.target.value);
+            }}
+            onKeyUp={(e) => {
+              if (e.code === "NumpadEnter" || e.code === "Enter") {
+                sendMessage();
+              }
+            }}
           />
           <MdSend
             size={30}
@@ -178,18 +236,7 @@ const Matches: FC<MatchesProps> = ({}) => {
               color:
                 message.length === 0 ? "rgba(255, 255, 255, 0.2)" : "white",
             }}
-            onClick={
-              message.length !== 0
-                ? () => {
-                    socket.emit("message", {
-                      matchId: data!.matches![selectedMatch].match.id,
-                      senderId: user?.me?.id,
-                      recipientId: data!.matches![selectedMatch].user.id,
-                      text: message,
-                    });
-                  }
-                : () => {}
-            }
+            onClick={message.length !== 0 ? () => sendMessage() : () => {}}
           />
         </Flex>
       </Flex>

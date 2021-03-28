@@ -32,7 +32,7 @@
     "react-dropzone": "^11.3.1",
     "react-github-login": "^1.0.3",
     "react-icons": "^4.2.0",
-    "react-is": "^17.0.1",
+    "react-is": "^17.0.2",
     "socket.io-client": "^4.0.0",
     "urql": "^1.11.6"
   },

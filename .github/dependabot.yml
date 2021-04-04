@@ -8,11 +8,11 @@ updates:
   - package-ecosystem: "npm"
     directory: "/Server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "sunday"
 
   - package-ecosystem: "npm"
     directory: "/Client"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "sunday"

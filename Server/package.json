@@ -45,14 +45,14 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
-    "nodemailer": "^6.5.0",
-    "pg": "^8.5.1",
+    "nodemailer": "^6.6.0",
+    "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.0.1",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.32",
     "uuid": "^8.3.2",
-    "validator": "^13.5.2"
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",

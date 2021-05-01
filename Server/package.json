@@ -52,7 +52,7 @@
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.32",
     "uuid": "^8.3.2",
-    "validator": "^13.5.2"
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",

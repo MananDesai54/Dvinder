@@ -11,7 +11,7 @@
     "@apollo/client": "^3.3.12",
     "@chakra-ui/icons": "^1.0.12",
     "@chakra-ui/react": "^1.0.0",
-    "@emotion/react": "^11.1.5",
+    "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@urql/exchange-graphcache": "^4.0.0",
     "apollo-upload-client": "^14.1.3",

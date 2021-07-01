@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@types/validator": "^13.1.3",
+    "argon2": "^0.28.2",
     "apollo-server-express": "^2.25.2",
-    "argon2": "^0.27.1",
     "connect-redis": "^5.2.0",
     "aws-sdk": "^2.937.0",
     "connect-redis": "^6.0.0",

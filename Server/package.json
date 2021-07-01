@@ -29,9 +29,9 @@
     "migration": "npx typeorm migration:create -n MockUser"
   },
   "dependencies": {
-    "@types/validator": "^13.1.4",
+    "@types/validator": "^13.1.3",
+    "argon2": "^0.28.2",
     "apollo-server-express": "^2.25.2",
-    "argon2": "^0.27.1",
     "connect-redis": "^5.2.0",
     "aws-sdk": "^2.937.0",
     "connect-redis": "^6.0.0",
@@ -63,15 +63,15 @@
     "@types/express": "^4.17.12",
     "@types/express-session": "^1.17.3",
     "@types/graphql": "^14.5.0",
-    "@types/graphql-upload": "^8.0.4",
+    "@types/graphql-upload": "^8.0.5",
     "@types/ioredis": "^4.26.4",
-    "@types/jsonwebtoken": "^8.5.1",
+    "@types/jsonwebtoken": "^8.5.2",
     "@types/morgan": "^1.9.2",
     "@types/node": "^15.12.5",
     "@types/nodemailer": "^6.4.1",
     "@types/uuid": "^8.3.0",
     "ts-node": "^10.0.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.5"
   },
   "browserslist": {
     "production": [

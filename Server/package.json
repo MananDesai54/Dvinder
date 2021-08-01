@@ -29,7 +29,7 @@
     "migration": "npx typeorm migration:create -n MockUser"
   },
   "dependencies": {
-    "@types/validator": "^13.1.3",
+    "@types/validator": "^13.6.3",
     "argon2": "^0.28.2",
     "apollo-server-express": "^2.25.2",
     "connect-redis": "^5.2.0",

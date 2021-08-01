@@ -13,7 +13,7 @@
     "@chakra-ui/react": "^1.0.0",
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
-    "@urql/exchange-graphcache": "^4.0.0",
+    "@urql/exchange-graphcache": "^4.2.1",
     "apollo-upload-client": "^16.0.0",
     "codemirror": "^5.60.0",
     "dayjs": "^1.10.4",

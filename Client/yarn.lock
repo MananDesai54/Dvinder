@@ -1910,10 +1910,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/global-this/-/global-this-0.4.4.tgz#8a1b2cfcd3e26e079a847daba879308c924dd695"
   integrity sha512-mHkm6FvepJECMNthFuIgpAEFmPOk71UyXuIxYfjytvFTnSDBIz7jmViO+LfHI/AjrazWije0PnSP3+/NlwzqtA==
 
-"@urql/core@>=2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.0.0.tgz#b4936dd51fe84cb570506d9ee2579149689f7535"
-  integrity sha512-Qj24CG8ullqZZsYmjrSH0JhH+nY7kj8GbVbA9si3KUjlYs75A/MBQU3i97j6oWyGldDBapyis2CfaQeXKbv8rA==
+"@urql/core@>=2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.1.5.tgz#8fbc0846d6020cee89dadbee07ffb0a618ab29d8"
+  integrity sha512-iX30xZ6exdJbajv2S4gxVP+1ZEh57x9gEuUrpOCLWZp84970XDSo82xoz+11I+NGWiQNZfbIs6LTLaie/iG3OQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
     wonka "^4.0.14"
@@ -1926,12 +1926,12 @@
     "@graphql-typed-document-node/core" "^3.1.0"
     wonka "^4.0.14"
 
-"@urql/exchange-graphcache@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@urql/exchange-graphcache/-/exchange-graphcache-4.0.0.tgz#be7dd362b6949dee8f2188139adca692b70a3b05"
-  integrity sha512-UuLyR2tuy28KFmcMzD0aU3hWEa62H8Yfo9rBVAaXPxvGUD8g0Bq3NXUGLBvXxKMZcodn7AjYeVBlfPCHth9awA==
+"@urql/exchange-graphcache@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@urql/exchange-graphcache/-/exchange-graphcache-4.2.1.tgz#d47e5ddc687db077e1f1c2ca74c3c020a5fd14f6"
+  integrity sha512-0scI3Lk449WdeQXV90pf7m42W4uzzNAiLOTiQ3ogLSarazn+jmsB9i233jctF26ud+KD110lIysFgyR3UXm+/g==
   dependencies:
-    "@urql/core" ">=2.0.0"
+    "@urql/core" ">=2.1.5"
     wonka "^4.0.14"
 
 "@wry/context@^0.5.2":

@@ -20,7 +20,7 @@
     "emoji-mart": "^3.0.1",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.2",
-    "graphql": "^15.5.0",
+    "graphql": "^15.5.1",
     "isomorphic-fetch": "^3.0.0",
     "next": "latest",
     "next-apollo": "^5.0.4",

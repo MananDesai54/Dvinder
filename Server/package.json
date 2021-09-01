@@ -42,7 +42,7 @@
     "express-session": "^1.17.2",
     "graphql": "^15.5.1",
     "graphql-upload": "^11.0.0",
-    "ioredis": "^4.27.6",
+    "ioredis": "^4.27.9",
     "graphql-upload": "^12.0.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",

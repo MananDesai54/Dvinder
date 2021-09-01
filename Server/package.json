@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
-    "@types/connect-redis": "^0.0.16",
+    "@types/connect-redis": "^0.0.17",
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.12",
     "@types/express-session": "^1.17.3",
